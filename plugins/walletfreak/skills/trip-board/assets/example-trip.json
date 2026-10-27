@@ -188,23 +188,27 @@
   ],
   "itinerary": [
     {
+      "day": "2027-04-12",
       "when": "April 12, 2027 \u00b7 America/New_York \u00b7 time TBD",
       "title": "Depart New York",
       "detail": "Proposed overnight flight to Tokyo. Choose the cash or award alternative after confirming seats and terms.",
       "option_id": "flight-cash"
     },
     {
+      "day": "2027-04-13",
       "when": "April 13, 2027 \u00b7 Asia/Tokyo \u00b7 time TBD",
       "title": "Arrive and settle in",
       "detail": "Local arrival date is the following day. Airport transfer remains unpriced.",
       "option_id": "hotel-cash"
     },
     {
+      "day": "2027-04-14",
       "when": "April 14\u201318, 2027 \u00b7 Asia/Tokyo",
       "title": "Five days to explore",
       "detail": "Leave space for neighborhoods, food and a day trip. Activities and local transport are not priced."
     },
     {
+      "day": "2027-04-19",
       "when": "April 19, 2027 \u00b7 Asia/Tokyo \u00b7 time TBD",
       "title": "Head home",
       "detail": "Confirm checkout, airport transfer and the return flight\u2019s local arrival date.",

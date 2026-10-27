@@ -193,10 +193,16 @@ def validate(data):
         for name in ("when", "title", "detail"):
             text(item.get(name), f"itinerary {name}", True)
         if 'day' in item:
+            if not isinstance(item['day'], str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', item['day']):
+                raise ValueError('Itinerary day needs YYYY-MM-DD')
             date.fromisoformat(item['day'])
+        elif re.search(r'\b\d{4}-\d{2}-\d{2}\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:[–-]\d{1,2})?,?\s+\d{4}\b', item['when'], re.I):
+            raise ValueError('Add day for a dated itinerary entry')
         if 'price' in item and (not isinstance(item['price'],str) or len(item['price'])>80): raise ValueError('Invalid itinerary price')
         if 'booking_status' in item and item['booking_status'] not in ('proposed','booked','cancelled'):
             raise ValueError('Unknown booking status')
+        if re.match(r'Booked\b', item['title'], re.I) and item.get('booking_status') != 'booked':
+            raise ValueError('Booked titles require booked status')
         if 'place' in item:
             place = item['place']
             if not isinstance(place, dict) or set(place) != {'label','lat','lng','confidence','source_url'}:
@@ -217,6 +223,8 @@ def validate(data):
                     raise ValueError('Stay dates need YYYY-MM-DD')
             if date.fromisoformat(stay['check_out']) <= date.fromisoformat(stay['check_in']):
                 raise ValueError('Check-out must follow check-in')
+            if item.get('day') and item['day'] != stay['check_in']:
+                raise ValueError('Stay day must match check-in')
         if 'route' in item:
             route = item['route']
             if not isinstance(route, dict) or set(route) - {'mode','duration','source_url'} or 'mode' not in route:

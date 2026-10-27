@@ -38,7 +38,9 @@ async function openAccountSignin(id){
  try{if(dirty)await persistWallet();await refreshVault();const account=draft.programs.find(a=>a.id===id);if(!account)return;pendingAccountId=id;tab('credentials');$('#credential-form').reset();const saved=vaultState?.entries?.find(e=>e.id===account.credential_id);$('#credential-id').value=saved?.id||'';$('#credential-provider').value=saved?.provider||account.name;$('#credential-label').value=saved?.label||account.account_label||account.owner;$('#credential-origin').value=saved?.login_origin||'';$('#credential-username').value=saved?.username||'';$('#credential-association').hidden=false;$('#credential-association').textContent=`Link sign-in to ${account.owner} · ${account.account_label||account.name}.`;}
  catch(e){notice(e.message,true);}
 }
-async function copyAccountSync(id){
+async function openAccountSync(id){
  const account=draft.programs.find(a=>a.id===id);if(!account)return;
- try{if(dirty)await persistWallet();await navigator.clipboard.writeText(`Use wallet-sync to refresh ${account.owner}'s ${account.account_label||account.name} (${account.name}). Person ID: ${account.person_id}; rewards account ID: ${account.id}. Use its linked sign-in when available; ask me for any verification code. Preserve other accounts.`);notice('Sync request copied. Paste it in your agent conversation.');}catch(e){notice(e.message,true);}
+ try{if(dirty)await persistWallet();$('#sync-request-text').value=`Use wallet-sync to refresh ${account.owner}'s ${account.account_label||account.name} (${account.name}). Person ID: ${account.person_id}; rewards account ID: ${account.id}. Use its linked sign-in when available; ask me for any verification code. Preserve other accounts.`;$('#sync-request-dialog').showModal();}catch(e){notice(e.message,true);}
 }
+$('#sync-request-close').onclick=()=>$('#sync-request-dialog').close();
+$('#sync-request-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('#sync-request-text').value);notice('Request copied. Paste it in your agent conversation.');$('#sync-request-dialog').close();}catch{notice('Clipboard unavailable. Select the request and copy it manually.',true);$('#sync-request-text').focus();$('#sync-request-text').select();}};

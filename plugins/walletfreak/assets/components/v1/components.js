@@ -25,6 +25,18 @@
   function payment(p){return p?`<p>${esc(p.reason)}</p>${(p.benefits||[]).map(b=>`<p>${esc(b.name)} · ${esc(b.status)} — ${esc(b.detail)}${b.recorded_at?' · Recorded '+esc(b.recorded_at):''}</p>`).join('')}`:'';}
   function stayLabel(r){if(!r.stay)return '';const n=(Date.parse(r.stay.check_out)-Date.parse(r.stay.check_in))/86400000;return `${esc(r.stay.check_in)} → ${esc(r.stay.check_out)} · ${Number.isFinite(n)?n:'?'} ${n===1?'night':'nights'}`;}
   function nextDay(day){const time=Date.parse(day);return Number.isFinite(time)?new Date(time+86400000).toISOString().slice(0,10):'';}
+  function dayOf(row){
+    const valid=day=>/^\d{4}-\d{2}-\d{2}$/.test(day||'')&&!Number.isNaN(Date.parse(day))&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)===day;
+    const known=row.day||row.stay?.check_in;
+    if(valid(known))return known;
+    const when=row.when||'',iso=when.match(/\b\d{4}-\d{2}-\d{2}\b/);
+    if(iso&&valid(iso[0]))return iso[0];
+    const match=when.match(/\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\s+(\d{1,2}),?\s+(\d{4})\b/i);
+    if(!match)return '';
+    const month=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(match[1].slice(0,3).toLowerCase())+1;
+    const day=`${match[3]}-${String(month).padStart(2,'0')}-${match[2].padStart(2,'0')}`;
+    return valid(day)?day:'';
+  }
   function eachNight(start,end,make){const result=[];for(let day=start,next=nextDay(day);day<end&&next&&next>day;day=next,next=nextDay(day))result.push(make(day,next));return result;}
   function vacantNight(day,next,proposal,trip,showPrice){
     const {stay,price,...rest}=proposal||{};
@@ -40,6 +52,7 @@
     }).filter(Boolean);
   }
   function tripRows(rows,window){
+    rows=rows.map(r=>({...r,day:dayOf(r)}));
     const display=rows.flatMap(r=>{
       if(!r.stay)return [r];
       if(r.booking_status!=='booked')return [];
@@ -48,7 +61,7 @@
     const groups=new Map();
     if(!window)for(const r of rows.filter(r=>r.stay)){const key=r.trip||'',group=groups.get(key)||{rows:[],check_in:r.stay.check_in,check_out:r.stay.check_out};group.rows.push(r);if(r.stay.check_in<group.check_in)group.check_in=r.stay.check_in;if(r.stay.check_out>group.check_out)group.check_out=r.stay.check_out;groups.set(key,group);}
     const slots=window?hotelSlots(rows,window):[...groups.values()].flatMap(group=>hotelSlots(group.rows,group));
-    return [...display,...slots].sort((a,b)=>(a.day||'9999').localeCompare(b.day||'9999'));
+    return [...display,...slots].sort((a,b)=>(a.day||'9999').localeCompare(b.day||'9999')).map((r,i,all)=>({...r,showDate:i===0||r.day!==all[i-1].day}));
   }
   function routeStops(rows){const seen=new Set();return rows.map((r,i)=>({r,i})).filter(({r})=>{const place=r.place?.label;if(!place||seen.has(place))return false;seen.add(place);return true;});}
   function safeLink(url,label){try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password?`<a href="${esc(u.href)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>`:'';}catch{return '';}}
@@ -68,9 +81,11 @@
     const times=(r.when||'').match(/\b\d{1,2}:\d{2}\b/g)||[];
     const compactTime=r.slot?'Overnight':times.length>1?times.slice(0,2).join(' → '):times[0]||(/\bmorning\b|\bafternoon\b|\bdaytime\b|\bevening\b/i.exec(r.when||'')?.[0]||'Time TBD');
     const date=/^\d{4}-\d{2}-\d{2}$/.test(r.day||'')?new Date(r.day+'T12:00:00Z'):null;
-    const day=date&&!Number.isNaN(date.getTime())?`${new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:'UTC'}).format(date)}<strong>${new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(date)}</strong>`:`<strong>${esc(r.day||'Date TBD')}</strong>`;
-    const details=`<dialog class="wf-evidence" aria-label="Details for ${esc(r.title)}${r.day?' on '+esc(r.day):''}"><div class="wf-evidence-heading"><h3>${esc(r.title)}</h3><button type="button" data-close-info aria-label="Close details">×</button></div><dl><div><dt>Date / time</dt><dd>${esc(r.day||'Date to confirm')} · ${esc(r.when||schedule)}</dd></div><div><dt>Status</dt><dd>${esc(r.booking_status||'proposed')}</dd></div><div><dt>Price</dt><dd>${price?`${esc(price)}${stay?' · full stay quote or reported total':''}`:'To confirm'}</dd></div></dl><p>${esc(r.detail||'Details to confirm.')}</p>${r.candidate?`<p>Suggested stay: ${esc(r.candidate)}</p>`:''}${r.option_anchor&&/^#option-[0-9]+$/.test(r.option_anchor)?`<a href="${r.option_anchor}">View option</a>`:''}${payment(r.payment)}${r.terms?`<p>${esc(r.terms)}</p>`:''}${(r.sources||[]).map(s=>safeLink(s.url,s.label)).join(' · ')}${r.place?`<p>${esc(r.place.label)} · ${esc(r.place.confidence)} ${safeLink(r.place.source_url,'Location source')}</p>`:''}${r.route?.source_url?`<p>${safeLink(r.route.source_url,'Route source')}</p>`:''}</dialog>`;
-    return `<li data-stop="${i}" class="${r.slot?'wf-needed':stay?'wf-stay':/flight|fly|depart|arriv|return/i.test(r.title)?'wf-flight':'wf-activity'}" tabindex="-1"><span class="wf-cal-date">${day}</span><div class="wf-cal-event"><div class="wf-step-top"><small class="wf-time">${esc(compactTime)}</small><button type="button" class="wf-info" data-info="${i}" aria-label="More details for ${esc(r.title)}${r.day?' on '+esc(r.day):''}">i</button></div><div class="wf-step-heading"><strong>${esc(r.title)}</strong><span class="wf-tag">${esc(r.booking_status||'proposed')}</span></div>${r.price||r.candidate_price&&r.show_candidate_price?`<span class="wf-price">${esc(r.price||r.candidate_price)}${r.stay_total||r.candidate_price?'<small>Stay total</small>':''}</span>`:''}${r.place?`<button type="button" class="wf-show-stop" data-show-stop="${i}">Show on map</button>`:''}</div>${details}</li>`;
+    const day=r.showDate?(date&&!Number.isNaN(date.getTime())?`${new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:'UTC'}).format(date)}<strong>${new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(date)}</strong>`:'<strong>Unscheduled</strong>'):'';
+    const status=r.slot?'To book':/^booked\b/i.test(r.title||'')&&r.booking_status!=='booked'?'Status to confirm':r.booking_status==='booked'?'Booked':r.booking_status==='cancelled'?'Cancelled':r.booking_status==='proposed'?'Proposed':'To confirm';
+    const title=(r.title||'').replace(/^Booked\s+/i,'');
+    const details=`<dialog class="wf-evidence" aria-label="Details for ${esc(title)}${r.day?' on '+esc(r.day):''}"><div class="wf-evidence-heading"><h3>${esc(title)}</h3><button type="button" data-close-info aria-label="Close details">×</button></div><dl><div><dt>Date / time</dt><dd>${esc(r.day||'Date to confirm')} · ${esc(r.when||schedule)}</dd></div><div><dt>Status</dt><dd>${esc(status)}</dd></div><div><dt>Price</dt><dd>${price?`${esc(price)}${stay?' · full stay quote or reported total':''}`:'To confirm'}</dd></div></dl><p>${esc(r.detail||'Details to confirm.')}</p>${r.candidate?`<p>Suggested stay: ${esc(r.candidate)}</p>`:''}${r.option_anchor&&/^#option-[0-9]+$/.test(r.option_anchor)?`<a href="${r.option_anchor}">View option</a>`:''}${payment(r.payment)}${r.terms?`<p>${esc(r.terms)}</p>`:''}${(r.sources||[]).map(s=>safeLink(s.url,s.label)).join(' · ')}${r.place?`<p>${esc(r.place.label)} · ${esc(r.place.confidence)} ${safeLink(r.place.source_url,'Location source')}</p>`:''}${r.route?.source_url?`<p>${safeLink(r.route.source_url,'Route source')}</p>`:''}</dialog>`;
+    return `<li data-stop="${i}" class="${r.slot?'wf-needed':stay?'wf-stay':r.route?.mode==='flight'||r.kind==='flight'||/flight|fly|depart|arriv|return/i.test(r.title)?'wf-flight':'wf-activity'}" tabindex="-1"><span class="wf-cal-date">${day}</span><div class="wf-cal-event"><div class="wf-step-top"><small class="wf-time">${esc(compactTime)}</small><button type="button" class="wf-info" data-info="${i}" aria-label="More details for ${esc(title)}${r.day?' on '+esc(r.day):''}">i</button></div><div class="wf-step-heading"><strong>${esc(title)}</strong><span class="wf-tag">${esc(status)}</span></div>${r.price||r.candidate_price&&r.show_candidate_price?`<span class="wf-price">${esc(r.price||r.candidate_price)}${r.stay_total||r.candidate_price?'<small>Stay total</small>':''}</span>`:''}${r.place?`<button type="button" class="wf-show-stop" data-show-stop="${i}">Show on map</button>`:''}</div>${details}</li>`;
   }
   function tripHtml(rows,window){
     const warnings=routeWarnings(rows,window);
@@ -109,7 +124,7 @@
   function tripBrief(rows){
     const stops=rows.filter(r=>r.place?.label&&Number.isFinite(r.place.lat)&&Number.isFinite(r.place.lng)).filter((r,i,all)=>all.findIndex(other=>other.place.label===r.place.label)===i).slice(0,8);
     const title=rows[0]?.trip||'Your trip';
-    const dated=rows.map(r=>r.day).filter(Boolean).sort();
+    const dated=rows.map(dayOf).filter(Boolean).sort();
     const dates=dated.length?`${dated[0]}${dated.at(-1)!==dated[0]?' → '+dated.at(-1):''}`:'Dates to confirm';
     const nights=tripRows(rows).filter(r=>r.stay).length;
     let art='';
@@ -119,7 +134,7 @@
       const points=stops.map(r=>[90+420*(r.place.lng-minLng)/Math.max(maxLng-minLng,.01),175-105*(r.place.lat-minLat)/Math.max(maxLat-minLat,.01)]);
       art=`<svg viewBox="0 0 600 240" role="img" aria-label="Schematic route: ${esc(stops.map(r=>r.place.label).join(' to '))}"><polyline points="${points.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#87e1ce" stroke-width="3" stroke-dasharray="5 8"/>${points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="7" fill="#a9eadb"/><text x="${x+11}" y="${y-12}">${esc(stops[i].place.label.split(' · ')[0])}</text>`).join('')}</svg>`;
     }
-    return `<div class="wf-trip-brief"><div class="wf-trip-brief-copy"><span>YOUR ROUTE</span><strong>${esc(title)}</strong><p>${esc(dates)} · ${nights?nights+' hotel nights':'Stays to confirm'}</p><small>${stops.length?'Approximate positions · route is schematic':'Add verified locations to draw the route.'}</small></div>${art}</div>`;
+    return `<div class="wf-trip-brief${stops.length?'':' wf-trip-brief-empty'}"><div class="wf-trip-brief-copy"><span>YOUR ROUTE</span>${stops.length?`<strong>${esc(title)}</strong>`:''}<p>${esc(dates)} · ${nights?nights+' hotel nights':'Stays to confirm'}</p><small>${stops.length?'Approximate positions · route is schematic':'Add verified locations to draw the route.'}</small></div>${art}</div>`;
   }
   function actionQueue(rows){return `<div class="wf-action-queue">${rows.filter(r=>!r.done).slice(0,4).map(r=>`<article><span class="wf-action-mark" aria-hidden="true">${r.kind==='booking'?'✈':r.kind==='sign-in'?'⌑':'◉'}</span><div><small>${esc(r.trip_name||'TRIP')}${r.due?' · DUE '+esc(r.due):''}</small><strong>${esc(r.title)}</strong><p>${esc(r.detail||'Review this step in Actions.')}</p></div></article>`).join('')||'<p class="wf-empty">No trip actions need your attention.</p>'}</div>`;}
   function componentHtml(block,data){

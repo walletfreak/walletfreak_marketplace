@@ -1,7 +1,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const {execFileSync} = require('node:child_process');
-const {mkdtempSync, rmSync} = require('node:fs');
+const {mkdtempSync, rmSync, writeFileSync} = require('node:fs');
 const {tmpdir} = require('node:os');
 const {join, resolve} = require('node:path');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -14,6 +14,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   const cli = (args, input) => execFileSync('python3', [script, ...args], {env, input, encoding:'utf8'}).trim();
   let browser;
   try {
+    writeFileSync(join(data,'wallet.json'),JSON.stringify({version:2,revision:'test-wallet',preferences:'',people:[{id:'alex',name:'Alex'}],cards:[{id:'card',person_id:'alex',owner:'Alex',name:'Capital One Venture X; personal/business variant not specified',notes:'',reported_on:'',reward_account_id:'miles'}],programs:[{id:'miles',person_id:'alex',owner:'Alex',name:'Capital One Miles',account_label:'Alex · Capital One Miles',balance:'68000',approximate:false,status:'',preserve:false,reported_on:'',notes:''}],benefits:[]}));
     cli(['start','--port','0']);
     const stamp = new Date().toISOString();
     const source = [{label:'Example',url:'https://example.com/travel'}];
@@ -32,6 +33,8 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
       lodging_window:{check_in:'2027-02-16',check_out:'2027-02-18'}, gaps:['Second hotel night is unknown.']
     };
     const published = JSON.parse(cli(['publish','--input','-'], JSON.stringify({findings})));
+    const layout=JSON.parse(cli(['layout']));
+    cli(['layout','--input','-'],JSON.stringify({expected_revision:layout.revision,layout:{...layout.layout,blocks:[...layout.layout.blocks,{id:'legacy-wallet',component:'wallet-cards',source:'wallet.cards',title:'Cards'}]}}));
     const link = cli(['start','--port','0','--trip',published.id,'--review','comparison']);
     assert.match(link, /\/travel\?trip=[^#]+&review=comparison#key=/);
     browser = await chromium.launch({headless:true, executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
@@ -40,6 +43,9 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     await page.locator('#comparison').waitFor();
     await page.waitForFunction(() => document.querySelector('#trip-library').open && document.querySelector('#trip-alternatives').open);
     assert.equal(await page.locator('#overview-trip').inputValue(),published.id);
+    assert.equal(await page.locator('#overview-layout-note').isVisible(),true);
+    assert.equal(await page.locator('#overview-content [data-component="wallet-cards"]').count(),0);
+    assert.equal(await page.locator('#overview-costs').isVisible(),false);
     const actions = await page.evaluate(() => window.getTripActions(state.trips.find(t => t.id === activeId)));
     assert.deepEqual(actions.map(a => a.option).sort(), ['hotel','priced']);
     await page.locator('[data-tab="actions"]').first().click();
@@ -48,6 +54,12 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
       const item = document.querySelector('[data-option-id="priced"]');
       return document.querySelector('#trip-library').open && document.querySelector('#trip-alternatives').open && item && item.getBoundingClientRect().top < innerHeight;
     });
+    await page.locator('[data-tab="wallet"]').first().click();
+    await page.locator('#wallet-tiles .wallet-tile-cards h4').getByText('Capital One Venture X').waitFor();
+    assert.equal(await page.getByText('Copy sync request',{exact:true}).count(),0);
+    await page.getByRole('button',{name:'Ask agent to refresh'}).click();
+    await page.locator('#sync-request-dialog').waitFor();
+    assert.match(await page.locator('#sync-request-text').inputValue(),/Use wallet-sync to refresh/);
     console.log('review links and actionable research: OK');
   } finally {
     if (browser) await browser.close();

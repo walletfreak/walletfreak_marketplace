@@ -43,6 +43,22 @@ assert.match(flight,/class="wf-info"/);
 assert.match(flight,/class="wf-evidence"/);
 assert.doesNotMatch(flight,/Details & evidence/);
 assert.doesNotMatch(flight,/Payment card: to confirm/);
+renderTrip(target,[
+  {when:'February 13, 2027 · 18:20 America/New_York',title:'Booked JFK departure',booking_status:'proposed',detail:'Long research note stays in the dialog.'},
+  {when:'To confirm',title:'Connection to arrange',detail:'No date supplied.'}
+]);
+assert.match(target.innerHTML,/Feb 13/);
+assert.match(target.innerHTML,/Status to confirm/);
+assert.match(target.innerHTML,/Unscheduled/);
+assert.doesNotMatch(target.innerHTML,/Date TBD/);
+assert.match(target.innerHTML,/Long research note stays in the dialog/);
+renderTrip(target,[
+  {when:'February 13, 2027',title:'Departure'},
+  {when:'February 13, 2027',title:'Arrival'},
+  {when:'2027-02-30',title:'Invalid date'}
+]);
+assert.equal((target.innerHTML.match(/<strong>Feb 13<\/strong>/g)||[]).length,1);
+assert.match(target.innerHTML,/Unscheduled/);
 let click,opened=0,closed=0;
 const dialog={showModal(){opened++},close(){closed++}};
 const trip={addEventListener(type,handler){if(type==='click')click=handler},querySelector(){return dialog}};

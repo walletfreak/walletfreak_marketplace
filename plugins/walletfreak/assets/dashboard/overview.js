@@ -37,24 +37,27 @@
       const [nextCatalog,nextSaved,current,references]=await Promise.all([catalog||api('catalog'),api('layout'),api('state'),api('references')]);
       if(sequence!==request)return;
       catalog=nextCatalog;const first=!saved;saved=nextSaved;
-      if(first||reset){$('#overview-template').innerHTML=catalog.templates.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');$('#overview-theme').innerHTML=catalog.themes.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-density').innerHTML=catalog.densities.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-theme').value=saved.layout.theme;$('#overview-density').value=saved.layout.density;}
+      if(first||reset){$('#overview-template').innerHTML=catalog.templates.filter(t=>t.layout.blocks.every(b=>b.source.startsWith('travel.'))).map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');$('#overview-theme').innerHTML=catalog.themes.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-density').innerHTML=catalog.densities.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-theme').value=saved.layout.theme;$('#overview-density').value=saved.layout.density;}
       const trips=current.trips||[];
       if(!trips.some(t=>t.id===activeId))activeId=trips[0]?.id||'';
       const selector=$('#overview-trip'), options=trips.map(t=>`<option value="${esc(t.id)}">${esc(t.findings.title)}</option>`).join('');
       if(selector.innerHTML!==options)selector.innerHTML=options;selector.value=activeId;
-      const hasTravel=saved.layout.blocks.some(b=>b.source==='travel.itinerary');
+      const travelBlocks=saved.layout.blocks.filter(b=>b.source.startsWith('travel.'));
+      const travelLayout={...saved.layout,title:'Travel',blocks:travelBlocks.length?travelBlocks:catalog.templates.find(t=>t.id==='concierge-travel').layout.blocks};
+      $('#overview-layout-note').hidden=travelBlocks.length===saved.layout.blocks.length;
+      const hasTravel=travelLayout.blocks.some(b=>b.source==='travel.itinerary');
       $('#overview-trip-label').hidden=!trips.length;$('#overview-intro').hidden=hasTravel&&trips.some(t=>t.findings.itinerary?.length||t.findings.lodging_window);
       const selected=trips.find(t=>t.id===activeId);
       $('#overview-heading').textContent=selected?.findings.title||'Travel';
       const costs=selected?.totals||{cash:{},points:{},unknown:[]};
       const reported={};for(const item of selected?.findings.itinerary||[]){if(item.booking_status==='booked'&&!item.option_id){const m=/^([A-Z]{3}) ([0-9]+(?:\.[0-9]{1,2})?)$/.exec(item.price||'');if(m)reported[m[1]]=(reported[m[1]]||0)+Number(m[2]);}}
       const figures=[...Object.entries(reported).map(([currency,value])=>`<article><small>Reported bookings</small><strong>${esc(currency)} ${value.toFixed(2)}</strong></article>`),...Object.entries(costs.cash).map(([currency,value])=>`<article><small>Recorded cash</small><strong>${esc(currency)} ${esc(value)}</strong></article>`),...Object.entries(costs.points).map(([program,value])=>`<article><small>${esc(program)} points</small><strong>${Number(value).toLocaleString()}</strong></article>`)];
-      $('#overview-costs').hidden=!hasTravel||!selected;$('#overview-costs').innerHTML=figures.length?figures.join('')+'<p>Selected booked or verified items only. Other potential prices appear in the timeline.</p>':'<article><small>Trip cost</small><strong>To confirm</strong></article><p>Potential prices appear on each itinerary stop.</p>';
-      const data=bind(current,references),signature=JSON.stringify([saved.layout,data,activeId]);
-      if(signature!==rendered){WalletFreakComponents.render($('#overview-content'),saved.layout,catalog,data);$('#overview-content').classList.remove('travel-route-preview','travel-route-mapped');drawRoute(data['travel.itinerary'].slice(0,100));rendered=signature;}
+      $('#overview-costs').hidden=!hasTravel||!selected||!figures.length;$('#overview-costs').innerHTML=figures.join('');
+      const data=bind(current,references),signature=JSON.stringify([travelLayout,data,activeId]);
+      if(signature!==rendered){WalletFreakComponents.render($('#overview-content'),travelLayout,catalog,data);$('#overview-content').classList.remove('travel-route-preview','travel-route-mapped');drawRoute(data['travel.itinerary'].slice(0,100));rendered=signature;}
     }catch(e){notice(e.message,true);}
   };
-  async function save(layout){WalletFreakComponents.validate(layout,catalog);await api('layout',{expected_revision:saved.revision,layout});await window.loadOverview(true);notice('Dashboard layout saved locally.');}
+  async function save(layout){WalletFreakComponents.validate(layout,catalog);if(layout.blocks.some(b=>!b.source.startsWith('travel.')))throw new Error('Travel layouts can contain trip sections only. Cards and spending have their own workspaces.');await api('layout',{expected_revision:saved.revision,layout});await window.loadOverview(true);notice('Dashboard layout saved locally.');}
   $('#overview-settings').onsubmit=async e=>{e.preventDefault();try{if(!saved)throw new Error('Reload the dashboard first.');const layout=structuredClone(catalog.templates.find(t=>t.id===$('#overview-template').value).layout);layout.theme=$('#overview-theme').value;layout.density=$('#overview-density').value;await save(layout);}catch(error){notice(error.message,true);}};
   $('#overview-file').onchange=async e=>{const file=e.target.files[0];try{if(!saved)throw new Error('Reload the dashboard first.');if(!file||file.size>32000)throw new Error('Choose a layout JSON file up to 32 KB.');await save(JSON.parse(await file.text()));}catch(error){notice(error.message,true);}finally{e.target.value='';}};
   $('#overview-export').onclick=()=>{if(!saved)return;const url=URL.createObjectURL(new Blob([JSON.stringify(saved.layout,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='walletfreak-layout.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
