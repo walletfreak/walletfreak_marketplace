@@ -44,6 +44,20 @@ class WorkspaceTests(unittest.TestCase):
         self.root=Path(self.temp.name)/'local';self.root.mkdir()
         self.store=local.Store(self.root)
 
+    def test_onboarding_starts_only_for_fresh_data_and_remembers_completion(self):
+        self.assertTrue(self.store.snapshot()['onboarding']['show'])
+        self.store.user_action('onboarding', {'state':'started'})
+        catalog=self.store.layouts.state()
+        self.store.layouts.save({'expected_revision':catalog['revision'],'layout':catalog['layout']})
+        self.assertTrue(local.Store(self.root).snapshot()['onboarding']['show'])
+        self.store.user_action('onboarding', {'state':'complete'})
+        self.assertFalse(local.Store(self.root).snapshot()['onboarding']['show'])
+        with self.assertRaises(ValueError):self.store.user_action('onboarding', {'state':'invalid'})
+        other=self.root.parent/'existing';other.mkdir()
+        existing=local.Store(other)
+        existing.layouts.save({'expected_revision':'empty','layout':existing.layouts.state()['layout']})
+        self.assertFalse(existing.snapshot()['onboarding']['show'])
+
     def test_import_preserves_dates_unknowns_and_original_and_rejects_overwrite(self):
         path=self.root.parent/'traveler-profile.md';path.write_text(PROFILE)
         self.assertTrue(self.store.snapshot()['legacy_profile'])
@@ -92,6 +106,18 @@ class VaultTests(unittest.TestCase):
         self.root=Path(self.temp.name);self.store=local.Store(self.root);self.v=self.store.vault
         self.password='synthetic master password only'
         self.v.action('create',{'master_password':self.password},'browser-A')
+
+    def test_device_signin_json_has_no_plaintext_and_agent_can_decrypt(self):
+        root=self.root/'device';root.mkdir()
+        saved=local.Store(root).vault
+        with patch('vault.device_key', return_value=b'x'*32):
+            saved.action('device',{},'browser-A')
+            result=saved.action('save',{'provider':'Example','label':'Personal','username':'person@example.com','password':'synthetic secret','login_origin':'https://example.com','expected_revision':saved.revision},'browser-A')
+            self.assertNotIn('synthetic secret',saved.path.read_text())
+            self.assertNotIn('password',json.dumps(result))
+            reopened=local.Store(root).vault
+            reopened.open_device('agent')
+            self.assertEqual(reopened.payload['entries'][0]['password'],'synthetic secret')
 
     def save(self,password=' synthetic provider password '):
         return self.v.action('save',{'provider':'Example','label':'Synthetic','username':'synthetic@example.invalid','password':password,'expected_revision':self.v.revision},'browser-A')

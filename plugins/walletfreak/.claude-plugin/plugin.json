@@ -8,6 +8,7 @@
   "homepage": "https://github.com/walletfreak/walletfreak_marketplace",
   "repository": "https://github.com/walletfreak/walletfreak_marketplace",
   "license": "MIT",
+  "hooks": {"SessionStart": [{"matcher": "startup", "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/onboarding_hint.py\""}]}]},
   "keywords": [
     "travel",
     "research",

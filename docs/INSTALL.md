@@ -8,7 +8,7 @@ Codex: `codex plugin marketplace add walletfreak/walletfreak_marketplace`, then 
 
 Claude Code: `claude plugin marketplace add walletfreak/walletfreak_marketplace`, then `claude plugin install walletfreak@walletfreak`.
 
-Start a fresh host session and invoke walletfreak-setup. For an unpublished development build, add the explicit marketplace checkout path instead of the GitHub source. Verify which source the host is using before reinstalling.
+Start a fresh host session and invoke walletfreak-setup. Codex exposes the packaged onboarding skill after installation; Claude Code offers it in a new session. The private dashboard prompts for a starting template, wallet details and optional sign-ins on first launch. For an unpublished development build, add the explicit marketplace checkout path instead of the GitHub source. Verify which source the host is using before reinstalling.
 
 ## Upgrade from 0.1 or 0.2
 
@@ -28,11 +28,11 @@ Plan in the host conversation. The agent publishes findings to Travel → Saved 
 
 WALLETFREAK_DATA can point to a dedicated private directory for tests or another local user-selected location. Keep it consistent between the dashboard and host browser process. Default: ~/.walletfreak/local. Never use a repository, home directory itself, shared folder or installed plugin directory.
 
-## Compact wallet and optional sign-in vault
+## Compact wallet and optional encrypted sign-ins
 
 The viewer starts on Travel. Open Credit Cards to add people, cards and linked rewards accounts. If an older traveler-profile.md exists beside the local data directory, Load existing wallet imports it into an empty wallet without changing the original. Import is explicit and does not silently refresh old reporting dates. Add separate rows for gift cards, TravelBank, airline credits, certificates, passes and other assets; blank values remain unknown.
 
-Sign-ins accepts any provider name and keeps usernames/passwords in an encrypted local vault. The optional dependency is `python3 -m pip install -r <plugin>/requirements-vault.txt` in the Python environment used to run local.py; use an isolated environment if required by your Python installation. The wallet and results viewer require no additional package. Never enter secrets in shell arguments or chat. Create/unlock the vault in the private browser. New vaults use a device-held key without a separate master password; existing password vaults can migrate after one unlock. Saving a sign-in does not automatically log in.
+Sign-ins accepts any provider name and keeps passwords encrypted in private local JSON. The optional dependency is `python3 -m pip install -r <plugin>/requirements-vault.txt` in the Python environment used to run local.py; use an isolated environment if required by your Python installation. The wallet and results viewer require no additional package. Never enter secrets in shell arguments or chat. Open Sign-ins in the private browser and save an account; new storage initializes automatically with a device-held key. Older master-password sign-ins can migrate after one unlock. Saving a sign-in does not automatically log in.
 
 Plugins & skills displays local Codex installations and their skill documents. If the native CLI is unavailable it shows this bundled WalletFreak package with an explicit discovery limitation. Restart the viewer after installing/removing plugins to refresh its inventory.
 

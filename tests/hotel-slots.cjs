@@ -8,19 +8,19 @@ const target={classList:{add(){}},querySelector(){return null},innerHTML:''};
 const show=rows=>{renderTrip(target,rows,windowDates);return target.innerHTML;};
 const empty=show([]);
 assert.equal((empty.match(/class="wf-needed"/g)||[]).length,5);
-assert.match(empty,/2027-06-03 → 2027-06-04 · 1 night/);
-assert.match(empty,/2027-06-07 → 2027-06-08 · 1 night/);
+assert.match(empty,/Thu<strong>Jun 3<\/strong>/);
+assert.match(empty,/Mon<strong>Jun 7<\/strong>/);
 const split=show([
   {booking_status:'booked',stay:{check_in:'2027-06-04',check_out:'2027-06-06'}},
   {booking_status:'proposed',title:'Suggested hotel',price:'USD 400',stay:{check_in:'2027-06-06',check_out:'2027-06-08'}}
 ]);
-assert.match(split,/2027-06-03 → 2027-06-04 · 1 night/);
-assert.match(split,/2027-06-06 → 2027-06-07 · 1 night/);
-assert.match(split,/2027-06-07 → 2027-06-08 · 1 night/);
-assert.match(split,/Suggested: Suggested hotel/);
-assert.equal((split.match(/<p class="wf-candidate">Suggested:/g)||[]).length,1);
+assert.match(split,/Thu<strong>Jun 3<\/strong>/);
+assert.match(split,/Sun<strong>Jun 6<\/strong>/);
+assert.match(split,/Mon<strong>Jun 7<\/strong>/);
+assert.match(split,/Suggested stay: Suggested hotel/);
+assert.doesNotMatch(split,/class="wf-candidate"/);
 assert.match(split,/USD 400<small>Stay total/);
-assert.equal((split.match(/<p class="wf-price">USD 400/g)||[]).length,1);
+assert.equal((split.match(/<span class="wf-price">USD 400/g)||[]).length,1);
 assert.equal((split.match(/class="wf-needed"/g)||[]).length,3);
 assert.doesNotMatch(show([
   {booking_status:'booked',stay:{check_in:'2027-06-03',check_out:'2027-06-05'}},
@@ -31,16 +31,18 @@ renderTrip(target,[
   {booking_status:'booked',stay:{check_in:'2027-06-06',check_out:'2027-06-08'}}
 ]);
 assert.equal((target.innerHTML.match(/class="wf-needed"/g)||[]).length,2);
-assert.match(target.innerHTML,/2027-06-04 → 2027-06-05 · 1 night/);
-assert.match(target.innerHTML,/2027-06-05 → 2027-06-06 · 1 night/);
+assert.match(target.innerHTML,/Fri<strong>Jun 4<\/strong>/);
+assert.match(target.innerHTML,/Sat<strong>Jun 5<\/strong>/);
 const flight=show([{day:'2027-06-02',when:'10:35 AM EDT → 2:15 PM JST',title:'Outbound flight',detail:'Booked flight',price:'USD 900',booking_status:'booked'}]);
 assert.match(flight,/Outbound flight/);
-assert.match(flight,/class="wf-time">10:35 AM EDT → 2:15 PM JST/);
+assert.match(flight,/class="wf-time">10:35 → 2:15/);
+assert.match(flight,/10:35 AM EDT → 2:15 PM JST/);
 assert.match(flight,/class="wf-price">USD 900/);
 assert.match(flight,/Hotel night to book/);
 assert.match(flight,/class="wf-info"/);
 assert.match(flight,/class="wf-evidence"/);
 assert.doesNotMatch(flight,/Details & evidence/);
+assert.doesNotMatch(flight,/Payment card: to confirm/);
 let click,opened=0,closed=0;
 const dialog={showModal(){opened++},close(){closed++}};
 const trip={addEventListener(type,handler){if(type==='click')click=handler},querySelector(){return dialog}};

@@ -35,5 +35,10 @@
     "composerIcon": "./assets/mascot.png",
     "logo": "./assets/mascot.png"
   },
-  "mcpServers": "./.mcp.json"
+  "mcpServers": "./.mcp.json",
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/walletfreak-setup/SKILL.md"
+    }
+  }
 }

@@ -228,6 +228,16 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(code,200);self.assertEqual(json.loads(raw)['entries'],[])
         self.assertEqual(self.request('/credentials.enc.json',headers={'Cookie':'walletfreak=session'})[0],404)
 
+    def test_first_run_setup_is_private_and_persists(self):
+        agent={'Authorization':'Bearer agent-secret'}
+        browser={'Cookie':'walletfreak=session'}
+        code,_,raw=self.request('/api/state',headers=browser)
+        self.assertEqual(code,200);self.assertTrue(json.loads(raw)['onboarding']['show'])
+        self.assertEqual(self.request('/api/onboarding',{'state':'complete'},headers=agent)[0],403)
+        self.assertEqual(self.request('/api/onboarding',{'state':'complete'},headers=browser)[0],200)
+        code,_,raw=self.request('/api/state',headers=browser)
+        self.assertEqual(code,200);self.assertFalse(json.loads(raw)['onboarding']['show'])
+
 
 class LauncherTests(unittest.TestCase):
     def test_replaces_removed_plugin_installation_and_keeps_private_data(self):
@@ -269,6 +279,11 @@ class LauncherTests(unittest.TestCase):
                             self.assertIn(b'/assets/dashboard/app.js', response.read())
                     with urlopen(descriptor['origin'] + '/travel?trip=' + trip_id, timeout=3) as response:
                         self.assertEqual(response.status, 200)
+                    with urlopen(descriptor['origin'] + '/travel?trip=' + trip_id + '&review=comparison', timeout=3) as response:
+                        self.assertEqual(response.status, 200)
+                    with self.assertRaises(HTTPError) as invalid:
+                        urlopen(descriptor['origin'] + '/travel?trip=' + trip_id + '&review=comparison&review=research', timeout=3)
+                    self.assertEqual(invalid.exception.code, 400)
                     subprocess.check_output([sys.executable, str(current_script), 'start', '--port', '0'])
                     self.assertEqual(local.read_json(root / 'server.json'), descriptor)
                     self.assertEqual(local.call(root, '/api/state')['trips'][0]['id'], trip_id)

@@ -18,6 +18,13 @@ async function act(path, body) {
   catch (error) { notice(error.message, true); await refresh(); return null; }
 }
 const routes = {home:'/',overview:'/travel',actions:'/actions',wallet:'/credit-cards',spending:'/spending',shopping:'/shopping',credentials:'/settings/sign-ins',plugins:'/settings/plugins'};
+function openReviewLink() {
+  if (location.pathname !== '/travel') return;
+  const query = new URLSearchParams(location.search), review = query.get('review');
+  if (!['comparison','research'].includes(review)) return;
+  $('#trip-library').open = true; $('#trip-alternatives').open = true;
+  requestAnimationFrame(() => (review === 'comparison' ? $('#comparison') : $('#options')).scrollIntoView({block:'start'}));
+}
 function tab(name, navigate=true) {
   if (!routes[name]) name='overview';
   currentTab=name; document.body.dataset.view=name; $('.workspace-more').open=false;
@@ -31,6 +38,7 @@ window.addEventListener('popstate',()=>{
   const requested = new URLSearchParams(location.search).get('trip');
   if (location.pathname==='/travel' && state?.trips.some(t=>t.id===requested)) {activeId=requested;renderFindings();}
   tab(Object.keys(routes).find(name=>routes[name]===location.pathname)||'home',false);
+  openReviewLink();
 });
 window.selectTravelTrip = id => {
   if (!state?.trips.some(t=>t.id===id)) return;
@@ -82,7 +90,7 @@ function renderFindings() {
   const words = $('#search').value.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const options = (f.options || []).filter(o => words.every(w=>JSON.stringify(o).toLowerCase().includes(w)) && (!$('#kind').value || o.kind === $('#kind').value) && (!$('#availability').value || o.status === $('#availability').value) && (!$('#shortlisted').checked || t.shortlist.includes(o.id)));
   $('#count').textContent = `${options.length} of ${(f.options || []).length} options · ${t.shortlist.length} shortlisted`;
-  $('#options').innerHTML = options.length ? options.map(o => `<article class="option">${hotelPhoto(o)}<div class="provider">${logo(o.provider)}<span>${esc(o.provider)} · ${esc(o.kind)}</span></div><h3>${esc(o.title)}</h3><span class="status ${esc(o.status)}">${esc(o.status)} at observation</span><p class="price">${esc(o.price || 'Price unknown')}</p><p class="muted">${esc(o.program)} · Observed ${esc(o.observed_at || 'not recorded')}</p><details><summary>Card & benefits</summary>${paymentView(o)}</details><label class="check"><input type="checkbox" data-shortlist="${esc(o.id)}" ${t.shortlist.includes(o.id)?'checked':''}> Add to shortlist</label><label class="check"><input type="checkbox" data-select="${esc(o.id)}" ${t.selected.includes(o.id)?'checked':''}> Include in my comparison</label><details><summary>Evidence & restrictions</summary><dl>${['search','product','terms','benefits','uncertainty','reproduce'].map(key=>`<dt>${esc(key)}</dt><dd>${esc(o[key] || 'Not recorded')}</dd>`).join('')}</dl>${sourceLinks(o.sources)}</details></article>`).join('') : '<p class="muted">No matching findings.</p>';
+  $('#options').innerHTML = options.length ? options.map(o => `<article class="option" data-option-id="${esc(o.id)}">${hotelPhoto(o)}<div class="provider">${logo(o.provider)}<span>${esc(o.provider)} · ${esc(o.kind)}</span></div><h3>${esc(o.title)}</h3><span class="status ${esc(o.status)}">${esc(o.status)} at observation</span><p class="price">${esc(o.price || 'Price unknown')}</p><p class="muted">${esc(o.program)} · Observed ${esc(o.observed_at || 'not recorded')}</p><details><summary>Card & benefits</summary>${paymentView(o)}</details><label class="check"><input type="checkbox" data-shortlist="${esc(o.id)}" ${t.shortlist.includes(o.id)?'checked':''}> Add to shortlist</label><label class="check"><input type="checkbox" data-select="${esc(o.id)}" ${t.selected.includes(o.id)?'checked':''}> Include in my comparison</label><details><summary>Evidence & restrictions</summary><dl>${['search','product','terms','benefits','uncertainty','reproduce'].map(key=>`<dt>${esc(key)}</dt><dd>${esc(o[key] || 'Not recorded')}</dd>`).join('')}</dl>${sourceLinks(o.sources)}</details></article>`).join('') : '<p class="muted">No matching findings.</p>';
   const shortlisted = (f.options || []).filter(o=>t.shortlist.includes(o.id));
   $('#comparison').innerHTML = shortlisted.length ? `<table><thead><tr><th scope="col">Compare</th>${shortlisted.map(o=>`<th scope="col">${hotelPhoto(o)}${esc(o.title)}</th>`).join('')}</tr></thead><tbody>${['provider','price','status','payment','product','terms','benefits','uncertainty'].map(key=>`<tr><th scope="row">${esc(key==='payment'?'Card & benefits':key)}</th>${shortlisted.map(o=>`<td>${key==='payment'?paymentView(o):esc(o[key] || 'Not recorded')}</td>`).join('')}</tr>`).join('')}</tbody></table>` : '<p class="muted">Shortlist options to compare their prices, terms and benefits here.</p>';
   const totals = [...Object.entries(t.totals.cash).map(([c,v])=>`${c} ${v}`), ...Object.entries(t.totals.points).map(([p,v])=>`${v.toLocaleString()} ${p} points`)];
@@ -224,7 +232,7 @@ window.addEventListener('beforeunload', event => { if (dirty && !stopped) { even
 (async () => {
   try {
     const token = new URLSearchParams(location.hash.slice(1)).get('key');
-    if (token) { await api('session',{token}); history.replaceState(null,'',location.pathname); }
+    if (token) { await api('session',{token}); history.replaceState(null,'',location.pathname + location.search); }
     const loaded = await Promise.all(['/assets/brands.json','/assets/cards.json','/assets/wallet-assets.json'].map(path=>fetch(path).then(r=>r.json())));
     [brands,cards] = loaded; assetCatalog=loaded[2].items;
     $('#asset-names').innerHTML=assetCatalog.map(a=>`<option value="${esc(a.name)}"></option>`).join('');
@@ -233,6 +241,8 @@ window.addEventListener('beforeunload', event => { if (dirty && !stopped) { even
     await refresh();
     if (location.pathname==='/travel/trips') history.replaceState(null,'',`/travel${location.search}`);
     tab(Object.keys(routes).find(name=>routes[name]===location.pathname)||'home',false);
+    openReviewLink();
+    window.loadOnboarding?.();
     $('#program-names').innerHTML = (state?.providers || []).flatMap(p=>p.programs).map(p=>`<option value="${esc(p)}"></option>`).join('');
     $('#provider-names').innerHTML=(state?.providers || []).map(p=>`<option value="${esc(p.name)}"></option>`).join('');
     setInterval(refresh,3000);
@@ -240,13 +250,13 @@ window.addEventListener('beforeunload', event => { if (dirty && !stopped) { even
 })();
 
 async function refreshVault() {
-  try {const next=await api('vault');const changed=JSON.stringify(next)!==JSON.stringify(vaultState);vaultState=next;if(changed)renderVault();}catch(error){$('#vault-status').textContent=error.message;}
+  try {let next=await api('vault');if(next.supported&&!next.exists)next=await api('vault/device',{});const changed=JSON.stringify(next)!==JSON.stringify(vaultState);vaultState=next;if(changed)renderVault();}catch(error){$('#vault-status').textContent=error.message;}
 }
 function renderVault() {
   const v=vaultState;
-  $('#vault-status').textContent=!v.supported?'Vault dependency unavailable. Ask setup to install requirements-vault.txt.':v.unlocked?'Unlocked in this browser. Passwords are never shown or exported.':v.exists?'Vault locked.':'Enable device sign-in to save credentials without a separate master password.';
-  $('#device-vault').hidden=v.exists||!v.supported;$('#migrate-vault').hidden=!v.unlocked||v.device;$('#vault-unlock').hidden=v.unlocked || !v.supported || !v.exists;$('#vault-open').hidden=!v.unlocked;$('#lock-vault').hidden=!v.unlocked||v.device;
-  $('#unlock-vault').textContent=v.exists?'Unlock vault':'Create vault';
+  $('#vault-status').textContent=!v.supported?'Encrypted sign-ins require the optional cryptography package.':v.unlocked?'Sign-ins are encrypted in local JSON. Passwords are never shown or exported.':v.exists?'Unlock the older password-protected sign-ins once to move them to device encryption.':'Sign-ins are unavailable.';
+  $('#migrate-vault').hidden=!v.unlocked||v.device;$('#vault-unlock').hidden=v.unlocked || !v.supported || !v.exists;$('#vault-open').hidden=!v.unlocked;
+  $('#unlock-vault').textContent='Unlock older sign-ins';
   if(!v.unlocked){$('#credential-form').reset();$('#credential-id').value='';return;}
   $('#vault-list').innerHTML=`<table><thead><tr><th>Provider</th><th>Label</th><th>Username</th><th>Password</th><th>Actions</th></tr></thead><tbody>${v.entries.map(e=>`<tr><td>${esc(e.provider)}</td><td>${esc(e.label)}</td><td>${esc(e.username)}</td><td>••••••••</td><td><button data-edit-credential="${e.id}" type="button">Replace</button> <button data-delete-credential="${e.id}" type="button">Delete</button></td></tr>`).join('')}</tbody></table>`;
 }
@@ -254,13 +264,12 @@ $('#vault-unlock').onsubmit=async event=>{
   event.preventDefault();const password=$('#master-password').value;$('#master-password').value='';event.submitter.disabled=true;
   try{vaultState=await api('vault/'+(vaultState.exists?'unlock':'create'),{master_password:password});renderVault();}catch(error){$('#vault-status').textContent=error.message;}finally{event.submitter.disabled=false;}
 };
-$('#lock-vault').onclick=async()=>{try{vaultState=await api('vault/lock',{});renderVault();}catch(error){notice(error.message,true);}};
 $('#credential-form').onsubmit=async event=>{
   event.preventDefault();event.submitter.disabled=true;
   const body={login_origin:$('#credential-origin').value,provider:$('#credential-provider').value,label:$('#credential-label').value,username:$('#credential-username').value,password:$('#credential-password').value,expected_revision:vaultState.revision};
   if($('#credential-id').value)body.id=$('#credential-id').value;
   $('#credential-password').value='';
-  try{const previousIds=new Set(vaultState.entries.map(e=>e.id));vaultState=await api('vault/save',body);if(pendingAccountId){const account=draft.programs.find(a=>a.id===pendingAccountId);const savedId=body.id||vaultState.entries.find(e=>!previousIds.has(e.id))?.id;if(account&&savedId){$('#credential-id').value=savedId;account.credential_id=savedId;dirty=true;await persistWallet();}pendingAccountId='';$('#credential-association').hidden=true;}$('#credential-form').reset();$('#credential-id').value='';renderVault();$('#vault-status').textContent='Sign-in saved in the encrypted vault.';}catch(error){$('#vault-status').textContent=error.message;}finally{event.submitter.disabled=false;}
+  try{const previousIds=new Set(vaultState.entries.map(e=>e.id));vaultState=await api('vault/save',body);if(pendingAccountId){const account=draft.programs.find(a=>a.id===pendingAccountId);const savedId=body.id||vaultState.entries.find(e=>!previousIds.has(e.id))?.id;if(account&&savedId){$('#credential-id').value=savedId;account.credential_id=savedId;dirty=true;await persistWallet();}pendingAccountId='';$('#credential-association').hidden=true;}$('#credential-form').reset();$('#credential-id').value='';renderVault();$('#vault-status').textContent='Sign-in saved in encrypted local JSON.';}catch(error){$('#vault-status').textContent=error.message;}finally{event.submitter.disabled=false;}
 };
 $('#new-credential').onclick=()=>{pendingAccountId='';$('#credential-association').hidden=true;$('#credential-form').reset();$('#credential-id').value='';};
 $('#vault-list').onclick=async event=>{
@@ -313,5 +322,4 @@ $('#wallet-editor').addEventListener('cancel',e=>{e.preventDefault();cancelWalle
 
 function renderPeople(){const current=$('#wallet-person').value;$('#wallet-person').innerHTML='<option value="">Everyone</option>'+draft.people.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#wallet-person').value=current;}
 $('#wallet-person').onchange=filterWallet;
-$('#device-vault').onclick=async()=>{try{vaultState=await api('vault/device',{});renderVault();}catch(e){notice(e.message,true);}};
 $('#migrate-vault').onclick=async()=>{try{vaultState=await api('vault/migrate-device',{});renderVault();}catch(e){notice(e.message,true);}};
