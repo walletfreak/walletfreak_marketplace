@@ -19,7 +19,7 @@ import tempfile
 import threading
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit
 from urllib.request import Request, urlopen
 import uuid
 
@@ -38,7 +38,7 @@ import render_board as board
 
 PROVIDERS = json.loads((PLUGIN / 'providers.json').read_text())
 LIMIT = 2_000_000
-UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/confirmations.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
+UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/confirmations.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
 
 
 def now():
@@ -309,9 +309,27 @@ class Store:
         for trip in result['trips']:
             trip['totals'] = selected_totals(trip)
         result.update(wallet=self.wallet(), shopping=self.shopping.state(), providers=PROVIDERS, legacy_profile=(self.root.parent / 'traveler-profile.md').is_file())
+        settings = read_json(self.root / 'settings.json', {})
+        result['onboarding'] = {
+            'show': settings.get('onboarding_started', False) or (
+                not settings.get('onboarding_done', False)
+                and result['wallet']['revision'] == 'empty'
+                and not (self.root / 'layout.json').exists()
+                and not result['trips']
+            )
+        }
         return result
 
     def user_action(self, action, body):
+        if action == 'onboarding':
+            fields(body, ('state',), ('state',))
+            if body['state'] not in ('started', 'complete'):
+                raise ValueError('Choose a supported setup state.')
+            settings = read_json(self.root / 'settings.json', {})
+            settings['onboarding_started'] = body['state'] == 'started'
+            settings['onboarding_done'] = body['state'] == 'complete'
+            atomic_json(self.root / 'settings.json', settings)
+            return {'message': 'Dashboard setup saved on this device.'}
         if action == 'import-confirmations':
             fields(body, ('title','items','lodging_window'), ('title','items'))
             title=short_text(body['title'],'trip title',True,200)
@@ -527,7 +545,13 @@ class Handler(BaseHTTPRequestHandler):
         if not self.host_ok():
             return self.respond(403, {'error': 'Invalid local origin.'})
         route = urlsplit(self.path)
-        if route.fragment or (route.query and not (route.path in ('/travel', '/travel/trips') and re.fullmatch(r'trip=[0-9a-f]{32}', route.query))):
+        query = parse_qsl(route.query, keep_blank_values=True)
+        if route.fragment or (route.query and not (
+            route.path in ('/travel', '/travel/trips') and len(query) == len({key for key, _ in query}) <= 2
+            and all((key == 'trip' and re.fullmatch(r'[0-9a-f]{32}', value)) or
+                    (key == 'review' and value in ('comparison', 'research')) for key, value in query)
+            and ('review' not in dict(query) or 'trip' in dict(query))
+        )):
             return self.respond(400, {'error': 'Unexpected URL parameters.'})
         path = route.path
         if path in ('/', '/travel', '/travel/trips', '/actions', '/credit-cards', '/spending', '/shopping', '/settings/sign-ins', '/settings/plugins'):
@@ -652,6 +676,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.user() or self.headers.get('X-WalletFreak') != '1':
                     return self.respond(403, {'error':'Vault changes require the private browser session.'})
                 result = self.server.store.vault.action(self.path.rsplit('/',1)[1], body, self.session())
+            elif self.path == '/api/onboarding':
+                if not self.user() or self.headers.get('X-WalletFreak') != '1':
+                    return self.respond(403, {'error':'Dashboard setup requires the private browser session.'})
+                result = self.server.store.user_action('onboarding', body)
             elif self.path.startswith('/api/agent/'):
                 if not self.agent():
                     return self.respond(403, {'error': 'Agent authentication required.'})
@@ -755,6 +783,8 @@ def main():
     parser.add_argument('command', choices=('start', 'serve', 'status', 'publish', 'wallet-sync', 'wallet', 'settings', 'forget', 'stop', 'references', 'extract-references', 'insights', 'shopping', 'shopping-publish', 'layout', 'catalog'))
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--view', choices=('travel', 'credit-cards', 'spending', 'shopping'), default='travel', help='Private dashboard view to open with start.')
+    parser.add_argument('--trip', help='Saved trip ID for a direct Travel link.')
+    parser.add_argument('--review', choices=('comparison', 'research'), help='Open the selected trip at its comparison or research section.')
     parser.add_argument('--input', type=Path, help='JSON findings or local settings; use - for stdin. Never supply credentials.')
     args = parser.parse_args()
     try:
@@ -763,8 +793,15 @@ def main():
             serve(root, args.port)
             return
         if args.command == 'start':
+            if (args.trip or args.review) and args.view != 'travel':
+                raise ValueError('Trip review links use the Travel view.')
+            if args.review and not args.trip:
+                raise ValueError('Provide --trip for a direct review link.')
+            if args.trip:
+                Store(root).trip(args.trip)
             descriptor = start(root, args.port)
-            print(descriptor['origin'] + '/' + args.view + '#key=' + descriptor['ui_token'])
+            query = urlencode({key:value for key,value in (('trip',args.trip),('review',args.review)) if value})
+            print(descriptor['origin'] + '/' + args.view + ('?' + query if query else '') + '#key=' + descriptor['ui_token'])
             return
         if args.command in ('publish', 'settings', 'forget', 'insights', 'wallet-sync', 'extract-references', 'shopping-publish') or args.command == 'layout' and args.input:
             if not args.input:

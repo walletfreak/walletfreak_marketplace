@@ -12,4 +12,4 @@ Remembered does not mean currently authenticated. Recheck when beginning provide
 
 Information visible to the agent may enter model context and host history. On blocked access, stop retries and accept redacted user-supplied evidence with its observation time. Never bypass site controls. Transactions, enrollment and point transfers remain user-operated in both browser modes.
 
-Sign-ins uses a local encrypted vault with a device-held key. The walletfreak_sign_in bridge fills credentials only on their saved exact HTTPS origin without returning secrets. Never inspect filled credential forms or read raw vault/key files. Existing password-encrypted vaults require one user-operated unlock to migrate; never ask for that password in the conversation.
+Sign-ins uses encrypted local JSON with a device-held key. The walletfreak_sign_in bridge fills credentials only on their saved exact HTTPS origin without returning secrets. Never inspect filled credential forms or read raw credential/key files. Older master-password sign-ins require one user-operated unlock to migrate; never ask for that password in the conversation.
