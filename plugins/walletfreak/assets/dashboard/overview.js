@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  let catalog, saved, request=0, rendered='';
+  let catalog, saved, activeLayout, request=0, rendered='';
   function bind(state,references){
     const rows=[];
     for(const trip of (state.trips||[]).filter(t=>t.id===activeId)){
@@ -37,14 +37,16 @@
       const [nextCatalog,nextSaved,current,references]=await Promise.all([catalog||api('catalog'),api('layout'),api('state'),api('references')]);
       if(sequence!==request)return;
       catalog=nextCatalog;const first=!saved;saved=nextSaved;
-      if(first||reset){$('#overview-template').innerHTML=catalog.templates.filter(t=>t.layout.blocks.every(b=>b.source.startsWith('travel.'))).map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');$('#overview-theme').innerHTML=catalog.themes.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-density').innerHTML=catalog.densities.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-theme').value=saved.layout.theme;$('#overview-density').value=saved.layout.density;}
+      if(first||reset){$('#overview-template').innerHTML=catalog.templates.filter(t=>t.layout.blocks.every(b=>b.source.startsWith('travel.'))).map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');$('#overview-theme').innerHTML=catalog.themes.map(t=>`<option>${esc(t)}</option>`).join('');$('#overview-density').innerHTML=catalog.densities.map(t=>`<option>${esc(t)}</option>`).join('');}
       const trips=current.trips||[];
       if(!trips.some(t=>t.id===activeId))activeId=trips[0]?.id||'';
       const selector=$('#overview-trip'), options=trips.map(t=>`<option value="${esc(t.id)}">${esc(t.findings.title)}</option>`).join('');
       if(selector.innerHTML!==options)selector.innerHTML=options;selector.value=activeId;
-      const travelBlocks=saved.layout.blocks.filter(b=>b.source.startsWith('travel.'));
-      const travelLayout={...saved.layout,title:'Travel',blocks:travelBlocks.length?travelBlocks:catalog.templates.find(t=>t.id==='concierge-travel').layout.blocks};
-      $('#overview-layout-note').hidden=travelBlocks.length===saved.layout.blocks.length;
+      const travelOnly=saved.layout.blocks.every(b=>b.source.startsWith('travel.'));
+      const travelLayout=travelOnly?saved.layout:catalog.templates.find(t=>t.id==='concierge-travel').layout;
+      activeLayout=travelLayout;
+      if(first||reset){$('#overview-theme').value=travelLayout.theme;$('#overview-density').value=travelLayout.density;}
+      $('#overview-layout-note').hidden=true;
       const hasTravel=travelLayout.blocks.some(b=>b.source==='travel.itinerary');
       $('#overview-trip-label').hidden=!trips.length;$('#overview-intro').hidden=hasTravel&&trips.some(t=>t.findings.itinerary?.length||t.findings.lodging_window);
       const selected=trips.find(t=>t.id===activeId);
@@ -60,7 +62,7 @@
   async function save(layout){WalletFreakComponents.validate(layout,catalog);if(layout.blocks.some(b=>!b.source.startsWith('travel.')))throw new Error('Travel layouts can contain trip sections only. Cards and spending have their own workspaces.');await api('layout',{expected_revision:saved.revision,layout});await window.loadOverview(true);notice('Dashboard layout saved locally.');}
   $('#overview-settings').onsubmit=async e=>{e.preventDefault();try{if(!saved)throw new Error('Reload the dashboard first.');const layout=structuredClone(catalog.templates.find(t=>t.id===$('#overview-template').value).layout);layout.theme=$('#overview-theme').value;layout.density=$('#overview-density').value;await save(layout);}catch(error){notice(error.message,true);}};
   $('#overview-file').onchange=async e=>{const file=e.target.files[0];try{if(!saved)throw new Error('Reload the dashboard first.');if(!file||file.size>32000)throw new Error('Choose a layout JSON file up to 32 KB.');await save(JSON.parse(await file.text()));}catch(error){notice(error.message,true);}finally{e.target.value='';}};
-  $('#overview-export').onclick=()=>{if(!saved)return;const url=URL.createObjectURL(new Blob([JSON.stringify(saved.layout,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='walletfreak-layout.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+  $('#overview-export').onclick=()=>{if(!activeLayout)return;const url=URL.createObjectURL(new Blob([JSON.stringify(activeLayout,null,2)+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='walletfreak-layout.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
   $('#overview-trip').onchange=e=>window.selectTravelTrip(e.target.value);
   $('#overview-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('#overview-prompt').textContent);notice('Starter prompt copied. Paste it in your agent conversation.');}catch{notice('Copy the prompt above into your agent conversation.',true);}};
   $('#overview-reload').onclick=()=>window.loadOverview(true);
