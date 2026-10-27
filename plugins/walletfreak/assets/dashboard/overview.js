@@ -48,7 +48,7 @@
       if(first||reset){$('#overview-theme').value=travelLayout.theme;$('#overview-density').value=travelLayout.density;}
       $('#overview-layout-note').hidden=true;
       const hasTravel=travelLayout.blocks.some(b=>b.source==='travel.itinerary');
-      $('#overview-trip-label').hidden=!trips.length;$('#overview-intro').hidden=hasTravel&&trips.some(t=>t.findings.itinerary?.length||t.findings.lodging_window);
+      $('#trip-toolbar').hidden=!trips.length;$('#overview-trip-label').hidden=!trips.length;$('#overview-intro').hidden=hasTravel&&trips.some(t=>t.findings.itinerary?.length||t.findings.lodging_window);
       const selected=trips.find(t=>t.id===activeId);
       $('#overview-heading').textContent=selected?.findings.title||'Travel';
       const costs=selected?.totals||{cash:{},points:{},unknown:[]};

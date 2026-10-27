@@ -166,6 +166,7 @@ async function refresh() {
     const next = await api('state');
     const resultChanged = !state || JSON.stringify(state.trips) !== JSON.stringify(next.trips);
     state = next;
+    if ($('#trip-manager').open) renderTripManager();
     $('#wallet-summary').innerHTML = `<span><strong>${state.wallet.cards.length}</strong> cards</span><span><strong>${state.wallet.programs.length}</strong> points programs</span><span><strong>${state.wallet.benefits.length}</strong> credits & assets</span><span><strong>${state.trips.length}</strong> itineraries</span>`;
     renderHome();
     if (resultChanged) {
@@ -191,6 +192,12 @@ $('#wallet-form').addEventListener('input', event => {
   dirty = true; walletStatus();
   if($('#wallet-editor').open)updateRewardSuggestion();
 });
+function removeWalletEntry(section,index){
+  const row=draft[section]?.[index];if(!row)return;
+  draft[section].splice(index,1);
+  for(const entry of [...draft.cards,...draft.benefits])for(const key of ['reward_account_id','card_id','program_id'])if(entry[key]===row.id)entry[key]='';
+  dirty=true;renderWallet();
+}
 $('#wallet-form').addEventListener('click', event => {
   const button = event.target.closest('button');
   if (button?.dataset.add) {
@@ -200,7 +207,8 @@ $('#wallet-form').addEventListener('click', event => {
     draft[section].push(section === 'cards' ? {...common,notes:''} : section === 'programs' ? {...common,balance:'',status:'',approximate:false,preserve:false,notes:''} : {...common,kind:'credit',remaining:'',expires_on:'',notes:''});
     dirty = true; renderWallet();if($('#wallet-tables').hidden)editWallet(section,draft[section].length-1,true);else $(`#wallet-${section} tbody tr:last-child ${section==='programs'?'[data-program-choice]':'[data-field=name]'}`).focus();
   } else if (button?.dataset.remove) {
-    const section=button.dataset.remove,index=Number(button.dataset.index),id=draft[section][index].id; if(!confirm('Remove this entry? Links to it will be cleared; other balances stay unchanged.'))return; draft[section].splice(index,1);for(const entry of [...draft.cards,...draft.benefits])for(const key of ['reward_account_id','card_id','program_id'])if(entry[key]===id)entry[key]=''; dirty = true; renderWallet();
+    if(!confirm('Remove this entry? Links to it will be cleared; other balances stay unchanged.'))return;
+    removeWalletEntry(button.dataset.remove,Number(button.dataset.index));
   }
 });
 $('#wallet-form').addEventListener('keydown', event=>{
@@ -225,7 +233,7 @@ $('#wallet-form').onsubmit = async event => {
 };
 $('#reload-wallet').onclick = () => { if (!dirty || confirm('Discard unsaved wallet edits and reload the saved wallet?')) loadWallet(); };
 $('#delete-wallet').onclick = async () => {
-  if (!confirm('Delete your saved personal wallet and discard unsaved wallet edits? Trip results and downloaded files will stay.')) return;
+  if (!confirm('Delete your saved personal wallet and discard unsaved wallet edits? Trips, downloaded files and saved sign-ins will stay.')) return;
   if (await act('delete-wallet',{expected_revision:draftRevision})) loadWallet();
 };
 for (const id of ['search','kind','availability','shortlisted']) $('#'+id).addEventListener('input', renderFindings);
@@ -240,6 +248,25 @@ $('#export').onclick = () => { if (trip()) location.href = '/api/export/' + trip
 $('#delete-results').onclick = async () => {
   const t = trip();
   if (t && confirm(`Delete “${t.findings.title}” from this device? Your wallet and downloaded copies will stay.`)) await act('delete-results',{id:t.id,expected_revision:t.revision});
+};
+function renderTripManager(){
+  const trips=state?.trips||[];
+  $('#trip-manager-list').innerHTML=trips.map(t=>`<article><strong>${esc(t.findings.title)}</strong><button type="button" class="quiet danger" data-delete-trip="${esc(t.id)}">Delete</button></article>`).join('')||'<p class="muted">No saved trips.</p>';
+  $('#clear-trips').disabled=!trips.length;
+}
+$('#manage-trips').onclick=()=>{renderTripManager();$('#trip-manager').showModal();};
+$('#trip-manager-close').onclick=()=>$('#trip-manager').close();
+$('#trip-manager-list').onclick=async event=>{
+  const button=event.target.closest('[data-delete-trip]'),t=state?.trips.find(item=>item.id===button?.dataset.deleteTrip);
+  if(!t||!confirm(`Delete “${t.findings.title}” from this device? Your wallet and downloaded copies will stay.`))return;
+  button.disabled=true;await act('delete-results',{id:t.id,expected_revision:t.revision});button.disabled=false;
+};
+$('#clear-trips').onclick=async event=>{
+  const trips=state?.trips||[];
+  if(!trips.length||!confirm(`Delete all ${trips.length} saved trips from this device? Your wallet and downloaded copies will stay.`))return;
+  event.target.disabled=true;
+  await act('clear-results',{confirm:'clear-all-trips',expected_trips:trips.map(t=>({id:t.id,revision:t.revision}))});
+  event.target.disabled=!(state?.trips||[]).length;
 };
 $('#stop').onclick = async () => {
   if (!confirm('Close the local server? Saved results and your wallet stay on this device. Unsaved wallet edits will be lost.')) return;
@@ -272,6 +299,7 @@ function renderVault() {
   const v=vaultState;
   $('#vault-status').textContent=!v.supported?'Encrypted sign-ins require the optional cryptography package.':v.unlocked?'Sign-ins are encrypted in local JSON. Passwords are never shown or exported.':v.exists?'Unlock the older password-protected sign-ins once to move them to device encryption.':'Sign-ins are unavailable.';
   $('#migrate-vault').hidden=!v.unlocked||v.device;$('#vault-unlock').hidden=v.unlocked || !v.supported || !v.exists;$('#vault-open').hidden=!v.unlocked;
+  $('#clear-signins').disabled=!v.entries.length;
   $('#unlock-vault').textContent='Unlock older sign-ins';
   if(!v.unlocked){$('#credential-form').reset();$('#credential-id').value='';return;}
   $('#vault-list').innerHTML=`<table><thead><tr><th>Provider</th><th>Label</th><th>Username</th><th>Password</th><th>Actions</th></tr></thead><tbody>${v.entries.map(e=>`<tr><td>${esc(e.provider)}</td><td>${esc(e.label)}</td><td>${esc(e.username)}</td><td>••••••••</td><td><button data-edit-credential="${e.id}" type="button">Replace</button> <button data-delete-credential="${e.id}" type="button">Delete</button></td></tr>`).join('')}</tbody></table>`;
@@ -288,11 +316,22 @@ $('#credential-form').onsubmit=async event=>{
   try{const previousIds=new Set(vaultState.entries.map(e=>e.id));vaultState=await api('vault/save',body);if(pendingAccountId){const account=draft.programs.find(a=>a.id===pendingAccountId);const savedId=body.id||vaultState.entries.find(e=>!previousIds.has(e.id))?.id;if(account&&savedId){$('#credential-id').value=savedId;account.credential_id=savedId;dirty=true;await persistWallet();}pendingAccountId='';$('#credential-association').hidden=true;}$('#credential-form').reset();$('#credential-id').value='';renderVault();$('#vault-status').textContent='Sign-in saved in encrypted local JSON.';}catch(error){$('#vault-status').textContent=error.message;}finally{event.submitter.disabled=false;}
 };
 $('#new-credential').onclick=()=>{pendingAccountId='';$('#credential-association').hidden=true;$('#credential-form').reset();$('#credential-id').value='';};
+async function unlinkSavedSignins(ids){
+  if(!draft.programs.some(account=>ids.has(account.credential_id)))return;
+  if(dirty)throw new Error('Save or reload wallet edits before removing linked sign-ins.');
+  for(const account of draft.programs)if(ids.has(account.credential_id))account.credential_id='';
+  dirty=true;renderWallet();await persistWallet();
+}
 $('#vault-list').onclick=async event=>{
   const button=event.target.closest('button');if(!button)return;
   const id=button.dataset.editCredential || button.dataset.deleteCredential;
   if(button.dataset.editCredential){const e=vaultState.entries.find(e=>e.id===id);for(const key of ['id','provider','label','username'])$('#credential-'+key).value=e[key];$('#credential-origin').value=e.login_origin||'';$('#credential-password').value='';$('#credential-password').focus();}
-  else if(confirm('Delete this saved sign-in? The provider account will stay unchanged.')){try{vaultState=await api('vault/delete',{id,expected_revision:vaultState.revision});renderVault();if(draft.programs.some(a=>a.credential_id===id)){for(const a of draft.programs)if(a.credential_id===id)a.credential_id='';dirty=true;await persistWallet();}}catch(error){$('#vault-status').textContent=error.message;}}
+  else if(confirm('Delete this saved sign-in and unlink it from rewards accounts? The accounts and balances will stay.')){try{await unlinkSavedSignins(new Set([id]));vaultState=await api('vault/delete',{id,expected_revision:vaultState.revision});renderVault();notice('Saved sign-in deleted.');}catch(error){$('#vault-status').textContent=error.message;await refreshVault();}}
+};
+$('#clear-signins').onclick=async()=>{
+  const entries=vaultState?.entries||[];
+  if(!entries.length||!confirm(`Delete all ${entries.length} saved sign-ins and unlink them from rewards accounts? Account balances will stay.`))return;
+  try{await unlinkSavedSignins(new Set(entries.map(entry=>entry.id)));vaultState=await api('vault/clear',{confirm:'clear-all-sign-ins',expected_revision:vaultState.revision});renderVault();notice('All saved sign-ins deleted.');}catch(error){$('#vault-status').textContent=error.message;await refreshVault();}
 };
 async function loadPlugins(){$('#plugin-note').textContent='Loading installed plugins…';try{pluginInventory=await api('plugins');renderPlugins();}catch(error){$('#plugin-note').textContent=error.message;}}
 function renderPlugins(){
@@ -313,11 +352,11 @@ function walletTile(section,r,i){
     const parts=String(r.name||'').split(';'),uncertain=/^Exact product not reported/i.test(parts[0]);
     const name=uncertain?'Card to identify':parts[0].trim()||'Card to identify';
     const note=uncertain?r.name:parts.slice(1).join(';').trim();
-    content=`${art}<h4>${esc(name)}</h4>${note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}<p class="wallet-linked">${account?`<button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button>`:`<button type="button" data-edit-wallet="cards" data-index="${i}">Link rewards account ↗</button>`}</p><small>${draft.benefits.filter(b=>b.card_id===r.id).length} linked benefits</small><div class="wallet-tile-actions"><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button></div>`;
+    content=`${art}<h4>${esc(name)}</h4>${note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}<p class="wallet-linked">${account?`<button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button>`:`<button type="button" data-edit-wallet="cards" data-index="${i}">Link rewards account ↗</button>`}</p><small>${draft.benefits.filter(b=>b.card_id===r.id).length} linked benefits</small><div class="wallet-tile-actions"><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>${account.credential_id?`<button type="button" data-account-signin="${esc(account.id)}">Manage sign-in</button>`:''}`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div>`;
   } else if(section==='programs'){
-    content=`${art}<h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<strong class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()}`:'Balance not reported'}</strong><small>${esc(r.status||'Status not reported')} · ${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on||'date unknown')}</small><p class="wallet-linked">${draft.cards.filter(c=>c.reward_account_id===r.id).length} linked cards · ${r.credential_id?'Sign-in linked':'Manual balance'}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button><button type="button" data-account-signin="${esc(r.id)}">${r.credential_id?'Manage sign-in':'Connect to sync'}</button>${r.credential_id?`<button type="button" data-account-sync="${esc(r.id)}">Request sync</button>`:''}</div>`;
+    content=`${art}<h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<strong class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()}`:'Balance not reported'}</strong><small>${esc(r.status||'Status not reported')} · ${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on||'date unknown')}</small><p class="wallet-linked">${draft.cards.filter(c=>c.reward_account_id===r.id).length} linked cards · ${r.credential_id?'Sign-in linked':'Manual balance'}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button><button type="button" data-account-signin="${esc(r.id)}">${r.credential_id?'Manage sign-in':'Connect to sync'}</button>${r.credential_id?`<button type="button" data-account-sync="${esc(r.id)}">Request sync</button><button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div>`;
   } else {
-    content=`${art}<h4>${esc(r.name||'Credit or travel fund')}</h4><strong class="wallet-balance">${esc(r.remaining||'Remaining unknown')}</strong><small>Expires ${esc(r.expires_on||'date unknown')}</small><p class="wallet-linked">${esc(linked?.name||'Not linked to a card or program')}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit asset</button></div>`;
+    content=`${art}<h4>${esc(r.name||'Credit or travel fund')}</h4><strong class="wallet-balance">${esc(r.remaining||'Remaining unknown')}</strong><small>Expires ${esc(r.expires_on||'date unknown')}</small><p class="wallet-linked">${esc(linked?.name||'Not linked to a card or program')}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit asset</button><button type="button" class="danger" data-remove-tile="benefits" data-index="${i}">Remove asset</button></div>`;
   }
   return `<article class="wallet-tile wallet-tile-${section}" data-section="${section}" data-index="${i}">${content}</article>`;
 }
@@ -328,6 +367,16 @@ function renderWalletTiles(){
   $('#wallet-tiles').querySelectorAll('[data-account-sync]').forEach(b=>b.onclick=()=>openAccountSync(b.dataset.accountSync));
   $('#wallet-tiles').querySelectorAll('[data-edit-wallet]').forEach(b=>b.onclick=()=>editWallet(b.dataset.editWallet,Number(b.dataset.index)));
 }
+$('#wallet-tiles').addEventListener('click',async event=>{
+  const button=event.target.closest('[data-unlink-wallet],[data-remove-tile]');if(!button)return;
+  const section=button.dataset.unlinkWallet||button.dataset.removeTile,index=Number(button.dataset.index),row=draft[section]?.[index];if(!row)return;
+  if(dirty&&!confirm('Save your other unsaved wallet edits with this change?'))return;
+  const removing=button.hasAttribute('data-remove-tile');
+  if(!confirm(removing?`Remove “${row.account_label||row.name}” and save the wallet? Linked records will stay but their links will be cleared.`:section==='cards'?'Unlink this card from its rewards account? The account and balance will stay.':'Unlink this saved sign-in? The encrypted sign-in will stay in Sign-ins.'))return;
+  if(removing)removeWalletEntry(section,index);
+  else {row[section==='cards'?'reward_account_id':'credential_id']='';dirty=true;renderWallet();}
+  try{await persistWallet();}catch(error){notice(error.message,true);}
+});
 let editorSnapshot,editorDirty;
 async function editWallet(section,index,isNew=false){
  if(section==='programs')await refreshVault();

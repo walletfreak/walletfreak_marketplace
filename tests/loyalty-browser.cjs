@@ -71,6 +71,15 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   await page.locator('#setup-fields [data-program-choice]').selectOption('Hilton Honors');
   await page.locator('#setup-next').click();await page.locator('#setup-next').click();
   assert.equal(JSON.parse(cli('wallet')).programs[2].name,'Hilton Honors');
+  await page.goto(new URL('/settings/sign-ins',url).href);
+  await page.locator('#clear-signins').waitFor();
+  page.on('dialog',dialog=>dialog.accept());
+  await page.locator('#clear-signins').click();
+  await page.getByText('All saved sign-ins deleted.',{exact:true}).waitFor();
+  wallet=JSON.parse(cli('wallet'));
+  assert.equal(wallet.programs[0].credential_id,'');
+  assert.equal(wallet.programs.length,3);
+  assert.equal(await page.locator('#vault-list tbody tr').count(),0);
   console.log('loyalty picker, default layout, manual balance and optional sync: OK');
  }finally{if(browser)await browser.close();try{cli('stop');}catch{}rmSync(data,{recursive:true,force:true});}
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -416,7 +416,12 @@ class Store:
             atomic_json(self.root / 'settings.json', settings)
             return {'message': 'Saved. Restart the browser connection to apply on its next use.'}
         state = self.read_results()
-        if action == 'delete-results':
+        if action == 'clear-results':
+            fields(body, ('confirm', 'expected_trips'), ('confirm', 'expected_trips'))
+            if body['confirm'] != 'clear-all-trips' or body['expected_trips'] != [{'id': trip['id'], 'revision': trip['revision']} for trip in state['trips']]:
+                raise ValueError('Trips changed. Refresh before clearing all trips.')
+            state['trips'] = []
+        elif action == 'delete-results':
             fields(body, ('id', 'expected_revision'), ('id', 'expected_revision'))
             trip = self.trip(body['id'], state)
             if body['expected_revision'] != trip['revision']:
@@ -448,7 +453,7 @@ class Store:
         else:
             raise ValueError('Unknown action.')
         atomic_json(self.path, state)
-        return {'message': 'Results deleted. Your personal wallet is unchanged.'} if action == 'delete-results' else {}
+        return {'message': 'Trips deleted. Your personal wallet is unchanged.'} if action == 'clear-results' else {'message': 'Results deleted. Your personal wallet is unchanged.'} if action == 'delete-results' else {}
 
     def agent_action(self, action, body):
         if action == 'shopping-publish': return self.shopping.publish(body)

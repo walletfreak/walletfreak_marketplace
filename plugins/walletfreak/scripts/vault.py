@@ -171,6 +171,10 @@ class Vault:
                 rows = [e for e in payload['entries'] if e['id'] != body['id']]
                 if len(rows) == len(payload['entries']): raise ValueError('Saved sign-in no longer exists.')
                 payload['entries'] = rows
+            elif action == 'clear':
+                fields(body, ('confirm','expected_revision'), ('confirm','expected_revision'))
+                if body['confirm'] != 'clear-all-sign-ins': raise ValueError('Confirm clearing all saved sign-ins.')
+                payload['entries'] = []
             else:
                 raise ValueError('Unknown vault action.')
             self.persist(payload)

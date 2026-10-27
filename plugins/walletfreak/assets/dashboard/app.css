@@ -236,3 +236,20 @@ body{background:var(--paper);color:var(--ink)}header{background:#fbfaf8;border-c
 .wallet-extra{border-top:1px solid var(--border);padding-top:13px;margin-top:12px}
 .wallet-extra>summary{color:#4056c4;font-weight:650}
 @media(max-width:700px){#overview .travel-hero h1{font-size:clamp(27px,8vw,39px)}#wallet .wallet-tile{min-height:0}}
+
+/* Keep each workspace's content inside the panel edge. */
+main>.panel:not(#home){padding:clamp(18px,2.2vw,32px)}
+#trip-toolbar{order:1;display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:0 0 24px}
+#trip-toolbar[hidden]{display:none}
+#trip-toolbar #overview-trip-label{order:0;margin:0}
+#trip-toolbar>button{min-height:36px}
+#trip-manager{width:min(580px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--border);border-radius:15px;padding:24px;background:#fff;color:var(--ink);box-shadow:0 25px 70px #14243b45}
+#trip-manager::backdrop{background:#101d3470}
+#trip-manager .section-heading{align-items:center;margin:0 0 12px}
+#trip-manager .section-heading h2{margin:0;font:500 27px Georgia,serif}
+#trip-manager-list article{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border)}
+#trip-manager-list strong{overflow-wrap:anywhere}
+#trip-manager .actions{margin:18px 0 10px}
+#clear-signins{margin:8px 0 20px}
+#wallet .wallet-tile-actions .danger{color:#a03830;background:transparent;border-color:#e3d8d6}
+@media(max-width:600px){main>.panel:not(#home){padding:16px}#trip-toolbar{align-items:stretch}#trip-toolbar #overview-trip-label{width:100%}#trip-toolbar>button{width:max-content}#trip-manager{padding:17px}}

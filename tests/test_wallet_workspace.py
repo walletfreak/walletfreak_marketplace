@@ -158,5 +158,14 @@ class VaultTests(unittest.TestCase):
         with self.assertRaises(ValueError):self.v.action('create',{'master_password':self.password},'browser-A')
         self.assertTrue(self.v.path.exists())
 
+    def test_clear_signins_requires_confirmation_and_current_revision(self):
+        self.save(); self.save('second synthetic password')
+        with self.assertRaises(ValueError): self.v.action('clear',{'confirm':'wrong','expected_revision':self.v.revision},'browser-A')
+        with self.assertRaises(ValueError): self.v.action('clear',{'confirm':'clear-all-sign-ins','expected_revision':'stale'},'browser-A')
+        self.assertEqual(len(self.v.status('browser-A')['entries']),2)
+        self.v.action('clear',{'confirm':'clear-all-sign-ins','expected_revision':self.v.revision},'browser-A')
+        self.assertEqual(self.v.status('browser-A')['entries'],[])
+        self.assertNotIn('second synthetic password',self.v.path.read_text())
+
 
 if __name__=='__main__':unittest.main()
