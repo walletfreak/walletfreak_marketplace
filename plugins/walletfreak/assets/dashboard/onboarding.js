@@ -6,8 +6,9 @@
     if (!state?.onboarding?.show) return;
     try {
       [layout, catalog] = await Promise.all([api('layout'), api('catalog')]);
-      $('#onboarding-template').innerHTML = catalog.templates.map(template => `<option value="${esc(template.id)}">${esc(template.name)}</option>`).join('');
-      $('#onboarding-template').value = catalog.templates.some(template => template.id === 'concierge-travel') ? 'concierge-travel' : catalog.templates[0].id;
+      const travel=catalog.templates.filter(template=>template.layout.blocks.every(block=>block.source.startsWith('travel.')));
+      $('#onboarding-template').innerHTML = travel.map(template => `<option value="${esc(template.id)}">${esc(template.name)}</option>`).join('');
+      $('#onboarding-template').value = travel.find(template=>template.id==='concierge-travel')?.id||travel[0].id;
       await api('onboarding', {state:'started'});
       panel.hidden = false;
     } catch (error) { notice(error.message, true); }

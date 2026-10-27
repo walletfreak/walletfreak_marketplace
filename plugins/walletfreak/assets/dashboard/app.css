@@ -232,4 +232,6 @@ body{background:var(--paper);color:var(--ink)}header{background:#fbfaf8;border-c
 #sync-request-dialog{width:min(520px,calc(100vw - 32px));border:1px solid var(--border);border-radius:14px;padding:22px;color:var(--ink);box-shadow:0 25px 70px #14243b45}
 #sync-request-dialog::backdrop{background:#101d3470}
 #sync-request-dialog textarea{width:100%;margin:9px 0 12px}
+.wallet-extra{border-top:1px solid var(--border);padding-top:13px;margin-top:12px}
+.wallet-extra>summary{color:#4056c4;font-weight:650}
 @media(max-width:700px){#overview .travel-hero h1{font-size:clamp(27px,8vw,39px)}#wallet .wallet-tile{min-height:0}}

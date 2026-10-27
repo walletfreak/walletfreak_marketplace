@@ -56,10 +56,10 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     });
     await page.locator('[data-tab="wallet"]').first().click();
     await page.locator('#wallet-tiles .wallet-tile-cards h4').getByText('Capital One Venture X').waitFor();
-    assert.equal(await page.getByText('Copy sync request',{exact:true}).count(),0);
-    await page.getByRole('button',{name:'Ask agent to refresh'}).click();
-    await page.locator('#sync-request-dialog').waitFor();
-    assert.match(await page.locator('#sync-request-text').inputValue(),/Use wallet-sync to refresh/);
+    assert.equal(await page.getByRole('button',{name:'Request sync'}).count(),0);
+    await page.getByRole('button',{name:'Connect to sync'}).click();
+    await page.locator('#credential-association').waitFor();
+    assert.match(await page.locator('#credential-association').innerText(),/Alex · Alex · Capital One Miles/);
     console.log('review links and actionable research: OK');
   } finally {
     if (browser) await browser.close();
