@@ -69,6 +69,7 @@ body[data-view=wallet],body[data-view=spending],body[data-view=shopping]{--green
 #confirmation-import{order:5}
 #overview-customize{order:6}
 #overview-content.travel-route-preview>.wf-title,#overview-content [data-component=itinerary]>h3{display:none}
+#overview-content .wf-trip-brief-empty .wf-trip-brief-copy>strong{display:none}
 #overview-content.travel-route-preview .wf-block:first-of-type{margin-top:0}
 #overview-content [data-component=itinerary]>.wf-trip>.wf-trip-columns{grid-template-columns:minmax(0,1.65fr) minmax(290px,.85fr);gap:clamp(20px,3vw,44px)}
 #overview-content .wf-trip .wf-route{grid-column:1;grid-row:1;position:static;background:transparent;border:0;padding:0}
