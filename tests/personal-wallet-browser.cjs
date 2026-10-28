@@ -25,6 +25,8 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   await page.getByRole('button',{name:'Wallet',exact:true}).click();
   assert.equal(await page.locator('.people-toolbar').isVisible(),false);
   assert.equal(await page.getByRole('button',{name:'Save wallet'}).count(),0);
+  for(const selector of ['#wallet-search','#wallet-preferences','#wallet-data','#asset-guide','#delete-wallet'])assert.equal(await page.locator(selector).count(),0);
+  assert.equal(await page.locator('#wallet-view-menu>summary').textContent(),'View: Cards');
   await page.getByRole('button',{name:'Add credit card',exact:true}).click();
   await page.locator('#card-picker').waitFor({state:'visible'});
   await page.screenshot({path:'/private/tmp/wf-card-picker.png'});

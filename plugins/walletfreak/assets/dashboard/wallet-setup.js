@@ -26,7 +26,7 @@ $('#setup-next').onclick=async()=>{
  if(!setupValid())return;
  if(setupStep===0){const name=$('#setup-name').value.trim();if(!name)return;const duplicate=draft.people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&p.id!==setupPerson);if(duplicate){$('#setup-error').textContent='That person already exists. Choose them from the list.';return;}let person=draft.people.find(p=>p.id===setupPerson);if(!person){person={id:crypto.randomUUID(),name};draft.people.push(person);setupPerson=person.id;}else person.name=name;for(const row of [...draft.cards,...draft.programs,...draft.benefits])if(row.person_id===person.id)row.owner=name;dirty=true;}
  if(setupStep<3){setupStep++;renderSetup();return;}
- const button=$('#setup-next');button.disabled=true;try{await persistWallet();$('#wallet-setup').close();renderPeople();filterWallet();}catch(e){$('#setup-error').textContent=e.message;}finally{button.disabled=false;}
+ const button=$('#setup-next');button.disabled=true;try{await persistWallet();$('#wallet-setup').close();renderPeople();}catch(e){$('#setup-error').textContent=e.message;}finally{button.disabled=false;}
 };
 $('#setup-fields').addEventListener('input',e=>{const entry=e.target.closest('[data-section]');if(!entry)return;const row=draft[entry.dataset.section][Number(entry.dataset.index)];if(e.target.hasAttribute('data-program-choice')){updateProgramChoice(e.target,row);return;}if(!e.target.dataset.field)return;row[e.target.dataset.field]=e.target.value;dirty=true;if(e.target.dataset.field==='name')entry.querySelector('.wallet-image').innerHTML=walletImage(entry.dataset.section,row);});
 $('#setup-fields').onclick=e=>{
@@ -38,7 +38,7 @@ async function openAccountSignin(section,id){
  try{
   if(dirty)await persistWallet();await refreshVault();
   const account=draft[section]?.find(a=>a.id===id);if(!account)return;
-  if(!vaultState?.unlocked){$('#wallet-data').open=true;$('#saved-signins').open=true;$('#saved-signins').scrollIntoView();notice('Unlock saved sign-ins before linking this account.');return;}
+  if(!vaultState?.unlocked){$('#signins-dialog').showModal();notice('Unlock saved sign-ins before linking this account.');return;}
   pendingAccountId=section+':'+id;tab('wallet');
   const saved=vaultState?.entries?.find(e=>e.id===account.credential_id);
   const provider=section==='programs'?loyaltyChoices().find(item=>item.name.toLowerCase()===account.name.toLowerCase())?.provider:/american express|amex/i.test(account.name)?'Amex Travel':/chase/i.test(account.name)?'Chase Travel':/capital one/i.test(account.name)?'Capital One Travel':/citi/i.test(account.name)?'Citi Travel':undefined;

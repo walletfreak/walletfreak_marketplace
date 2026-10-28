@@ -7,7 +7,7 @@ const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state, activeId = '', brands = {}, cards = [], draft, draftRevision, dirty = false, stopped = false, assetCatalog = [], vaultState, pluginInventory, currentTab = 'home';
 const programDraftCategories = new Map();
-$('#wallet-data').append($('#saved-signins'));
+$('#signins-dialog').append($('#saved-signins'));
 $('#wallet').append($('#credential-dialog'));
 $('#wallet-connections').remove();
 function notice(message, error = false) { $('#notice').textContent = message; $('#notice').className = error ? 'error' : ''; }
@@ -151,16 +151,10 @@ function renderWallet() {
     const cols=columns[section].filter(c=>draft.people.length>1||c[0]!=='person_id');
     $(`#wallet-${section}`).innerHTML = `<table class="wallet-sheet"><thead><tr><th scope="col">#</th><th scope="col">${section==='cards'?'Card':'Program'}</th>${cols.map(c=>`<th scope="col">${c[1]}</th>`).join('')}<th scope="col">Remove</th></tr></thead><tbody>${draft[section].map((row,index)=>`<tr data-section="${section}" data-index="${index}"><th scope="row">${index+1}</th><td class="wallet-image provider">${walletImage(section,row)}</td>${cols.map(c=>`<td>${cell(section,index,row,c)}</td>`).join('')}<td><button type="button" data-remove="${section}" data-index="${index}" class="quiet danger" aria-label="Remove ${section==='cards'?'card':section==='programs'?'program':'asset'} ${index+1}">×</button></td></tr>`).join('')}</tbody></table>${draft[section].length?'':`<p class="muted empty-sheet">No ${section==='programs'?'loyalty programs':section==='benefits'?'assets':section} added yet.</p>`}`;
   }
-  $('#wallet-preferences').value = draft.preferences;
-  renderWalletTiles();filterWallet();walletStatus();
+  renderWalletTiles();walletStatus();
 }
-function filterWallet() {
-  const words=$('#wallet-search').value.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  document.querySelectorAll('tr[data-section],.wallet-tile[data-section]').forEach(row=>{const entry=draft[row.dataset.section][Number(row.dataset.index)];row.hidden=($('#wallet-person').value&&entry.person_id!==$('#wallet-person').value)||!words.every(word=>JSON.stringify(entry).toLowerCase().includes(word));});
-}
-$('#wallet-search').oninput=filterWallet;
 function walletStatus() {
-  $('#wallet-status').textContent = dirty ? 'Unsaved changes' : 'Your saved wallet is up to date on this device.';
+  $('#wallet-status').textContent = dirty ? 'Unsaved changes' : '';
   $('#wallet-conflict').hidden = !dirty || state.wallet.revision === draftRevision;
   $('#legacy-profile').hidden = !state.legacy_profile || state.wallet.revision !== 'empty';
 }
@@ -188,6 +182,7 @@ async function refresh() {
 }
 $('#wallet-form').addEventListener('input', event => {
   const entry = event.target.closest('[data-section]');
+  if(!entry)return;
   if(entry&&event.target.hasAttribute('data-program-choice')){updateProgramChoice(event.target,draft.programs[Number(entry.dataset.index)]);return;}
   if (entry && event.target.dataset.field) {
     const row = draft[entry.dataset.section][Number(entry.dataset.index)];
@@ -197,7 +192,7 @@ $('#wallet-form').addEventListener('input', event => {
       entry.querySelector('.wallet-image').innerHTML = walletImage(entry.dataset.section,row);
       if(entry.dataset.section==='benefits') { const template=assetCatalog.find(a=>a.name===row.name);if(template){row.kind=template.kind;entry.querySelector('[data-field=kind]').value=template.kind;} }
     }
-  } else if (event.target.id === 'wallet-preferences') draft.preferences = event.target.value;
+  }
   dirty = true; walletStatus();
   if($('#wallet-editor').open)updateRewardSuggestion();
 });
@@ -242,10 +237,6 @@ $('#wallet-form').onsubmit = async event => {
   button.disabled = false;
 };
 $('#reload-wallet').onclick = () => { if (!dirty || confirm('Discard unsaved wallet edits and reload the saved wallet?')) loadWallet(); };
-$('#delete-wallet').onclick = async () => {
-  if (!confirm('Delete your saved personal wallet and discard unsaved wallet edits? Trips, downloaded files and saved sign-ins will stay.')) return;
-  if (await act('delete-wallet',{expected_revision:draftRevision})) loadWallet();
-};
 for (const id of ['search','kind','availability','shortlisted']) $('#'+id).addEventListener('input', renderFindings);
 $('#options').addEventListener('change', async event => {
   const t = trip(), target = event.target, key = target.dataset.shortlist ? 'shortlist' : 'selected', id = target.dataset.shortlist || target.dataset.select;
@@ -290,7 +281,6 @@ window.addEventListener('beforeunload', event => { if (dirty && !stopped) { even
     const loaded = await Promise.all(['/assets/brands.json','/assets/cards.json','/assets/wallet-assets.json'].map(path=>fetch(path).then(r=>r.json())));
     [brands,cards] = loaded; assetCatalog=loaded[2].items;
     $('#asset-names').innerHTML=assetCatalog.map(a=>`<option value="${esc(a.name)}"></option>`).join('');
-    $('#asset-catalog').innerHTML=assetCatalog.map(a=>`<p><a href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(a.name)} ↗</a> <span class="muted">${esc(a.note)}</span></p>`).join('');
     $('#card-names').innerHTML = cards.map(c=>`<option value="${esc(c.name)}"></option>`).join('');
     await refresh();
     if (location.pathname==='/travel/trips') history.replaceState(null,'',`/travel${location.search}`);
@@ -304,11 +294,13 @@ window.addEventListener('beforeunload', event => { if (dirty && !stopped) { even
 async function refreshVault() {
   try {let next=await api('vault');if(next.supported&&!next.exists)next=await api('vault/device',{});const changed=JSON.stringify(next)!==JSON.stringify(vaultState);vaultState=next;if(changed)renderVault();}catch(error){$('#vault-status').textContent=error.message;}
 }
+$('#manage-signins').onclick=()=>$('#signins-dialog').showModal();
+$('#close-signins').onclick=()=>$('#signins-dialog').close();
 function renderVault() {
   const v=vaultState;
   $('#vault-status').textContent=!v.supported?'Encrypted sign-ins require the optional cryptography package.':v.unlocked?'Passwords are encrypted on this device and are never shown or exported.':v.exists?'Unlock the older password-protected sign-ins once to move them to device encryption.':'Sign-ins are unavailable.';
   $('#migrate-vault').hidden=!v.unlocked||v.device;$('#vault-unlock').hidden=v.unlocked || !v.supported || !v.exists;$('#vault-open').hidden=!v.unlocked;
-  $('#clear-signins').hidden=!v.entries.length;
+  $('#clear-signins').hidden=!v.entries.length;$('#manage-signins').hidden=v.unlocked&&!v.entries.length;
   $('#vault-list').classList.toggle('empty',!v.entries.length);
   $('#unlock-vault').textContent='Unlock older sign-ins';
   if(!v.unlocked){$('#credential-form').reset();$('#credential-id').value='';return;}
@@ -370,8 +362,8 @@ function renderPlugins(){
 }
 $('#skill-search').oninput=renderPlugins;
 
-function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-table-actions').hidden=!table;$('#wallet-table-hint').hidden=!table;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
-$('#wallet-view-cards').onclick=()=>{renderWalletTiles();filterWallet();setWalletView(false);};
+function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-table-actions').hidden=!table;$('#wallet-table-hint').hidden=!table;$('#wallet-view-menu>summary').textContent=table?'View: Table':'View: Cards';$('#wallet-view-menu').open=false;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
+$('#wallet-view-cards').onclick=()=>{renderWalletTiles();setWalletView(false);};
 $('#wallet-view-table').onclick=()=>{renderWallet();setWalletView(true);};
 function loyaltyGroup(row){
   const name=String(row.name||'').toLowerCase(),known=loyaltyChoices().find(item=>item.name.toLowerCase()===name);
@@ -467,5 +459,4 @@ $('#wallet-editor-done').onclick=async()=>{const entry=$('#wallet-editor-fields 
 $('#wallet-editor').addEventListener('cancel',e=>{e.preventDefault();cancelWalletEditor();});
 
 function renderPeople(){$('#wallet-person').innerHTML='<option value="">My wallet</option>'+draft.people.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#wallet-person').value='';$('.people-toolbar').hidden=true;}
-$('#wallet-person').onchange=filterWallet;
 $('#migrate-vault').onclick=async()=>{try{vaultState=await api('vault/migrate-device',{});renderVault();}catch(e){notice(e.message,true);}};
