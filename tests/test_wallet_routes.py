@@ -39,10 +39,34 @@ class WalletRoutes(unittest.TestCase):
         result=self.store.user_action('wallet',{'wallet':draft,'expected_revision':current['revision']})['wallet']
         self.assertEqual(result['programs'][0]['balance'],'12345');self.assertEqual(result['programs'][0]['reported_on'],'2026-10-01')
         self.assertEqual(result['programs'][0]['credential_id'],'a'*32)
-        bad=deepcopy(draft);bad['cards'][0]['credential_id']='a'*32
+        linked=deepcopy(draft);linked['cards'][0]['credential_id']='b'*32
+        local.validate_wallet(linked)
+        bad=deepcopy(draft);bad['cards'][0]['credential_id']='not-an-id'
         with self.assertRaises(ValueError):local.validate_wallet(bad)
         bad=deepcopy(draft);bad['programs'][0]['credential_id']='not-an-id'
         with self.assertRaises(ValueError):local.validate_wallet(bad)
+    def test_refresh_requests_are_account_scoped_and_cleared_after_sync(self):
+        local.atomic_json(self.root/'wallet.json',self.old_wallet())
+        wallet=self.store.wallet();draft={k:v for k,v in wallet.items() if k not in ('version','revision')}
+        draft['programs'][0]['credential_id']='a'*32
+        draft['cards'][0]['credential_id']='b'*32
+        wallet=self.store.user_action('wallet',{'wallet':draft,'expected_revision':wallet['revision']})['wallet']
+        program=wallet['programs'][0];card=wallet['cards'][0]
+        with self.assertRaises(ValueError):self.store.user_action('refresh-account',{'section':'programs','id':'missing'})
+        self.store.user_action('refresh-account',{'section':'programs','id':program['id']})
+        self.store.user_action('refresh-account',{'section':'cards','id':card['id']})
+        self.assertEqual(len(self.store.refresh_requests()['requests']),2)
+        self.store.agent_action('wallet-sync',{'expected_revision':wallet['revision'],'updates':[{'program_id':program['id'],'person_id':program['person_id'],'balance':'42000','observed_at':'2026-10-19T10:00:00-04:00','source_url':'https://example.com/rewards'}]})
+        self.assertEqual(len(self.store.refresh_requests()['requests']),2)
+        self.store.agent_action('refresh-complete',{'section':'programs','id':program['id']})
+        self.assertEqual(self.store.refresh_requests()['requests'][0]['section'],'cards')
+        self.store.agent_action('refresh-complete',{'section':'cards','id':card['id']})
+        self.assertEqual(self.store.refresh_requests()['requests'],[])
+        self.store.user_action('refresh-account',{'section':'cards','id':card['id']})
+        current=self.store.wallet();draft={k:v for k,v in current.items() if k not in ('version','revision')}
+        draft['cards'][0]['credential_id']=''
+        self.store.user_action('wallet',{'wallet':draft,'expected_revision':current['revision']})
+        self.assertEqual(self.store.refresh_requests()['requests'],[])
     def test_routes_validation_and_export_escape(self):
         data={'title':'Demo','generated_at':'2026-10-19T12:00:00Z','options':[],'itinerary':[{'when':'Local time TBD','title':'Stay','detail':'</script><script>alert(1)</script>','stay':{'check_in':'2027-01-01','check_out':'2027-01-03'},'place':{'label':'Public place','lat':0,'lng':0,'confidence':'approximate','source_url':'https://example.com/?secret=TOKEN'},'route':{'mode':'train'}}]}
         local.board.validate(data);html=local.board.render(data);self.assertNotIn('TOKEN',html);self.assertNotIn('</script><script>alert(1)',html)

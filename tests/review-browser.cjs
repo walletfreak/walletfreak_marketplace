@@ -75,7 +75,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     await page.waitForFunction(()=>state.wallet.cards[0].reward_account_id==='');
     assert.equal(JSON.parse(cli(['wallet'])).programs.length,1);
     assert.equal(await page.getByRole('button',{name:'Request sync'}).count(),0);
-    await page.getByRole('button',{name:'Add sign-in'}).click();
+    await page.locator('.wallet-tile-programs').getByRole('button',{name:'Connect sign-in'}).click();
     await page.locator('#credential-dialog').waitFor({state:'visible'});
     assert.match(await page.locator('#credential-association').innerText(),/Alex · Capital One Miles/);
     await page.locator('#credential-close').click();

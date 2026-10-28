@@ -206,7 +206,7 @@ def validate_wallet(value):
                     date.fromisoformat(row[key])
             for key in ('account_label', 'member_hint', 'credential_id'):
                 if key in row:
-                    if section != 'programs': raise ValueError('Account metadata belongs to rewards accounts.')
+                    if section != 'programs' and not (section == 'cards' and key == 'credential_id'): raise ValueError('Account metadata belongs to rewards accounts.')
                     short_text(row[key], key, False, 300)
                     if key == 'credential_id' and row[key] and not re.fullmatch(r'[a-f0-9]{32}', row[key]): raise ValueError('Invalid saved sign-in ID.')
             if section == 'programs' and row['balance'] and not re.fullmatch(r'\d{1,13}', row['balance']):
@@ -297,6 +297,12 @@ class Store:
             atomic_json(path, value)
         return value
 
+    def refresh_requests(self):
+        value = read_json(self.root / 'refresh-requests.json', {'version': 1, 'requests': []})
+        if value.get('version') != 1 or not isinstance(value.get('requests'), list):
+            raise ValueError('Unsupported refresh request file; original data retained.')
+        return value
+
     def trip(self, identifier, state=None):
         state = self.read_results() if state is None else state
         for trip in state['trips']:
@@ -308,7 +314,7 @@ class Store:
         result = self.read_results()
         for trip in result['trips']:
             trip['totals'] = selected_totals(trip)
-        result.update(wallet=self.wallet(), shopping=self.shopping.state(), providers=PROVIDERS, legacy_profile=(self.root.parent / 'traveler-profile.md').is_file())
+        result.update(wallet=self.wallet(), refresh_requests=self.refresh_requests()['requests'], shopping=self.shopping.state(), providers=PROVIDERS, legacy_profile=(self.root.parent / 'traveler-profile.md').is_file())
         settings = read_json(self.root / 'settings.json', {})
         result['onboarding'] = {
             'show': settings.get('onboarding_started', False) or (
@@ -321,6 +327,19 @@ class Store:
         return result
 
     def user_action(self, action, body):
+        if action == 'refresh-account':
+            fields(body, ('section', 'id'), ('section', 'id'))
+            if body['section'] not in ('cards', 'programs') or not isinstance(body['id'], str):
+                raise ValueError('Choose a card or rewards account.')
+            row = next((r for r in self.wallet()[body['section']] if r['id'] == body['id']), None)
+            if not row or not row.get('credential_id'):
+                raise ValueError('Save a sign-in for this account before requesting a refresh.')
+            requests = self.refresh_requests()
+            requests['requests'] = [r for r in requests['requests'] if (r.get('section'), r.get('id')) != (body['section'], body['id'])]
+            requests['requests'].append({'section': body['section'], 'id': body['id'], 'requested_at': now()})
+            if len(requests['requests']) > 100: raise ValueError('Finish or clear older refresh requests first.')
+            atomic_json(self.root / 'refresh-requests.json', requests)
+            return {'message': 'Refresh requested. Ask your agent to process pending Wallet refreshes.'}
         if action == 'onboarding':
             fields(body, ('state',), ('state',))
             if body['state'] not in ('started', 'complete'):
@@ -395,11 +414,19 @@ class Store:
             if action == 'wallet':
                 validate_wallet(body['wallet'])
                 atomic_json(path, {**identify_wallet(body['wallet']), 'version': 2, 'revision': uuid.uuid4().hex})
+                requests = self.refresh_requests()
+                linked = {(section, row['id']) for section in ('cards', 'programs') for row in self.wallet()[section] if row.get('credential_id')}
+                kept = [r for r in requests['requests'] if (r.get('section'), r.get('id')) in linked]
+                if len(kept) != len(requests['requests']):
+                    atomic_json(self.root / 'refresh-requests.json', {'version': 1, 'requests': kept})
                 return {'message': 'Wallet saved on this device. Balances are self-reported.', 'wallet': self.wallet()}
             if path.is_symlink():
                 raise ValueError('Refusing a symlink in private application data.')
+            requests_path = self.root / 'refresh-requests.json'
+            if requests_path.is_symlink(): raise ValueError('Refusing a symlink in private application data.')
             path.unlink(missing_ok=True)
             (self.root / 'wallet-v1-backup.json').unlink(missing_ok=True)
+            requests_path.unlink(missing_ok=True)
             return {'message': 'Personal wallet deleted. Trip results and downloaded files are unchanged.'}
         if action in ('settings', 'forget'):
             settings = read_json(self.root / 'settings.json', {'remember': False, 'forget': False})
@@ -457,6 +484,16 @@ class Store:
 
     def agent_action(self, action, body):
         if action == 'shopping-publish': return self.shopping.publish(body)
+        if action == 'refresh-complete':
+            fields(body, ('section', 'id'), ('section', 'id'))
+            if body['section'] not in ('cards', 'programs') or not isinstance(body['id'], str):
+                raise ValueError('Choose a card or rewards account.')
+            requests = self.refresh_requests()
+            before = len(requests['requests'])
+            requests['requests'] = [r for r in requests['requests'] if (r.get('section'), r.get('id')) != (body['section'], body['id'])]
+            if len(requests['requests']) == before: raise ValueError('No matching refresh request exists.')
+            atomic_json(self.root / 'refresh-requests.json', requests)
+            return {'message': 'Refresh request completed.'}
         if action == 'wallet-sync':
             fields(body, ('expected_revision','updates'), ('expected_revision','updates'))
             wallet=self.wallet()
@@ -785,7 +822,7 @@ def start(root, port):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('start', 'serve', 'status', 'publish', 'wallet-sync', 'wallet', 'settings', 'forget', 'stop', 'references', 'extract-references', 'insights', 'shopping', 'shopping-publish', 'layout', 'catalog'))
+    parser.add_argument('command', choices=('start', 'serve', 'status', 'publish', 'wallet-sync', 'wallet', 'refresh-requests', 'refresh-complete', 'settings', 'forget', 'stop', 'references', 'extract-references', 'insights', 'shopping', 'shopping-publish', 'layout', 'catalog'))
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--view', choices=('travel', 'wallet', 'credit-cards', 'spending', 'shopping'), default='travel', help='Private dashboard view to open with start.')
     parser.add_argument('--trip', help='Saved trip ID for a direct Travel link.')
@@ -808,11 +845,11 @@ def main():
             query = urlencode({key:value for key,value in (('trip',args.trip),('review',args.review)) if value})
             print(descriptor['origin'] + '/' + ('wallet' if args.view == 'credit-cards' else args.view) + ('?' + query if query else '') + '#key=' + descriptor['ui_token'])
             return
-        if args.command in ('publish', 'settings', 'forget', 'insights', 'wallet-sync', 'extract-references', 'shopping-publish') or args.command == 'layout' and args.input:
+        if args.command in ('publish', 'settings', 'forget', 'insights', 'wallet-sync', 'refresh-complete', 'extract-references', 'shopping-publish') or args.command == 'layout' and args.input:
             if not args.input:
                 raise ValueError('Provide --input with a JSON file or - for stdin.')
             body = json.load(sys.stdin) if str(args.input) == '-' else read_json(args.input)
-            route = '/api/agent/' + args.command if args.command in ('publish', 'insights', 'wallet-sync', 'extract-references', 'shopping-publish') else '/api/' + args.command
+            route = '/api/agent/' + args.command if args.command in ('publish', 'insights', 'wallet-sync', 'refresh-complete', 'extract-references', 'shopping-publish') else '/api/' + args.command
             result = call(root, route, body)
         elif args.command in ('layout','catalog'):
             result = call(root, '/api/' + args.command)
@@ -822,6 +859,8 @@ def main():
             result = call(root, '/api/references')
         elif args.command == 'wallet':
             result = Store(root).wallet()
+        elif args.command == 'refresh-requests':
+            result = Store(root).refresh_requests()
         elif args.command == 'stop':
             result = call(root, '/api/stop', {})
         else:

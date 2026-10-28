@@ -26,7 +26,7 @@ $('#setup-next').onclick=async()=>{
  if(!setupValid())return;
  if(setupStep===0){const name=$('#setup-name').value.trim();if(!name)return;const duplicate=draft.people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&p.id!==setupPerson);if(duplicate){$('#setup-error').textContent='That person already exists. Choose them from the list.';return;}let person=draft.people.find(p=>p.id===setupPerson);if(!person){person={id:crypto.randomUUID(),name};draft.people.push(person);setupPerson=person.id;}else person.name=name;for(const row of [...draft.cards,...draft.programs,...draft.benefits])if(row.person_id===person.id)row.owner=name;dirty=true;}
  if(setupStep<3){setupStep++;renderSetup();return;}
- const button=$('#setup-next');button.disabled=true;try{await persistWallet();$('#wallet-setup').close();renderPeople();$('#wallet-person').value=setupPerson;filterWallet();}catch(e){$('#setup-error').textContent=e.message;}finally{button.disabled=false;}
+ const button=$('#setup-next');button.disabled=true;try{await persistWallet();$('#wallet-setup').close();renderPeople();filterWallet();}catch(e){$('#setup-error').textContent=e.message;}finally{button.disabled=false;}
 };
 $('#setup-fields').addEventListener('input',e=>{const entry=e.target.closest('[data-section]');if(!entry)return;const row=draft[entry.dataset.section][Number(entry.dataset.index)];if(e.target.hasAttribute('data-program-choice')){updateProgramChoice(e.target,row);return;}if(!e.target.dataset.field)return;row[e.target.dataset.field]=e.target.value;dirty=true;if(e.target.dataset.field==='name')entry.querySelector('.wallet-image').innerHTML=walletImage(entry.dataset.section,row);});
 $('#setup-fields').onclick=e=>{
@@ -34,21 +34,32 @@ $('#setup-fields').onclick=e=>{
  if(b.dataset.setupAdd||b.dataset.suggestProgram){if(!setupValid())return;const section=b.dataset.setupAdd||'programs',person=draft.people.find(p=>p.id===setupPerson),row={id:crypto.randomUUID(),name:b.dataset.suggestProgram||'',person_id:person.id,owner:person.name,reported_on:'',notes:''};if(section==='programs')Object.assign(row,{account_label:row.name?`${person.name} · ${row.name}`:'',member_hint:'',balance:'',status:'',approximate:false,preserve:false});draft[section].push(row);if(b.dataset.suggestProgram)for(const {row:card} of setupRows('cards'))if(!card.reward_account_id&&suggestedProgram(card.name)===row.name)card.reward_account_id=row.id;dirty=true;renderSetup();$('#setup-fields [data-section="'+section+'"]:last-of-type '+(section==='programs'?'[data-program-choice]':'[data-field=name]'))?.focus();}
  if(b.dataset.setupRemove){const section=b.dataset.setupRemove,id=draft[section][Number(b.dataset.index)].id;draft[section].splice(Number(b.dataset.index),1);for(const row of [...draft.cards,...draft.benefits])for(const key of ['reward_account_id','card_id','program_id'])if(row[key]===id)row[key]='';dirty=true;renderSetup();}
 };
-async function openAccountSignin(id){
+async function openAccountSignin(section,id){
  try{
   if(dirty)await persistWallet();await refreshVault();
-  const account=draft.programs.find(a=>a.id===id);if(!account)return;
-  pendingAccountId=id;tab('wallet');
+  const account=draft[section]?.find(a=>a.id===id);if(!account)return;
+  if(!vaultState?.unlocked){$('#saved-signins').open=true;notice('Unlock saved sign-ins before linking this account.');return;}
+  pendingAccountId=section+':'+id;tab('wallet');
   const saved=vaultState?.entries?.find(e=>e.id===account.credential_id);
-  const provider=loyaltyChoices().find(item=>item.name.toLowerCase()===account.name.toLowerCase())?.provider;
+  const provider=section==='programs'?loyaltyChoices().find(item=>item.name.toLowerCase()===account.name.toLowerCase())?.provider:/american express|amex/i.test(account.name)?'Amex Travel':/chase/i.test(account.name)?'Chase Travel':/capital one/i.test(account.name)?'Capital One Travel':/citi/i.test(account.name)?'Citi Travel':undefined;
   openCredentialDialog(saved||null);
   $('#credential-provider').value=saved?.provider||provider||account.name;
   $('#credential-provider').readOnly=true;
-  $('#credential-label').value=saved?.label||account.account_label||'';
+  $('#credential-label').value=saved?.label||account.account_label||account.nickname||'';
   $('#credential-origin').value=saved?.login_origin||'';
   $('#credential-username').value=saved?.username||'';
   $('#credential-association').hidden=false;
-  $('#credential-association').textContent=`Link sign-in to ${account.account_label||account.name}.`;
+  $('#credential-association').textContent=`Link sign-in to ${account.nickname||account.account_label||account.name}.`;
+  const existing=(vaultState?.entries||[]).filter(entry=>!saved&&entry.provider.toLowerCase()===$('#credential-provider').value.toLowerCase());
+  $('#credential-existing').hidden=!existing.length;
+  $('#credential-existing').innerHTML=existing.length?'<strong>Use a saved sign-in</strong>'+existing.map(entry=>`<button type="button" data-use-credential="${esc(entry.id)}">${esc(entry.label||entry.provider)} · ${esc(entry.username)}</button>`).join(''):'';
   credentialStep(3);
  }catch(e){notice(e.message,true);}
 }
+$('#credential-existing').onclick=async event=>{
+ const button=event.target.closest('[data-use-credential]');if(!button||!pendingAccountId)return;
+ const [section,id]=pendingAccountId.split(':'),row=draft[section]?.find(item=>item.id===id);
+ if(!row)return;
+ row.credential_id=button.dataset.useCredential;dirty=true;
+ try{await persistWallet();$('#credential-dialog').close();notice('Saved sign-in linked to this wallet item.');}catch(error){notice(error.message,true);}
+};

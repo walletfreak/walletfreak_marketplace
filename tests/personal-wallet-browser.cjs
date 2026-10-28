@@ -25,7 +25,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   await page.getByRole('button',{name:'Wallet',exact:true}).click();
   assert.equal(await page.locator('.people-toolbar').isVisible(),false);
   assert.equal(await page.getByRole('button',{name:'Save wallet'}).count(),0);
-  await page.getByRole('button',{name:'+ Add card',exact:true}).click();
+  await page.getByRole('button',{name:'Add credit card',exact:true}).click();
   await page.locator('#card-picker').waitFor({state:'visible'});
   await page.screenshot({path:'/private/tmp/wf-card-picker.png'});
   assert.equal(await page.locator('#card-picker-results').getByText('Delta SkyMiles Gold American Express Card').count(),1);

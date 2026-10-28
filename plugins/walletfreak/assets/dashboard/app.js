@@ -6,6 +6,8 @@ document.addEventListener('error', event => {
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state, activeId = '', brands = {}, cards = [], draft, draftRevision, dirty = false, stopped = false, assetCatalog = [], vaultState, pluginInventory, currentTab = 'home';
+const programDraftCategories = new Map();
+$('#wallet').append($('#wallet-connections'));
 function notice(message, error = false) { $('#notice').textContent = message; $('#notice').className = error ? 'error' : ''; }
 async function api(path, body) {
   const response = await fetch('/api/' + path, body === undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json','X-WalletFreak':'1'}, body:JSON.stringify(body)});
@@ -111,7 +113,7 @@ function walletImage(section, row) {
 }
 const assetKinds = {'credit':'Card credit / offer','certificate':'Free-night certificate','gift-card':'Gift card','travel-bank':'TravelBank / stored funds','travel-credit':'Airline / trip credit','companion':'Companion certificate','upgrade':'Upgrade award','lounge-pass':'Lounge visits / passes','membership':'Membership','voucher':'Voucher / award','cashback':'Cash-back balance','other':'Other asset'};
 const columns = {
-  cards: [['name','Card name'],['nickname','Nickname'],['reward_account_id','Rewards account','relationship'],['person_id','Person','person'],['reported_on','Reported on','date'],['notes','Card details','textarea']],
+  cards: [['name','Card name'],['nickname','Nickname'],['reward_account_id','Rewards account','relationship'],['credential_id','Saved sign-in','credential'],['person_id','Person','person'],['reported_on','Reported on','date'],['notes','Card details','textarea']],
   programs: [['name','Loyalty program'],['account_label','Account label'],['member_hint','Member ID hint (last 4)'],['credential_id','Saved sign-in','credential'],['balance','Points / miles'],['approximate','Approx.','checkbox'],['status','Elite status'],['preserve','Preserve','checkbox'],['person_id','Person','person'],['reported_on','Reported on','date'],['notes','Notes','textarea']],
   benefits: [['kind','Type','select'],['card_id','Linked card','relationship'],['program_id','Linked program','relationship'],['name','Asset name'],['remaining','Remaining / currency'],['person_id','Person','person'],['expires_on','Expires on','date'],['reported_on','Reported on','date'],['notes','Restrictions / period','textarea']]
 };
@@ -120,7 +122,7 @@ function loyaltyChoices(){
   return (state?.providers||[]).map(provider=>({name:names[provider.id]||provider.programs[0],category:provider.category,provider:provider.name})).filter(item=>item.name);
 }
 function programChoice(row,index){
-  const choices=loyaltyChoices(),selected=choices.find(item=>item.name.toLowerCase()===row.name?.toLowerCase()),custom=!!row.name&&!selected;
+  const category=programDraftCategories.get(row.id),choices=loyaltyChoices().filter(item=>!category||item.category===category),selected=choices.find(item=>item.name.toLowerCase()===row.name?.toLowerCase()),custom=!!row.name&&!selected;
   const groups=[...new Set(choices.map(item=>item.category))].map(category=>`<optgroup label="${esc(category==='Credit cards'?'Bank rewards':category)}">${choices.filter(item=>item.category===category).map(item=>`<option value="${esc(item.name)}" ${selected?.name===item.name?'selected':''}>${esc(item.name)}</option>`).join('')}</optgroup>`).join('');
   return `<select data-program-choice aria-label="Loyalty program ${index+1}" required><option value="" ${!row.name?'selected':''}>Choose a program</option>${groups}<option value="other" ${custom?'selected':''}>Other program…</option></select><input data-field="name" aria-label="Other loyalty program ${index+1}" type="text" maxlength="300" value="${custom?esc(row.name):''}" ${custom?'required':'hidden disabled'} placeholder="Program name">`;
 }
@@ -169,6 +171,7 @@ async function refresh() {
   try {
     const next = await api('state');
     const resultChanged = !state || JSON.stringify(state.trips) !== JSON.stringify(next.trips);
+    const requestsChanged = !state || JSON.stringify(state.refresh_requests) !== JSON.stringify(next.refresh_requests);
     state = next;
     if ($('#trip-manager').open) renderTripManager();
     $('#wallet-summary').innerHTML = `<span><strong>${state.wallet.cards.length}</strong> cards</span><span><strong>${state.wallet.programs.length}</strong> points programs</span><span><strong>${state.wallet.benefits.length}</strong> credits & assets</span><span><strong>${state.trips.length}</strong> itineraries</span>`;
@@ -177,7 +180,7 @@ async function refresh() {
       if (!state.trips.some(t=>t.id===activeId)) activeId = state.trips.find(t=>t.id===new URLSearchParams(location.search).get('trip'))?.id || state.trips[0]?.id || '';
       renderFindings(); window.renderActions?.(); if (currentTab==='overview') window.loadOverview();
     }
-    if (!draft || (!dirty && !$('#wallet-setup').open && !$('#wallet-editor').open && draftRevision !== state.wallet.revision)) loadWallet(); else walletStatus();
+    if (!draft || (!dirty && !$('#wallet-setup').open && !$('#wallet-editor').open && draftRevision !== state.wallet.revision)) loadWallet(); else {walletStatus();if(requestsChanged)renderWalletTiles();}
     if(currentTab==='wallet') await refreshVault();
   } catch(error) { notice(error.message, true); }
 }
@@ -209,6 +212,7 @@ $('#wallet-form').addEventListener('click', event => {
     if(!draft.people.length)draft.people.push({id:crypto.randomUUID(),name:'Me'});
     const person=draft.people.find(p=>p.id===$('#wallet-person').value)||draft.people[0];const common = {id:crypto.randomUUID(),name:'',person_id:person.id,owner:person.name,reported_on:''};
     draft[section].push(section === 'cards' ? {...common,notes:''} : section === 'programs' ? {...common,balance:'',status:'',approximate:false,preserve:false,notes:''} : {...common,kind:'credit',remaining:'',expires_on:'',notes:''});
+    if(section==='programs'&&button.dataset.programCategory)programDraftCategories.set(common.id,button.dataset.programCategory);
     dirty = true; renderPeople();renderWallet();if($('#wallet-tables').hidden)editWallet(section,draft[section].length-1,true);else $(`#wallet-${section} tbody tr:last-child ${section==='programs'?'[data-program-choice]':'[data-field=name]'}`).focus();
   } else if (button?.dataset.remove) {
     if(!confirm('Remove this entry? Links to it will be cleared; other balances stay unchanged.'))return;
@@ -307,6 +311,7 @@ function renderVault() {
   $('#unlock-vault').textContent='Unlock older sign-ins';
   if(!v.unlocked){$('#credential-form').reset();$('#credential-id').value='';return;}
   $('#vault-list').innerHTML=v.entries.length?`<div class="connected-list">${v.entries.map(e=>`<article class="connected-account"><span class="connected-logo">${logo(e.provider)||'✦'}</span><div><strong>${esc(e.label||e.provider)}</strong><small>${esc(e.provider)} · ${esc(e.username)}</small></div><button data-edit-credential="${e.id}" type="button">Update</button><button data-delete-credential="${e.id}" type="button" class="danger">Remove</button></article>`).join('')}</div>`:'<p class="muted">No accounts connected yet.</p>';
+  if(draft)renderWalletTiles();
 }
 $('#vault-unlock').onsubmit=async event=>{
   event.preventDefault();const password=$('#master-password').value;$('#master-password').value='';event.submitter.disabled=true;
@@ -317,7 +322,7 @@ $('#credential-form').onsubmit=async event=>{
   const body={login_origin:$('#credential-origin').value,provider:$('#credential-provider').value,label:$('#credential-label').value,username:$('#credential-username').value,password:$('#credential-password').value,expected_revision:vaultState.revision};
   if($('#credential-id').value)body.id=$('#credential-id').value;
   $('#credential-password').value='';
-  try{const previousIds=new Set(vaultState.entries.map(e=>e.id));vaultState=await api('vault/save',body);if(pendingAccountId){const account=draft.programs.find(a=>a.id===pendingAccountId);const savedId=body.id||vaultState.entries.find(e=>!previousIds.has(e.id))?.id;if(account&&savedId){$('#credential-id').value=savedId;account.credential_id=savedId;dirty=true;await persistWallet();}pendingAccountId='';$('#credential-association').hidden=true;}$('#credential-form').reset();$('#credential-id').value='';$('#credential-dialog').close();renderVault();$('#vault-status').textContent='Account saved with an encrypted sign-in.';}catch(error){$('#vault-status').textContent=error.message;}finally{event.submitter.disabled=false;}
+  try{const previousIds=new Set(vaultState.entries.map(e=>e.id)),linked=!!pendingAccountId;vaultState=await api('vault/save',body);if(pendingAccountId){const [section,id]=pendingAccountId.split(':'),account=draft[section]?.find(a=>a.id===id);const savedId=body.id||vaultState.entries.find(e=>!previousIds.has(e.id))?.id;if(account&&savedId){account.credential_id=savedId;dirty=true;await persistWallet();}pendingAccountId='';$('#credential-association').hidden=true;}$('#credential-form').reset();$('#credential-id').value='';$('#credential-dialog').close();renderVault();notice(linked?'Sign-in saved and linked to this wallet item.':'Sign-in saved. Link it from a card or loyalty account.');}catch(error){notice(error.message,true);}finally{event.submitter.disabled=false;}
 };
 const credentialGroups=[['Hotels','Hotel loyalty','Hotels and stays'],['Flights','Airline loyalty','Flights and upcoming trips'],['Credit cards','Card portal','Travel portals and rewards']];
 let credentialGroup='';
@@ -328,7 +333,7 @@ function credentialStep(step){
   if(step===3)$('#credential-username').focus();
 }
 function openCredentialDialog(entry){
-  $('#credential-provider').readOnly=true;$('#credential-form').reset();$('#credential-id').value='';$('#credential-association').hidden=!pendingAccountId;
+  $('#credential-provider').readOnly=true;$('#credential-form').reset();$('#credential-id').value='';$('#credential-association').hidden=!pendingAccountId;$('#credential-existing').hidden=true;
   if(entry){for(const key of ['id','provider','label','username'])$('#credential-'+key).value=entry[key]||'';$('#credential-origin').value=entry.login_origin||'';}
   $('#credential-back').hidden=!!entry||!!pendingAccountId;
   $('#credential-dialog').showModal();credentialStep(entry?3:1);
@@ -341,9 +346,9 @@ $('#credential-back').onclick=()=>credentialStep(2);
 $('#credential-close').onclick=()=>$('#credential-dialog').close();
 $('#credential-dialog').addEventListener('close',()=>{pendingAccountId='';$('#credential-password').value='';});
 async function unlinkSavedSignins(ids){
-  if(!draft.programs.some(account=>ids.has(account.credential_id)))return;
+  if(![...draft.cards,...draft.programs].some(account=>ids.has(account.credential_id)))return;
   if(dirty)throw new Error('Save or reload wallet edits before removing linked sign-ins.');
-  for(const account of draft.programs)if(ids.has(account.credential_id))account.credential_id='';
+  for(const account of [...draft.cards,...draft.programs])if(ids.has(account.credential_id))account.credential_id='';
   dirty=true;renderWallet();await persistWallet();
 }
 $('#vault-list').onclick=async event=>{
@@ -367,6 +372,18 @@ $('#skill-search').oninput=renderPlugins;
 function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-table-actions').hidden=!table;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
 $('#wallet-view-cards').onclick=()=>{renderWalletTiles();filterWallet();setWalletView(false);};
 $('#wallet-view-table').onclick=()=>{renderWallet();setWalletView(true);};
+function loyaltyGroup(row){
+  const name=String(row.name||'').toLowerCase(),known=loyaltyChoices().find(item=>item.name.toLowerCase()===name);
+  if(known)return known.category;
+  if(/hilton|hyatt|marriott|ihg|accor|wyndham|choice hotels|best western|radisson/.test(name))return 'Hotels';
+  if(/delta|skymiles|united|mileageplus|american airlines|aadvantage|southwest|rapid rewards|alaska|atmos|jetblue|trueblue|qantas|turkish|air canada|aeroplan/.test(name))return 'Flights';
+  return 'Credit cards';
+}
+function syncControls(section,row){
+  const saved=!!row.credential_id,visible=vaultState?.entries?.some(entry=>entry.id===row.credential_id);
+  const pending=state?.refresh_requests?.some(request=>request.section===section&&request.id===row.id);
+  return `<span class="wallet-signin ${visible?'is-saved':''}">${saved?visible?'Sign-in saved':'Sign-in needs attention':'No sign-in'}</span><div class="wallet-sync-actions"><button type="button" data-account-signin="${section}:${esc(row.id)}">${saved?visible?'Manage sign-in':'Relink sign-in':'Connect sign-in'}</button>${visible?`<button type="button" data-refresh-account="${section}:${esc(row.id)}" title="Queue a refresh for your next agent conversation" ${pending?'disabled':''}>${pending?'Requested':'Refresh'}</button>`:''}</div>`;
+}
 function walletTile(section,r,i){
   const account=draft.programs.find(a=>a.id===r.reward_account_id);
   const linked=draft.cards.find(c=>c.id===r.card_id)||draft.programs.find(a=>a.id===r.program_id);
@@ -376,18 +393,20 @@ function walletTile(section,r,i){
     const parts=String(r.name||'').split(';'),uncertain=/^Exact product not reported/i.test(parts[0]);
     const name=uncertain?'Card to identify':parts[0].trim()||'Card to identify';
     const note=uncertain?r.name:parts.slice(1).join(';').trim();
-    content=`${art}<h4>${esc(r.nickname||name)}</h4>${r.nickname?`<small>${esc(name)}</small>`:note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}<p class="wallet-linked">${account?`<button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button>`:`<button type="button" data-edit-wallet="cards" data-index="${i}">Link rewards account ↗</button>`}</p><small>${draft.benefits.filter(b=>b.card_id===r.id).length} linked benefits</small><div class="wallet-tile-actions"><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>${account.credential_id?`<button type="button" data-account-signin="${esc(account.id)}">Manage sign-in</button>`:''}`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div>`;
+    content=`${art}<h4>${esc(r.nickname||name)}</h4>${r.nickname?`<small>${esc(name)}</small>`:note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}<p class="wallet-linked">${account?`<button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button>`:`<button type="button" data-edit-wallet="cards" data-index="${i}">Link rewards account ↗</button>`}</p>${syncControls('cards',r)}<div class="wallet-tile-actions"><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div>`;
   } else if(section==='programs'){
-    content=`${art}<h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<strong class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()}`:'Balance not reported'}</strong><small>${esc(r.status||'Status not reported')} · ${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on||'date unknown')}</small><p class="wallet-linked">${draft.cards.filter(c=>c.reward_account_id===r.id).length} linked cards · ${r.credential_id?'Sign-in linked':'Manual balance'}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button><button type="button" data-account-signin="${esc(r.id)}">${r.credential_id?'Manage sign-in':'Add sign-in'}</button>${r.credential_id?`<button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div>`;
+    content=`${art}<h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<strong class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()}`:'Balance not reported'}</strong><small>${esc(r.status||'Status not reported')} · ${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on||'date unknown')}</small>${syncControls('programs',r)}<div class="wallet-tile-actions"><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button>${r.credential_id?`<button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div>`;
   } else {
-    content=`${art}<h4>${esc(r.name||'Credit or travel fund')}</h4><strong class="wallet-balance">${esc(r.remaining||'Remaining unknown')}</strong><small>Expires ${esc(r.expires_on||'date unknown')}</small><p class="wallet-linked">${esc(linked?.name||'Not linked to a card or program')}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit asset</button><button type="button" class="danger" data-remove-tile="benefits" data-index="${i}">Remove asset</button></div>`;
+    content=`${art}<h4>${esc(r.name||'Travel credit or certificate')}</h4><strong class="wallet-balance">${esc(r.remaining||'Amount to confirm')}</strong><small>Expires ${esc(r.expires_on||'date unknown')}</small><p class="wallet-linked">${esc(linked?.name||'Not linked to a card or program')}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit credit</button><button type="button" class="danger" data-remove-tile="benefits" data-index="${i}">Remove credit</button></div>`;
   }
   return `<article class="wallet-tile wallet-tile-${section}" data-section="${section}" data-index="${i}">${content}</article>`;
 }
 function renderWalletTiles(){
-  $('#setup-wallet').textContent='Manage legacy profiles';$('#setup-wallet').hidden=draft.people.length<2;
-  $('#wallet-tiles').innerHTML=['cards','programs','benefits'].map(section=>`<section class="wallet-section"><div class="section-heading"><h3>${{cards:'Cards',programs:'Rewards accounts',benefits:'Credits & travel funds'}[section]}</h3><button type="button" data-add="${section}">${{cards:'+ Add card',programs:'+ Add loyalty program',benefits:'+ Add asset'}[section]}</button></div><div class="wallet-tiles">${draft[section].map((r,i)=>walletTile(section,r,i)).join('')||'<p class="muted">Add your first entry. Unknown balances can stay blank.</p>'}</div></section>`).join('');
-  $('#wallet-tiles').querySelectorAll('[data-account-signin]').forEach(b=>b.onclick=()=>openAccountSignin(b.dataset.accountSignin));
+  $('#setup-wallet').textContent='Manage legacy profiles';$('#setup-wallet').hidden=true;
+  const sections=[['cards','Credit cards','Add credit card',''],['programs','Airline loyalty','Add airline loyalty','Flights'],['programs','Hotel loyalty','Add hotel loyalty','Hotels'],['programs','Card rewards','Add card rewards','Credit cards'],['benefits','Travel credits & certificates','Add travel credit','']];
+  $('#wallet-tiles').innerHTML=sections.map(([section,title,add,category])=>`<section class="wallet-section"><div class="section-heading"><h3>${title}</h3></div><div class="wallet-tiles">${draft[section].map((r,i)=>section==='programs'&&loyaltyGroup(r)!==category?'':walletTile(section,r,i)).join('')}<button type="button" class="wallet-add-tile" data-add="${section}" ${category?`data-program-category="${category}"`:''}><span aria-hidden="true">＋</span><strong>${add}</strong></button></div></section>`).join('');
+  $('#wallet-tiles').querySelectorAll('[data-account-signin]').forEach(b=>b.onclick=()=>{const [section,id]=b.dataset.accountSignin.split(':');openAccountSignin(section,id);});
+  $('#wallet-tiles').querySelectorAll('[data-refresh-account]').forEach(b=>b.onclick=async()=>{const [section,id]=b.dataset.refreshAccount.split(':');try{await api('refresh-account',{section,id});await refresh();notice('Refresh requested. Ask your agent to process pending Wallet refreshes.');}catch(error){notice(error.message,true);}});
   $('#wallet-tiles').querySelectorAll('[data-edit-wallet]').forEach(b=>b.onclick=()=>editWallet(b.dataset.editWallet,Number(b.dataset.index)));
 }
 $('#wallet-tiles').addEventListener('click',async event=>{
@@ -405,7 +424,7 @@ async function editWallet(section,index,isNew=false){
  if(section==='programs')await refreshVault();
  if(!$('#wallet-editor').open){editorSnapshot=structuredClone(draft);editorDirty=dirty;if(isNew)editorSnapshot[section].splice(index,1);}
  const row=draft[section][index];$('#wallet-editor-title').textContent={cards:'Card & rewards',programs:'Rewards account',benefits:'Credit or travel fund'}[section];
- const basic=(section==='programs'?columns.programs.filter(c=>['name','account_label','balance','status','person_id'].includes(c[0])):section==='cards'?columns.cards.filter(c=>!['name','person_id'].includes(c[0])):columns[section]).filter(c=>draft.people.length>1||c[0]!=='person_id');
+ const basic=(section==='programs'?columns.programs.filter(c=>['name','account_label','balance','status','person_id'].includes(c[0])):section==='cards'?columns.cards.filter(c=>!['name','person_id','credential_id'].includes(c[0])):columns[section]).filter(c=>draft.people.length>1||c[0]!=='person_id');
  const more=section==='programs'?columns.programs.filter(c=>!basic.includes(c)&&(draft.people.length>1||c[0]!=='person_id')):[];
  const fields=items=>items.map(c=>`<label>${esc(c[1])}${cell(section,index,row,c)}</label>`).join('');
  const known=cards.some(c=>c.name.toLowerCase()===row.name.toLowerCase()),cardTitle=known?row.name:/^Exact product not reported/i.test(row.name)?'Card to identify':row.name||'Choose a card';
@@ -438,14 +457,14 @@ function updateRewardSuggestion(){const entry=$('#wallet-editor-fields [data-sec
 async function persistWallet(){
  notice('Saving wallet…');
  const sent=JSON.stringify(draft),result=await api('wallet',{wallet:JSON.parse(sent),expected_revision:draftRevision});state.wallet=result.wallet;
- if(JSON.stringify(draft)===sent)loadWallet();else draftRevision=result.wallet.revision;
+ if(JSON.stringify(draft)===sent){programDraftCategories.clear();loadWallet();}else draftRevision=result.wallet.revision;
  notice(result.message);return result;
 }
-function cancelWalletEditor(){draft=editorSnapshot;dirty=editorDirty;$('#wallet-editor').close();$('#wallet-editor-fields').innerHTML='';renderWallet();}
+function cancelWalletEditor(){draft=editorSnapshot;dirty=editorDirty;programDraftCategories.clear();$('#wallet-editor').close();$('#wallet-editor-fields').innerHTML='';renderWallet();}
 $('#wallet-editor-close').onclick=cancelWalletEditor;
 $('#wallet-editor-done').onclick=async()=>{const entry=$('#wallet-editor-fields [data-section]');if(entry?.dataset.section==='cards'&&!draft.cards[Number(entry.dataset.index)].name.trim()){openCardPicker(Number(entry.dataset.index));return;}if(![...$('#wallet-editor-fields').querySelectorAll('input,select,textarea')].every(el=>el.reportValidity()))return;const button=$('#wallet-editor-done');button.disabled=true;try{await persistWallet();$('#wallet-editor').close();$('#wallet-editor-fields').innerHTML='';}catch(e){notice(e.message,true);}finally{button.disabled=false;}};
 $('#wallet-editor').addEventListener('cancel',e=>{e.preventDefault();cancelWalletEditor();});
 
-function renderPeople(){const current=$('#wallet-person').value;$('#wallet-person').innerHTML='<option value="">Everyone</option>'+draft.people.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#wallet-person').value=draft.people.length===1?draft.people[0].id:current;$('.people-toolbar').hidden=draft.people.length<2;}
+function renderPeople(){$('#wallet-person').innerHTML='<option value="">My wallet</option>'+draft.people.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#wallet-person').value='';$('.people-toolbar').hidden=true;}
 $('#wallet-person').onchange=filterWallet;
 $('#migrate-vault').onclick=async()=>{try{vaultState=await api('vault/migrate-device',{});renderVault();}catch(e){notice(e.message,true);}};
