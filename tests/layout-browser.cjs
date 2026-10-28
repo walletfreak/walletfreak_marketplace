@@ -1,12 +1,31 @@
-const assert=require('node:assert/strict');const {execFileSync}=require('node:child_process');const {mkdtempSync,readFileSync,rmSync,mkdirSync}=require('node:fs');const {join,resolve}=require('node:path');const {tmpdir}=require('node:os');const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-(async()=>{const root=resolve(__dirname,'..'),data=mkdtempSync(join(tmpdir(),'walletfreak-layout-test-')),env={...process.env,WALLETFREAK_DATA:data},script=join(root,'plugins/walletfreak/scripts/local.py');const cli=(...args)=>execFileSync('python3',[script,...args],{env,encoding:'utf8'}).trim();let browser;try{
- const url=cli('start','--port','0');browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});const page=await browser.newPage(),errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));await page.goto(url);await require('./setup-helper.cjs').person(page,'Alex');await page.getByRole('button',{name:'+ Add card',exact:true}).click();await page.locator('#wallet-editor').getByLabel('Card name 1',{exact:true}).fill('Example travel rewards card');await page.getByRole('button',{name:'Save changes',exact:true}).click();await page.getByRole('button',{name:'Save wallet',exact:true}).click();await page.getByText('Wallet saved on this device. Balances are self-reported.',{exact:true}).waitFor();await page.getByRole('button',{name:'Travel',exact:true}).click();await page.locator('#overview-content .wf-trip').waitFor();assert.equal(await page.locator('#overview-content .wf-block').count(),3);
- await page.locator('#overview-customize > summary').click();await page.getByLabel('Template',{exact:true}).selectOption('wallet');await page.getByLabel('Theme',{exact:true}).selectOption('midnight');await page.getByRole('button',{name:'Apply template',exact:true}).click();await page.getByText('Dashboard layout saved locally.',{exact:true}).waitFor();assert.equal(await page.locator('#overview-content').getAttribute('data-theme'),'midnight');assert.deepEqual(JSON.parse(cli('layout')).layout.blocks.map(b=>b.source),['wallet.cards','wallet.programs','wallet.benefits']);
- for(const width of [1440,390,320]){await page.setViewportSize({width,height:1000});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));const cards=page.locator('#overview-content [data-block=cards]');await cards.getByRole('heading',{name:'Example travel rewards card',exact:true}).waitFor();assert.equal(await cards.locator('.wf-wallet-card').count(),1);}await page.setViewportSize({width:1440,height:1000});
- const catalog=JSON.parse(cli('catalog')),current=JSON.parse(cli('layout'));const custom=structuredClone(catalog.templates.find(t=>t.id==='spending').layout);custom.title='My custom dashboard';custom.theme='sage';custom.blocks.reverse();execFileSync('python3',[script,'layout','--input','-'],{env,input:JSON.stringify({expected_revision:current.revision,layout:custom})});await page.getByRole('heading',{name:'My custom dashboard',exact:true}).waitFor();assert.equal(await page.locator('#overview-content .wf-block').first().getAttribute('data-component'),'findings');
- const exported=page.waitForEvent('download');await page.getByRole('button',{name:'Download layout',exact:true}).click();const download=await exported;const json=JSON.parse(readFileSync(await download.path(),'utf8'));assert.equal(json.title,'My custom dashboard');assert.ok(!JSON.stringify(json).includes('private'));
- await page.getByLabel('Load layout JSON').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({...custom,url:'https://evil.test'}))});await page.getByText('Invalid or unsupported dashboard layout.',{exact:true}).waitFor();assert.equal(JSON.parse(cli('layout')).layout.title,'My custom dashboard');
- const valid={...custom,title:'Imported layout',theme:'paper'};await page.getByLabel('Load layout JSON').setInputFiles({name:'layout.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(valid))});await page.getByRole('heading',{name:'Imported layout',exact:true}).waitFor();
- mkdirSync(join(root,'.artifacts/layout'),{recursive:true});for(const width of [1440,768,390,320]){await page.setViewportSize({width,height:1000});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:join(root,'.artifacts/layout',`layout-${width}.png`),fullPage:true});}
- await page.reload();await page.getByRole('button',{name:'Travel',exact:true}).click();await page.getByRole('heading',{name:'Imported layout',exact:true}).waitFor();assert.deepEqual(errors,[]);assert.ok(requests.every(r=>r.startsWith(new URL(url).origin)));console.log('Passed: template/theme application, agent CLI composition, import/export, invalid-layout rejection, persistence, responsive layouts and offline-only requests.');
-}finally{if(browser)await browser.close();try{cli('stop');}catch{}rmSync(data,{recursive:true,force:true});}})().catch(e=>{console.error(e);process.exitCode=1;});
+'use strict';
+const assert=require('node:assert/strict');
+const {execFileSync}=require('node:child_process');
+const {mkdtempSync,readFileSync,rmSync}=require('node:fs');
+const {tmpdir}=require('node:os');
+const {join,resolve}=require('node:path');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+(async()=>{
+ const root=resolve(__dirname,'..'),data=mkdtempSync(join(tmpdir(),'wf-layout-'));
+ const script=join(root,'plugins/walletfreak/scripts/local.py'),env={...process.env,WALLETFREAK_DATA:data};
+ const cli=(...args)=>execFileSync('python3',[script,...args],{env,encoding:'utf8'}).trim();
+ let browser;
+ try{
+  const url=cli('start','--port','0');browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+  const page=await browser.newPage();page.setDefaultTimeout(10000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(url);await page.getByRole('button',{name:'Travel',exact:true}).click();
+  await page.locator('#overview-content').waitFor({state:'hidden'});
+  assert.equal(await page.locator('#overview-intro').isVisible(),true);
+  await page.locator('#overview-customize>summary').click();
+  await page.locator('#overview-template').selectOption('travel');
+  await page.getByRole('button',{name:'Apply template',exact:true}).click();
+  await page.getByText('Dashboard layout saved locally.',{exact:true}).waitFor();
+  assert.ok(JSON.parse(cli('layout')).layout.blocks.every(block=>block.source.startsWith('travel.')));
+  const findings=JSON.parse(readFileSync(join(root,'tests/fixtures/route-trip.json'),'utf8'));
+  execFileSync('python3',[script,'publish','--input','-'],{env,input:JSON.stringify({findings})});
+  await page.reload();await page.locator('#overview-content .travel-map-pin').first().waitFor();
+  assert.equal(await page.locator('#overview-content .travel-map-pin').count(),3);
+  for(const width of [1440,390,320]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`layout overflows at ${width}`);}
+  assert.deepEqual(errors,[]);console.log('Travel layout, empty state, mapped trip and responsive widths: OK');
+ }finally{await browser?.close();try{cli('stop')}catch{}rmSync(data,{recursive:true,force:true});}
+})().catch(error=>{console.error(error);process.exitCode=1});

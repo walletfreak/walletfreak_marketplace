@@ -253,3 +253,21 @@ main>.panel:not(#home){padding:clamp(18px,2.2vw,32px)}
 #clear-signins{margin:8px 0 20px}
 #wallet .wallet-tile-actions .danger{color:#a03830;background:transparent;border-color:#e3d8d6}
 @media(max-width:600px){main>.panel:not(#home){padding:16px}#trip-toolbar{align-items:stretch}#trip-toolbar #overview-trip-label{width:100%}#trip-toolbar>button{width:max-content}#trip-manager{padding:17px}}
+
+/* An empty itinerary has one starting point; card selection uses the existing artwork catalog. */
+.travel-empty{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.9fr);gap:clamp(24px,4vw,64px);align-items:center;margin:14px 0 28px;padding:clamp(24px,4vw,52px);border:1px solid var(--border);border-radius:20px;background:#fff}
+.travel-empty h2{font:clamp(30px,4vw,50px)/1.08 Georgia,serif;letter-spacing:-.045em;margin:12px 0}
+.travel-empty p{color:var(--soft);font-size:15px;line-height:1.5;max-width:42ch}
+.travel-empty details{margin-top:28px;color:var(--soft)}.travel-empty details p{font-size:13px}.travel-empty details button{margin-top:7px}
+.travel-empty-map{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:260px;padding:22px;overflow:hidden;border-radius:17px;background:linear-gradient(145deg,#173b53,#101b36);color:#c4d5e7}
+.travel-empty-map .eyebrow{color:#a7d6dc}.travel-empty-map svg{width:100%;max-height:200px}.travel-empty-map>span:last-child{font-size:12px}
+#card-picker{width:min(920px,calc(100vw - 28px));max-height:90dvh;overflow:auto}
+#card-picker .section-heading{margin-bottom:15px}#card-picker-search{width:100%;margin-bottom:8px}
+.card-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:10px;margin:14px 0}
+.card-picker-grid button{display:grid;align-content:start;gap:10px;min-width:0;min-height:150px;padding:12px;text-align:left;background:#fff;border:1px solid var(--border);border-radius:12px;color:var(--ink)}
+.card-picker-grid button:hover,.card-picker-grid button:focus-visible{border-color:var(--green);background:#f5f7ff}
+.card-picker-grid img{width:100%;height:92px;object-fit:contain}.card-picker-grid span{font-size:12px;line-height:1.3}
+.card-choice{width:100%;display:flex;align-items:center;gap:18px;text-align:left;padding:14px;margin-top:16px;border:1px solid var(--border);color:var(--ink)}
+.card-choice img{width:100px;height:66px;object-fit:contain}.card-choice strong,.card-choice small{display:block}.card-choice small{margin-top:5px;color:var(--green)}
+#wallet-data{margin-top:28px;padding-bottom:10px}#wallet-data>summary{font-size:12px}
+@media(max-width:700px){.travel-empty{grid-template-columns:1fr;padding:22px}.travel-empty-map{min-height:200px}.card-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

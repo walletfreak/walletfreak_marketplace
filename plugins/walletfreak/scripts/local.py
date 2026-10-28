@@ -186,7 +186,7 @@ def validate_wallet(value):
         short_text(person['name'],'person name',True,300)
         person_ids.add(person['id'])
     columns = {
-        'cards': ('name', 'owner', 'notes', 'reported_on'),
+        'cards': ('name', 'nickname', 'owner', 'notes', 'reported_on'),
         'programs': ('name', 'owner', 'balance', 'approximate', 'status', 'preserve', 'reported_on', 'notes'),
         'benefits': ('name', 'owner', 'kind', 'remaining', 'expires_on', 'notes', 'reported_on')}
     for section, allowed in columns.items():
@@ -194,7 +194,7 @@ def validate_wallet(value):
         if not isinstance(rows, list) or len(rows) > 100:
             raise ValueError('Use at most 100 entries per wallet section.')
         for row in rows:
-            fields(row, (*allowed, 'id', 'reward_account_id', 'card_id', 'program_id', 'person_id', 'synced_at', 'sync_source', 'account_label', 'member_hint', 'credential_id'), tuple(k for k in allowed if k != 'notes' or section != 'programs'))
+            fields(row, (*allowed, 'id', 'reward_account_id', 'card_id', 'program_id', 'person_id', 'synced_at', 'sync_source', 'account_label', 'member_hint', 'credential_id'), tuple(k for k in allowed if k != 'nickname' and (k != 'notes' or section != 'programs')))
             for key in allowed:
                 if key not in row: continue
                 if key in ('approximate', 'preserve'):

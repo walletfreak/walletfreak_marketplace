@@ -81,6 +81,11 @@ class WorkspaceTests(unittest.TestCase):
 
     def test_extended_assets_and_old_wallet_compatibility(self):
         data=parse_profile(PROFILE)
+        data['cards'][0]['nickname']='Everyday card';local.validate_wallet(data)
+        data['cards'][0].pop('nickname');local.validate_wallet(data)
+        data['cards'][0]['nickname']='x'*301
+        with self.assertRaises(ValueError):local.validate_wallet(data)
+        data['cards'][0].pop('nickname')
         for kind in ('travel-bank','gift-card','companion','upgrade','lounge-pass','membership','voucher','cashback','other'):
             data['benefits'][0]['kind']=kind;local.validate_wallet(data)
         data['programs'][0].pop('notes');local.validate_wallet(data)

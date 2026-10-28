@@ -10,7 +10,7 @@
       $('#onboarding-template').innerHTML = travel.map(template => `<option value="${esc(template.id)}">${esc(template.name)}</option>`).join('');
       $('#onboarding-template').value = travel.find(template=>template.id==='concierge-travel')?.id||travel[0].id;
       await api('onboarding', {state:'started'});
-      panel.hidden = false;
+      panel.hidden = currentTab !== 'home';
     } catch (error) { notice(error.message, true); }
   };
   async function saveTemplate() {

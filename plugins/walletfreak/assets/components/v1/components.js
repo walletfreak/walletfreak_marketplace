@@ -16,7 +16,7 @@
   }
   const value=(row,key)=>`${key==='balance'&&row.approximate?'≈ ':''}${esc(row[key]===null||row[key]===undefined||row[key]===''?'—':row[key])}`;
   const columns={
-    'wallet.cards':[['name','Card'],['owner','Owner'],['notes','Details'],['reported_on','Reported']],
+    'wallet.cards':[['nickname','Nickname'],['name','Card'],['owner','Owner'],['notes','Details'],['reported_on','Reported']],
     'wallet.programs':[['owner','Person'],['account_label','Account'],['name','Program'],['balance','Balance'],['status','Status'],['notes','Notes'],['reported_on','Reported']],
     'wallet.benefits':[['name','Benefit'],['remaining','Remaining'],['expires_on','Expires'],['notes','Restrictions']]
   };
@@ -127,7 +127,7 @@
     });
   }
   function renderTrip(target,rows,window){const display=tripRows(rows,window);target.classList.add('wf-dashboard');target.innerHTML=tripHtml(display,window);mountTrip(target,display);}
-  function walletCards(rows,data){return `<div class="wf-wallet-cards">${rows.map(r=>{const program=(data['wallet.programs']||[]).find(p=>p.id===r.reward_account_id);const benefits=(data['wallet.benefits']||[]).filter(b=>b.card_id&&b.card_id===r.id);const art=(data['wallet.artwork']||{})[r.name];return `<article class="wf-wallet-card">${typeof art==='string'&&/^\/(?:assets\/)?cards\/[a-zA-Z0-9._-]+$/.test(art)?`<img src="${esc(art)}" alt="" loading="lazy">`:'<span class="wf-card-symbol" aria-hidden="true">▰</span>'}<h4>${esc(r.name)}</h4><p>${program?esc(program.account_label||program.name):'Rewards account not linked'}</p>${program?`<strong>${value(program,'balance')} <small>points / miles · account balance</small></strong>`:''}<small>${benefits.length?benefits.length+' linked benefits':'No linked benefits'}</small><details><summary>Card details</summary><p>${esc(r.notes||'No notes added.')}</p><small>Reported ${esc(r.reported_on||'date unknown')}</small>${benefits.map(b=>`<p>${esc(b.name)} · ${esc(b.remaining||'Unknown remaining')} · Expires ${esc(b.expires_on||'unknown')}</p>`).join('')}</details></article>`;}).join('')}</div>`;}
+  function walletCards(rows,data){return `<div class="wf-wallet-cards">${rows.map(r=>{const program=(data['wallet.programs']||[]).find(p=>p.id===r.reward_account_id);const benefits=(data['wallet.benefits']||[]).filter(b=>b.card_id&&b.card_id===r.id);const art=(data['wallet.artwork']||{})[r.name];return `<article class="wf-wallet-card">${typeof art==='string'&&/^\/(?:assets\/)?cards\/[a-zA-Z0-9._-]+$/.test(art)?`<img src="${esc(art)}" alt="" loading="lazy">`:'<span class="wf-card-symbol" aria-hidden="true">▰</span>'}<h4>${esc(r.nickname||r.name)}</h4>${r.nickname?`<small>${esc(r.name)}</small>`:''}<p>${program?esc(program.account_label||program.name):'Rewards account not linked'}</p>${program?`<strong>${value(program,'balance')} <small>points / miles · account balance</small></strong>`:''}<small>${benefits.length?benefits.length+' linked benefits':'No linked benefits'}</small><details><summary>Card details</summary><p>${esc(r.notes||'No notes added.')}</p><small>Reported ${esc(r.reported_on||'date unknown')}</small>${benefits.map(b=>`<p>${esc(b.name)} · ${esc(b.remaining||'Unknown remaining')} · Expires ${esc(b.expires_on||'unknown')}</p>`).join('')}</details></article>`;}).join('')}</div>`;}
   function tripBrief(rows){
     const stops=rows.filter(r=>r.place?.label&&Number.isFinite(r.place.lat)&&Number.isFinite(r.place.lng)).filter((r,i,all)=>all.findIndex(other=>other.place.label===r.place.label)===i).slice(0,8);
     const title=rows[0]?.trip||'Your trip';

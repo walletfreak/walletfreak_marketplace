@@ -1,0 +1,48 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {execFileSync}=require('node:child_process');
+const {mkdtempSync,rmSync}=require('node:fs');
+const {tmpdir}=require('node:os');
+const {join,resolve}=require('node:path');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+(async()=>{
+ const root=resolve(__dirname,'..'),data=mkdtempSync(join(tmpdir(),'wf-personal-'));
+ const script=join(root,'plugins/walletfreak/scripts/local.py'),env={...process.env,WALLETFREAK_DATA:data};
+ const cli=(...args)=>execFileSync('python3',[script,...args],{env,encoding:'utf8'}).trim();
+ let browser;
+ try{
+  const url=cli('start','--port','0');
+  browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+  const page=await browser.newPage();page.on('pageerror',error=>console.error('PAGE ERROR',error));page.setDefaultTimeout(10000);const travel=new URL(url);travel.pathname='/travel';await page.goto(travel.href);
+  await page.locator('#trip-library').waitFor({state:'hidden'});
+  await page.locator('#overview-intro').waitFor({state:'visible'});
+  assert.equal(await page.locator('#overview-content').isVisible(),false);
+  assert.equal(await page.locator('#trip-library').isVisible(),false);
+  assert.equal(await page.locator('#onboarding').isVisible(),false);
+  await page.screenshot({path:'/private/tmp/wf-travel-empty.png',fullPage:true});
+  await page.locator('#overview-import').click();assert.equal(await page.locator('#confirmation-import').getAttribute('open'),'');
+  await page.getByRole('button',{name:'Credit Cards',exact:true}).click();
+  assert.equal(await page.locator('.people-toolbar').isVisible(),false);
+  assert.equal(await page.getByRole('button',{name:'Save wallet'}).count(),0);
+  await page.getByRole('button',{name:'+ Add card',exact:true}).click();
+  await page.locator('#card-picker').waitFor({state:'visible'});
+  await page.screenshot({path:'/private/tmp/wf-card-picker.png'});
+  assert.equal(await page.locator('#card-picker-results').getByText('Delta SkyMiles Gold American Express Card').count(),1);
+  await page.locator('#card-picker-close').click();
+  await page.locator('#wallet-editor-done').click();
+  await page.locator('#card-picker').waitFor({state:'visible'});
+  await page.locator('#card-picker-search').fill('United Quest');
+  await page.locator('#card-picker-results').getByRole('button',{name:'United Quest Card'}).click();
+  const editor=page.locator('#wallet-editor');
+  await editor.getByLabel('Nickname 1',{exact:true}).fill('My United card');
+  await editor.getByRole('button',{name:'Save changes'}).click();
+  await editor.waitFor({state:'hidden'});
+  const wallet=JSON.parse(cli('wallet'));
+  assert.equal(wallet.people.length,1);assert.equal(wallet.cards[0].name,'United Quest Card');assert.equal(wallet.cards[0].nickname,'My United card');
+  assert.equal(await page.getByRole('heading',{name:'My United card'}).count(),1);
+  await page.screenshot({path:'/private/tmp/wf-personal-wallet.png',fullPage:true});
+  await page.setViewportSize({width:390,height:850});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await page.reload();await page.getByRole('button',{name:'Credit Cards',exact:true}).click();await page.getByRole('heading',{name:'My United card'}).waitFor();
+  console.log('personal wallet browser checks passed');
+ }finally{await browser?.close();try{cli('stop')}catch{}rmSync(data,{recursive:true,force:true});}
+})().catch(error=>{console.error(error);process.exitCode=1});
