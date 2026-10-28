@@ -35,13 +35,20 @@ $('#setup-fields').onclick=e=>{
  if(b.dataset.setupRemove){const section=b.dataset.setupRemove,id=draft[section][Number(b.dataset.index)].id;draft[section].splice(Number(b.dataset.index),1);for(const row of [...draft.cards,...draft.benefits])for(const key of ['reward_account_id','card_id','program_id'])if(row[key]===id)row[key]='';dirty=true;renderSetup();}
 };
 async function openAccountSignin(id){
- try{if(dirty)await persistWallet();await refreshVault();const account=draft.programs.find(a=>a.id===id);if(!account)return;pendingAccountId=id;tab('credentials');$('#credential-form').reset();const saved=vaultState?.entries?.find(e=>e.id===account.credential_id),provider=loyaltyChoices().find(item=>item.name.toLowerCase()===account.name.toLowerCase())?.provider;$('#credential-id').value=saved?.id||'';$('#credential-provider').value=saved?.provider||provider||account.name;$('#credential-label').value=saved?.label||account.account_label||account.owner;$('#credential-origin').value=saved?.login_origin||'';$('#credential-username').value=saved?.username||'';$('#credential-association').hidden=false;$('#credential-association').textContent=`Link sign-in to ${account.owner} · ${account.account_label||account.name}.`;}
- catch(e){notice(e.message,true);}
+ try{
+  if(dirty)await persistWallet();await refreshVault();
+  const account=draft.programs.find(a=>a.id===id);if(!account)return;
+  pendingAccountId=id;tab('wallet');
+  const saved=vaultState?.entries?.find(e=>e.id===account.credential_id);
+  const provider=loyaltyChoices().find(item=>item.name.toLowerCase()===account.name.toLowerCase())?.provider;
+  openCredentialDialog(saved||null);
+  $('#credential-provider').value=saved?.provider||provider||account.name;
+  $('#credential-provider').readOnly=true;
+  $('#credential-label').value=saved?.label||account.account_label||'';
+  $('#credential-origin').value=saved?.login_origin||'';
+  $('#credential-username').value=saved?.username||'';
+  $('#credential-association').hidden=false;
+  $('#credential-association').textContent=`Link sign-in to ${account.account_label||account.name}.`;
+  credentialStep(3);
+ }catch(e){notice(e.message,true);}
 }
-async function openAccountSync(id){
- const account=draft.programs.find(a=>a.id===id);if(!account)return;
- if(!account.credential_id){notice('Connect this rewards account before requesting a sync.',true);return;}
- try{if(dirty)await persistWallet();$('#sync-request-text').value=`Please refresh my ${account.account_label||account.name} (${account.name}) in WalletFreak. Rewards account ID: ${account.id}. Use the linked sign-in, ask me to complete verification, and preserve my other accounts. If this is an airline account, review upcoming bookings and add confirmed trips to Travel without duplicates.`;$('#sync-request-dialog').showModal();}catch(e){notice(e.message,true);}
-}
-$('#sync-request-close').onclick=()=>$('#sync-request-dialog').close();
-$('#sync-request-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('#sync-request-text').value);notice('Request copied. Paste it in your agent conversation.');$('#sync-request-dialog').close();}catch{notice('Clipboard unavailable. Select the request and copy it manually.',true);$('#sync-request-text').focus();$('#sync-request-text').select();}};

@@ -8,7 +8,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
  const root=resolve(__dirname,'..'),data=mkdtempSync(join(tmpdir(),'wf-routes-')),env={...process.env,WALLETFREAK_DATA:data},script=join(root,'plugins/walletfreak/scripts/local.py');
  const cli=(...args)=>execFileSync('python3',[script,...args],{env,encoding:'utf8'}).trim();let browser;
  try{
-  const url=cli('start','--port','0');browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+  const url=cli('start','--port','0');assert.match(cli('start','--view','wallet'),/\/wallet#key=/);browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
   const page=await browser.newPage({viewport:{width:1440,height:1000}});page.setDefaultTimeout(10000);const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
   await page.goto(url);await require('./setup-helper.cjs').person(page,'Alex');
   await page.getByRole('button',{name:'+ Add card',exact:true}).click();const editor=page.locator('#wallet-editor');await page.locator('#card-picker-search').fill('Chase Sapphire Preferred');await page.locator('#card-picker-results').getByRole('button',{name:'Chase Sapphire Preferred Card'}).click();await editor.getByRole('button',{name:'Create Chase Ultimate Rewards account',exact:true}).click();await editor.getByRole('button',{name:'Save changes',exact:true}).click();
@@ -21,8 +21,10 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   for(const width of [1440,768,390,320]){await page.setViewportSize({width,height:1000});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`wallet ${width}`);await page.screenshot({path:`/tmp/wf-wallet-${width}.png`,fullPage:true});}
   const findings=JSON.parse(readFileSync(join(root,'tests/fixtures/route-trip.json'),'utf8'));
   const firstTrip=JSON.parse(execFileSync('python3',[script,'publish','--input','-'],{env,input:JSON.stringify({findings})}));await page.getByRole('button',{name:'Travel',exact:true}).click();await page.locator('#overview-content .wf-trip').waitFor();assert.equal(await page.locator('#trip-alternatives').getAttribute('open'),null);assert.equal(await page.locator('#overview-content details[open]').count(),0);
-  await page.getByRole('button',{name:'Actions',exact:true}).click();
-  assert.equal(await page.locator('#actions-list .user-action').count(),0);
+  assert.equal(await page.locator('[data-tab=actions]').count(),0);
+  assert.equal(await page.locator('[data-tab=credentials]').count(),0);
+  await page.getByRole('button',{name:'Wallet',exact:true}).click();
+  assert.equal(new URL(page.url()).pathname,'/wallet');
   await page.getByRole('button',{name:'Travel',exact:true}).click();
   const otherFindings={...findings,title:'Second synthetic trip'};
   const secondTrip=JSON.parse(execFileSync('python3',[script,'publish','--input','-'],{env,input:JSON.stringify({findings:otherFindings})}));

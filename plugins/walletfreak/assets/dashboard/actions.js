@@ -1,6 +1,5 @@
 'use strict';
 (() => {
-  let request = 0;
   const dayAfter = day => new Date(Date.parse(day) + 86400000).toISOString().slice(0, 10);
 
   function tripActions(trip) {
@@ -34,39 +33,25 @@
       }
       for (const action of actions) if (typeof action.detail === 'object') action.detail = `${action.detail.start} → ${action.detail.end} · ${Math.round((Date.parse(action.detail.end) - Date.parse(action.detail.start)) / 86400000)} nights need a confirmed stay.`;
     }
-    for (const item of findings.actions || []) actions.push({trip: trip.id, id: item.id, title: item.title, detail: item.detail || '', due: item.due_on, kind: item.kind, target: item.kind === 'sign-in' ? 'credentials' : 'research', done: trip.action_state?.[item.id] === 'done'});
+    for (const item of findings.actions || []) actions.push({trip: trip.id, id: item.id, title: item.title, detail: item.detail || '', due: item.due_on, kind: item.kind, target: item.kind === 'sign-in' ? 'wallet' : 'research', done: trip.action_state?.[item.id] === 'done'});
     return actions;
   }
   window.getTripActions = tripActions;
 
   function card(action) {
-    const label = action.kind === 'booking' ? (action.target === 'research' ? 'Review options' : 'View itinerary') : action.kind === 'sign-in' ? 'Open sign-ins' : action.target === 'spending' ? 'Review activity' : action.target === 'shopping' ? 'View offers' : 'Review trip';
+    const label = action.kind === 'booking' ? (action.target === 'research' ? 'Review options' : 'View itinerary') : action.kind === 'sign-in' ? 'Open Wallet' : action.target === 'spending' ? 'Review activity' : action.target === 'shopping' ? 'View offers' : 'Review trip';
     const trip = state.trips.find(item => item.id === action.trip);
     return `<article class="user-action ${action.done ? 'is-done' : ''}"><div><span class="eyebrow">${esc(trip?.findings.title || action.area || 'WORKSPACE')}${action.due ? ` · DUE ${esc(action.due)}` : ''}</span><h3>${esc(action.title)}</h3><p>${esc(action.detail)}</p></div><div class="user-action-controls"><button type="button" data-action-target="${esc(action.target)}" data-trip="${esc(action.trip || '')}" data-action-option="${esc(action.option || '')}">${label}</button>${action.id ? `<button type="button" class="quiet" data-action-status="${esc(action.id)}" data-trip="${esc(action.trip)}" data-status="${action.done ? 'open' : 'done'}">${action.done ? 'Reopen' : 'Mark addressed'}</button>` : ''}</div></article>`;
   }
 
-  window.renderActions = async () => {
+  window.renderActions = () => {
     if (!state) return;
-    const sequence = ++request;
-    const trips = state.trips.flatMap(tripActions);
-    const unverified = (state.shopping?.deals || []).filter(deal => deal.status === 'unverified').length;
-    const shopping = unverified ? [{area: 'SHOPPING', title: `Verify ${unverified} ${unverified === 1 ? 'offer' : 'offers'}`, detail: 'Check the current price and terms before buying.', target: 'shopping'}] : [];
-    const paint = (spending = []) => {
-      if (sequence !== request) return;
-      const all = [...trips, ...spending, ...shopping], open = all.filter(action => !action.done);
-      $('#action-count').hidden = !open.length;
-      $('#action-count').textContent = String(open.length);
-      $('#actions-list').innerHTML = all.length ? `<div class="user-action-list">${open.map(card).join('')}${all.some(action => action.done) ? `<details><summary>${all.filter(action => action.done).length} addressed</summary>${all.filter(action => action.done).map(card).join('')}</details>` : ''}</div>` : '<p class="note">No actions need your attention right now.</p>';
-      const current = trips.filter(action => action.trip === activeId && !action.done);
-      $('#travel-actions').hidden = !current.length;
-      $('#travel-actions').innerHTML = current.length ? `<div class="travel-action-heading"><span class="eyebrow">USER ACTIONS</span><button type="button" data-action-target="actions">View all ${open.length} actions →</button></div><div class="travel-action-list">${card(current[0])}</div>${current.length > 1 ? `<p class="muted">${current.length - 1} more for this trip in Actions.</p>` : ''}` : '';
-    };
-    paint();
-    try {
-      const ledger = await api('spending');
-      const pending = (ledger.rows || []).filter(row => row.review === 'needs-review').length;
-      if (pending) paint([{area: 'SPENDING', title: `Review ${pending} ${pending === 1 ? 'transaction' : 'transactions'}`, detail: 'Check categories and duplicates before these count in your totals.', target: 'spending'}]);
-    } catch (error) { if (currentTab === 'actions') notice(error.message, true); }
+    const open = state.trips.flatMap(tripActions).filter(action => !action.done);
+    $('#action-count').hidden = !open.length;
+    $('#action-count').textContent = String(open.length);
+    const current = open.filter(action => action.trip === activeId);
+    $('#travel-actions').hidden = !current.length;
+    $('#travel-actions').innerHTML = current.length ? `<div class="travel-action-heading"><span class="eyebrow">NEXT STEPS</span></div><div class="travel-action-list">${current.map(card).join('')}</div>` : '';
   };
 
   document.addEventListener('click', async event => {

@@ -37,4 +37,10 @@ Users sign in and complete transactions themselves. Never fill checkout, reserve
 
 For hotel locations, multi-stop trips or route checks, use [stay-route-map](../stay-route-map/SKILL.md) to add sourced locations, stay dates and travel legs to the same itinerary.
 
-If the traveler has confirmation emails, use confirmation-import for a reviewed booked itinerary before researching additions. Show the timeline, stay route and potential costs in Travel. Only claim a recorded subtotal for selected booked or verified items; keep prospective quotes as per-stop prices.
+If the traveler provides confirmation text in the conversation, use confirmation-import for a reviewed booked itinerary before researching additions. The Travel page has no email paste flow. Show the timeline, stay route and potential costs in Travel. Only claim a recorded subtotal for selected booked or verified items; keep prospective quotes as per-stop prices.
+
+## Sync upcoming trips from connected accounts
+
+When the user asks to sync trips, use the existing WalletFreak browser and the `walletfreak_signins` bridge to find a matching saved airline or hotel account ID. Reuse an authenticated session when available. Otherwise follow [browser boundaries](references/browser.md): open the provider's official site, verify the empty login form and exact saved HTTPS origin, use `walletfreak_sign_in`, then stop for user-operated MFA/CAPTCHA. A saved sign-in is not proof of an active connection. Never read credential files or show passwords.
+
+Review upcoming reservations on a non-sensitive authenticated page. Match by provider, route/property, dates and booking reference without publishing the reference. Compare with existing Travel trips before adding or updating confirmed items; ask about conflicts rather than duplicating a booking. Capture only necessary itinerary fields, actual booking status, reported total and a source/observation time. Missing dates, prices or hotel nights stay unknown. Publish via trip-board so the route and calendar update on the next dashboard refresh. Run this only during an active agent request; the local server has no background sync scheduler.

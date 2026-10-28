@@ -38,7 +38,7 @@ import render_board as board
 
 PROVIDERS = json.loads((PLUGIN / 'providers.json').read_text())
 LIMIT = 2_000_000
-UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/confirmations.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
+UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
 
 
 def now():
@@ -559,7 +559,7 @@ class Handler(BaseHTTPRequestHandler):
         )):
             return self.respond(400, {'error': 'Unexpected URL parameters.'})
         path = route.path
-        if path in ('/', '/travel', '/travel/trips', '/actions', '/credit-cards', '/spending', '/shopping', '/settings/sign-ins', '/settings/plugins'):
+        if path in ('/', '/travel', '/travel/trips', '/actions', '/credit-cards', '/wallet', '/spending', '/shopping', '/settings/sign-ins', '/settings/plugins'):
             try:
                 return self.respond(200, (PLUGIN / 'assets/dashboard/index.html').read_bytes(), 'text/html; charset=utf-8')
             except OSError:
@@ -787,7 +787,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=('start', 'serve', 'status', 'publish', 'wallet-sync', 'wallet', 'settings', 'forget', 'stop', 'references', 'extract-references', 'insights', 'shopping', 'shopping-publish', 'layout', 'catalog'))
     parser.add_argument('--port', type=int, default=8765)
-    parser.add_argument('--view', choices=('travel', 'credit-cards', 'spending', 'shopping'), default='travel', help='Private dashboard view to open with start.')
+    parser.add_argument('--view', choices=('travel', 'wallet', 'credit-cards', 'spending', 'shopping'), default='travel', help='Private dashboard view to open with start.')
     parser.add_argument('--trip', help='Saved trip ID for a direct Travel link.')
     parser.add_argument('--review', choices=('comparison', 'research'), help='Open the selected trip at its comparison or research section.')
     parser.add_argument('--input', type=Path, help='JSON findings or local settings; use - for stdin. Never supply credentials.')
@@ -806,7 +806,7 @@ def main():
                 Store(root).trip(args.trip)
             descriptor = start(root, args.port)
             query = urlencode({key:value for key,value in (('trip',args.trip),('review',args.review)) if value})
-            print(descriptor['origin'] + '/' + args.view + ('?' + query if query else '') + '#key=' + descriptor['ui_token'])
+            print(descriptor['origin'] + '/' + ('wallet' if args.view == 'credit-cards' else args.view) + ('?' + query if query else '') + '#key=' + descriptor['ui_token'])
             return
         if args.command in ('publish', 'settings', 'forget', 'insights', 'wallet-sync', 'extract-references', 'shopping-publish') or args.command == 'layout' and args.input:
             if not args.input:

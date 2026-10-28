@@ -24,7 +24,7 @@
 
 ## Component layouts
 
-Run `python3 -m unittest discover -s tests -v`, then `PLAYWRIGHT_MODULE=/path/to/playwright node tests/layout-browser.cjs`. Verify template/theme selection, layout JSON import/export, revision conflicts and agent CLI updates without changing wallet or statement data. Layouts must reject unknown components, unsupported sources and executable/remote fields. Check the shared renderer with populated wallet tables and itinerary payment/benefit details on the website gallery. Native discovery should expose dashboard-builder in core (eleven skills) plus spending-analysis (twelve total across two plugins).
+Run `python3 -m unittest discover -s tests -v`, then `PLAYWRIGHT_MODULE=/path/to/playwright node tests/layout-browser.cjs`. Verify the fixed Concierge Travel view, mapped and unmapped routes, saved-trip switching and mobile widths without changing wallet or statement data. Layouts must reject unknown components, unsupported sources and executable/remote fields. Check the shared renderer with populated wallet tables and itinerary payment/benefit details on the website gallery. Native discovery should expose dashboard-builder in core (eight skills) plus spending-analysis (twelve total across two plugins).
 
 Keep the core assets/components/v1 files byte-identical to the website public copies using its explicit sync script. Public previews use synthetic data only. A hosted MCP deployment is separate from plugin installation and static hosting.
 

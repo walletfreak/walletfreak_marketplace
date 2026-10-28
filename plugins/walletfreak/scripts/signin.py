@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 from vault import Vault
 
 TOOLS = [
- {'name':'walletfreak_signins','description':'List saved WalletFreak sign-in IDs, person labels and approved login origins. No passwords. Use when the user requests portal login or wallet refresh.','inputSchema':{'type':'object','properties':{},'additionalProperties':False}},
+ {'name':'walletfreak_signins','description':'List saved WalletFreak sign-in IDs, person labels and approved login origins. No passwords. Use when the user requests portal login, trip sync, flight research or wallet refresh.','inputSchema':{'type':'object','properties':{},'additionalProperties':False}},
  {'name':'walletfreak_sign_in','description':'Fill a saved sign-in in the active WalletFreak browser on its exact approved HTTPS origin. Inspect an empty form first. Does not submit, bypass MFA or book anything. Never screenshot filled forms.','inputSchema':{'type':'object','properties':{'credential_id':{'type':'string'},'username_selector':{'type':'string'},'password_selector':{'type':'string'}},'required':['credential_id'],'additionalProperties':False}}
 ]
 
@@ -20,7 +20,7 @@ def fill_code(entry, arguments):
     origin=entry.get('login_origin','')
     parsed=urlsplit(origin)
     if not origin or parsed.scheme!='https' or not parsed.hostname or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment:
-        raise ValueError('Set the exact provider login origin in Sign-ins first.')
+        raise ValueError('Set the exact provider login origin in Wallet first.')
     fields=[]
     for key,secret in [('username_selector','username'),('password_selector','password')]:
         selector=arguments.get(key)
