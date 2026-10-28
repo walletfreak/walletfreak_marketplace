@@ -289,3 +289,29 @@ main>.panel:not(#home){padding:clamp(18px,2.2vw,32px)}
 .credential-existing strong{font-size:12px}
 .credential-existing button{text-align:left}
 @media(max-width:700px){#wallet .wallet-add-tile{min-height:150px}}
+
+/* Wallet items read as accounts; secondary actions stay available without filling each card. */
+#wallet .wallet-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#wallet .wallet-tile{min-height:0;padding:14px;gap:12px}
+#wallet .wallet-tile-main{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:start;gap:14px;min-width:0}
+#wallet .wallet-tile .wallet-image{display:grid;place-items:center;width:100px;min-height:66px}
+#wallet .wallet-tile .card-art{width:100px;height:66px;object-fit:contain}
+#wallet .wallet-tile-copy{min-width:0;display:grid;align-content:start;gap:3px}
+#wallet .wallet-tile h4{margin:0;font-size:15px}
+#wallet .wallet-tile .wallet-balance{margin:3px 0 0;font-size:17px;font-weight:700}
+#wallet .wallet-tile .wallet-linked{margin:4px 0 0}
+#wallet .wallet-tile-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px;border-top:1px solid var(--border)}
+#wallet .wallet-sync-actions{margin:0;align-items:center}
+#wallet .wallet-sync-actions button{min-height:30px;padding:4px 9px;font-size:11px}
+#wallet .wallet-signin{align-self:auto}
+#wallet .wallet-tile-menu{position:relative;margin-left:auto;flex:none}
+#wallet .wallet-tile-menu>summary{display:grid;place-items:center;list-style:none;cursor:pointer;width:30px;height:30px;border-radius:8px;color:#617187;font-weight:800}
+#wallet .wallet-tile-menu>summary::-webkit-details-marker{display:none}
+#wallet .wallet-tile-menu>summary:hover,#wallet .wallet-tile-menu>summary:focus-visible{background:#edf0ff;color:#3d55c7}
+#wallet .wallet-tile-menu>div{position:absolute;right:0;top:100%;z-index:5;display:grid;gap:3px;min-width:155px;padding:6px;background:#fff;border:1px solid var(--border);border-radius:9px;box-shadow:0 12px 32px #15223924}
+#wallet .wallet-tile-menu button{text-align:left;border:0;min-height:30px;font-size:12px}
+#wallet .wallet-add-tile{min-height:132px;flex-direction:row;gap:10px}
+#wallet .wallet-add-tile span{width:34px;height:34px;font-size:22px}
+#wallet-data #saved-signins{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--border)}
+@media(max-width:900px){#wallet .wallet-tiles{grid-template-columns:1fr}}
+@media(max-width:500px){#wallet .wallet-tile-main{grid-template-columns:78px minmax(0,1fr);gap:10px}#wallet .wallet-tile .wallet-image,#wallet .wallet-tile .card-art{width:78px}#wallet .wallet-tile .card-art{height:52px}#wallet .wallet-tile-bottom{align-items:flex-start}}

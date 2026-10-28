@@ -38,7 +38,7 @@ async function openAccountSignin(section,id){
  try{
   if(dirty)await persistWallet();await refreshVault();
   const account=draft[section]?.find(a=>a.id===id);if(!account)return;
-  if(!vaultState?.unlocked){$('#saved-signins').open=true;notice('Unlock saved sign-ins before linking this account.');return;}
+  if(!vaultState?.unlocked){$('#wallet-data').open=true;$('#saved-signins').open=true;$('#saved-signins').scrollIntoView();notice('Unlock saved sign-ins before linking this account.');return;}
   pendingAccountId=section+':'+id;tab('wallet');
   const saved=vaultState?.entries?.find(e=>e.id===account.credential_id);
   const provider=section==='programs'?loyaltyChoices().find(item=>item.name.toLowerCase()===account.name.toLowerCase())?.provider:/american express|amex/i.test(account.name)?'Amex Travel':/chase/i.test(account.name)?'Chase Travel':/capital one/i.test(account.name)?'Capital One Travel':/citi/i.test(account.name)?'Citi Travel':undefined;

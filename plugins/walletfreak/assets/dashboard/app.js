@@ -7,7 +7,9 @@ const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let state, activeId = '', brands = {}, cards = [], draft, draftRevision, dirty = false, stopped = false, assetCatalog = [], vaultState, pluginInventory, currentTab = 'home';
 const programDraftCategories = new Map();
-$('#wallet').append($('#wallet-connections'));
+$('#wallet-data').append($('#saved-signins'));
+$('#wallet').append($('#credential-dialog'));
+$('#wallet-connections').remove();
 function notice(message, error = false) { $('#notice').textContent = message; $('#notice').className = error ? 'error' : ''; }
 async function api(path, body) {
   const response = await fetch('/api/' + path, body === undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json','X-WalletFreak':'1'}, body:JSON.stringify(body)});
@@ -306,7 +308,7 @@ function renderVault() {
   const v=vaultState;
   $('#vault-status').textContent=!v.supported?'Encrypted sign-ins require the optional cryptography package.':v.unlocked?'Passwords are encrypted on this device and are never shown or exported.':v.exists?'Unlock the older password-protected sign-ins once to move them to device encryption.':'Sign-ins are unavailable.';
   $('#migrate-vault').hidden=!v.unlocked||v.device;$('#vault-unlock').hidden=v.unlocked || !v.supported || !v.exists;$('#vault-open').hidden=!v.unlocked;
-  $('#clear-signins').hidden=!v.entries.length;$('#new-credential').disabled=!v.unlocked;
+  $('#clear-signins').hidden=!v.entries.length;
   $('#vault-list').classList.toggle('empty',!v.entries.length);
   $('#unlock-vault').textContent='Unlock older sign-ins';
   if(!v.unlocked){$('#credential-form').reset();$('#credential-id').value='';return;}
@@ -339,7 +341,6 @@ function openCredentialDialog(entry){
   $('#credential-dialog').showModal();credentialStep(entry?3:1);
 }
 $('#credential-categories').innerHTML=credentialGroups.map(([id,title,caption])=>`<button type="button" data-category="${esc(id)}"><span class="choice-icon">${id==='Hotels'?'⌂':id==='Flights'?'✈':'▤'}</span><strong>${title}</strong><small>${caption}</small></button>`).join('');
-$('#new-credential').onclick=()=>{pendingAccountId='';openCredentialDialog();};
 $('#credential-categories').onclick=e=>{const button=e.target.closest('[data-category]');if(!button)return;credentialGroup=button.dataset.category;credentialStep(2);};
 $('#credential-providers').onclick=e=>{const button=e.target.closest('[data-provider]');if(!button)return;const other=button.dataset.provider==='other';$('#credential-provider').readOnly=!other;$('#credential-provider').value=other?'':button.dataset.provider;credentialStep(3);if(other)$('#credential-provider').focus();};
 $('#credential-back').onclick=()=>credentialStep(2);
@@ -369,7 +370,7 @@ function renderPlugins(){
 }
 $('#skill-search').oninput=renderPlugins;
 
-function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-table-actions').hidden=!table;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
+function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-table-actions').hidden=!table;$('#wallet-table-hint').hidden=!table;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
 $('#wallet-view-cards').onclick=()=>{renderWalletTiles();filterWallet();setWalletView(false);};
 $('#wallet-view-table').onclick=()=>{renderWallet();setWalletView(true);};
 function loyaltyGroup(row){
@@ -382,7 +383,7 @@ function loyaltyGroup(row){
 function syncControls(section,row){
   const saved=!!row.credential_id,visible=vaultState?.entries?.some(entry=>entry.id===row.credential_id);
   const pending=state?.refresh_requests?.some(request=>request.section===section&&request.id===row.id);
-  return `<span class="wallet-signin ${visible?'is-saved':''}">${saved?visible?'Sign-in saved':'Sign-in needs attention':'No sign-in'}</span><div class="wallet-sync-actions"><button type="button" data-account-signin="${section}:${esc(row.id)}">${saved?visible?'Manage sign-in':'Relink sign-in':'Connect sign-in'}</button>${visible?`<button type="button" data-refresh-account="${section}:${esc(row.id)}" title="Queue a refresh for your next agent conversation" ${pending?'disabled':''}>${pending?'Requested':'Refresh'}</button>`:''}</div>`;
+  return `<div class="wallet-sync-actions"><button type="button" class="wallet-signin ${visible?'is-saved':''}" data-account-signin="${section}:${esc(row.id)}">${saved?visible?'● Sign-in saved':'Sign-in needs attention':'Connect sign-in'}</button>${visible?`<button type="button" data-refresh-account="${section}:${esc(row.id)}" title="Ask your agent to refresh this account on its next turn" ${pending?'disabled':''}>${pending?'Requested':'↻ Refresh'}</button>`:''}</div>`;
 }
 function walletTile(section,r,i){
   const account=draft.programs.find(a=>a.id===r.reward_account_id);
@@ -393,11 +394,11 @@ function walletTile(section,r,i){
     const parts=String(r.name||'').split(';'),uncertain=/^Exact product not reported/i.test(parts[0]);
     const name=uncertain?'Card to identify':parts[0].trim()||'Card to identify';
     const note=uncertain?r.name:parts.slice(1).join(';').trim();
-    content=`${art}<h4>${esc(r.nickname||name)}</h4>${r.nickname?`<small>${esc(name)}</small>`:note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}<p class="wallet-linked">${account?`<button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button>`:`<button type="button" data-edit-wallet="cards" data-index="${i}">Link rewards account ↗</button>`}</p>${syncControls('cards',r)}<div class="wallet-tile-actions"><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div>`;
+    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.nickname||name)}</h4>${r.nickname?`<small>${esc(name)}</small>`:note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}${account?`<p class="wallet-linked">Rewards · <button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button></p>`:''}</div></div><div class="wallet-tile-bottom">${syncControls('cards',r)}<details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.nickname||name)}">•••</summary><div><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div></details></div>`;
   } else if(section==='programs'){
-    content=`${art}<h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<strong class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()}`:'Balance not reported'}</strong><small>${esc(r.status||'Status not reported')} · ${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on||'date unknown')}</small>${syncControls('programs',r)}<div class="wallet-tile-actions"><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button>${r.credential_id?`<button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div>`;
+    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<p class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()} points`:'Balance unknown'}</p>${r.synced_at||r.reported_on?`<small>${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on)}</small>`:''}</div></div><div class="wallet-tile-bottom">${syncControls('programs',r)}<details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.account_label||r.name)}">•••</summary><div><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button>${r.credential_id?`<button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div></details></div>`;
   } else {
-    content=`${art}<h4>${esc(r.name||'Travel credit or certificate')}</h4><strong class="wallet-balance">${esc(r.remaining||'Amount to confirm')}</strong><small>Expires ${esc(r.expires_on||'date unknown')}</small><p class="wallet-linked">${esc(linked?.name||'Not linked to a card or program')}</p><div class="wallet-tile-actions"><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit credit</button><button type="button" class="danger" data-remove-tile="benefits" data-index="${i}">Remove credit</button></div>`;
+    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.name||'Travel credit or certificate')}</h4><p class="wallet-balance">${esc(r.remaining||'Amount to confirm')}</p>${r.expires_on?`<small>Expires ${esc(r.expires_on)}</small>`:''}${linked?`<small>${esc(linked.name)}</small>`:''}</div></div><div class="wallet-tile-bottom"><span></span><details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.name||'travel credit')}">•••</summary><div><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit credit</button><button type="button" class="danger" data-remove-tile="benefits" data-index="${i}">Remove credit</button></div></details></div>`;
   }
   return `<article class="wallet-tile wallet-tile-${section}" data-section="${section}" data-index="${i}">${content}</article>`;
 }
