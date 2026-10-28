@@ -1,0 +1,304 @@
+{
+  "version": 1,
+  "reviewed_on": "2026-10-27",
+  "programs": [
+    {
+      "id": "marriott",
+      "name": "Marriott Bonvoy",
+      "category": "Hotels",
+      "provider_id": "marriott",
+      "aliases": ["Marriott Bonvoy points"],
+      "tiers": [
+        "Member",
+        "Silver Elite",
+        "Gold Elite",
+        "Platinum Elite",
+        "Titanium Elite",
+        "Ambassador Elite"
+      ],
+      "tier_source": "https://www.marriott.com/loyalty/member-benefits.mi"
+    },
+    {
+      "id": "hilton",
+      "name": "Hilton Honors",
+      "category": "Hotels",
+      "provider_id": "hilton",
+      "aliases": ["Hilton Honors points"],
+      "tiers": [
+        "Member",
+        "Silver",
+        "Gold",
+        "Diamond",
+        "Diamond Reserve",
+        "Lifetime Diamond"
+      ],
+      "tier_source": "https://www.hilton.com/en/help-center/hilton-honors-benefits/tiers-and-benefits/"
+    },
+    {
+      "id": "hyatt",
+      "name": "World of Hyatt",
+      "category": "Hotels",
+      "provider_id": "hyatt",
+      "aliases": ["World of Hyatt points"],
+      "tiers": [
+        "Member",
+        "Discoverist",
+        "Explorist",
+        "Globalist",
+        "Lifetime Globalist"
+      ],
+      "tier_source": "https://world.hyatt.com/content/gp/en/tiers-and-benefits.html"
+    },
+    {
+      "id": "ihg",
+      "name": "IHG One Rewards",
+      "category": "Hotels",
+      "provider_id": "ihg",
+      "aliases": []
+    },
+    {
+      "id": "accor",
+      "name": "ALL Accor",
+      "category": "Hotels",
+      "provider_id": "accor",
+      "aliases": []
+    },
+    {
+      "id": "wyndham",
+      "name": "Wyndham Rewards",
+      "category": "Hotels",
+      "provider_id": "wyndham",
+      "aliases": []
+    },
+    {
+      "id": "choice",
+      "name": "Choice Privileges",
+      "category": "Hotels",
+      "provider_id": "choice",
+      "aliases": []
+    },
+    {
+      "id": "best-western",
+      "name": "Best Western Rewards",
+      "category": "Hotels",
+      "provider_id": "best-western",
+      "aliases": []
+    },
+    {
+      "id": "aadvantage",
+      "name": "AAdvantage",
+      "category": "Flights",
+      "provider_id": "american",
+      "aliases": [],
+      "tiers": [
+        "Member",
+        "Gold",
+        "Platinum",
+        "Platinum Pro",
+        "Executive Platinum"
+      ],
+      "tier_source": "https://www.aa.com/web/i18n/aadvantage-program/discover/member-statuses.html"
+    },
+    {
+      "id": "delta-skymiles",
+      "name": "Delta SkyMiles",
+      "category": "Flights",
+      "provider_id": "delta",
+      "aliases": [
+        "SkyMiles"
+      ],
+      "tiers": [
+        "Member",
+        "Silver Medallion",
+        "Gold Medallion",
+        "Platinum Medallion",
+        "Diamond Medallion"
+      ],
+      "tier_source": "https://www.delta.com/us/en/skymiles/medallion-program/overview"
+    },
+    {
+      "id": "united-mileageplus",
+      "name": "United MileagePlus",
+      "category": "Flights",
+      "provider_id": "united",
+      "aliases": [
+        "MileagePlus"
+      ],
+      "tiers": [
+        "Member",
+        "Premier Silver",
+        "Premier Gold",
+        "Premier Platinum",
+        "Premier 1K"
+      ],
+      "tier_source": "https://travel-partner.marriott.com/united/en-us"
+    },
+    {
+      "id": "southwest-rapid-rewards",
+      "name": "Southwest Rapid Rewards",
+      "category": "Flights",
+      "provider_id": "southwest",
+      "aliases": [
+        "Rapid Rewards"
+      ],
+      "tiers": [
+        "Member",
+        "A-List",
+        "A-List Preferred"
+      ],
+      "tier_source": "https://www.southwest.com/rapid-rewards/tiers/",
+      "future_tiers": {
+        "effective_on": "2027-01-01",
+        "tiers": [
+          "Member",
+          "Silver",
+          "Gold",
+          "Platinum"
+        ],
+        "source": "https://www.southwest.com/rapid-rewards/guides/status-tiers-explained/"
+      }
+    },
+    {
+      "id": "jetblue",
+      "name": "TrueBlue",
+      "category": "Flights",
+      "provider_id": "jetblue",
+      "aliases": []
+    },
+    {
+      "id": "alaska-hawaiian",
+      "name": "Atmos Rewards",
+      "category": "Flights",
+      "provider_id": "alaska-hawaiian",
+      "aliases": []
+    },
+    {
+      "id": "air-canada-aeroplan",
+      "name": "Aeroplan",
+      "category": "Flights",
+      "provider_id": "air-canada",
+      "aliases": []
+    },
+    {
+      "id": "british-airways-club",
+      "name": "The British Airways Club",
+      "category": "Flights",
+      "provider_id": "british-airways",
+      "aliases": []
+    },
+    {
+      "id": "iberia",
+      "name": "Iberia Club",
+      "category": "Flights",
+      "provider_id": "iberia",
+      "aliases": []
+    },
+    {
+      "id": "air-france-klm",
+      "name": "Flying Blue",
+      "category": "Flights",
+      "provider_id": "air-france-klm",
+      "aliases": []
+    },
+    {
+      "id": "lufthansa-group",
+      "name": "Miles & More",
+      "category": "Flights",
+      "provider_id": "lufthansa-group",
+      "aliases": []
+    },
+    {
+      "id": "emirates",
+      "name": "Emirates Skywards",
+      "category": "Flights",
+      "provider_id": "emirates",
+      "aliases": []
+    },
+    {
+      "id": "qatar",
+      "name": "Privilege Club",
+      "category": "Flights",
+      "provider_id": "qatar",
+      "aliases": []
+    },
+    {
+      "id": "singapore",
+      "name": "KrisFlyer",
+      "category": "Flights",
+      "provider_id": "singapore",
+      "aliases": []
+    },
+    {
+      "id": "ana",
+      "name": "ANA Mileage Club",
+      "category": "Flights",
+      "provider_id": "ana",
+      "aliases": []
+    },
+    {
+      "id": "jal",
+      "name": "JAL Mileage Bank",
+      "category": "Flights",
+      "provider_id": "jal",
+      "aliases": []
+    },
+    {
+      "id": "cathay-pacific",
+      "name": "Cathay",
+      "category": "Flights",
+      "provider_id": "cathay-pacific",
+      "aliases": []
+    },
+    {
+      "id": "qantas",
+      "name": "Qantas Frequent Flyer",
+      "category": "Flights",
+      "provider_id": "qantas",
+      "aliases": []
+    },
+    {
+      "id": "turkish",
+      "name": "Miles&Smiles",
+      "category": "Flights",
+      "provider_id": "turkish",
+      "aliases": []
+    },
+    {
+      "id": "capital-one-miles",
+      "name": "Capital One miles",
+      "category": "Credit cards",
+      "provider_id": "capital-one-travel",
+      "aliases": [
+        "Capital One Miles"
+      ]
+    },
+    {
+      "id": "amex-membership-rewards",
+      "name": "Amex Membership Rewards",
+      "category": "Credit cards",
+      "provider_id": "amex-travel",
+      "aliases": []
+    },
+    {
+      "id": "chase-ultimate-rewards",
+      "name": "Chase Ultimate Rewards",
+      "category": "Credit cards",
+      "provider_id": "chase-travel",
+      "aliases": []
+    },
+    {
+      "id": "citi-thankyou-points",
+      "name": "Citi ThankYou Points",
+      "category": "Credit cards",
+      "provider_id": "citi-travel",
+      "aliases": []
+    },
+    {
+      "id": "bilt-rewards",
+      "name": "Bilt Rewards",
+      "category": "Credit cards",
+      "provider_id": "bilt",
+      "aliases": []
+    }
+  ]
+}

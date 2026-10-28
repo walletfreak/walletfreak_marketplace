@@ -93,6 +93,18 @@ class WorkspaceTests(unittest.TestCase):
         with self.assertRaises(ValueError):local.validate_wallet(data)
         with self.assertRaises(ValueError):parse_profile('No supported tables')
 
+    def test_catalog_ids_validate_without_requiring_a_card_for_loyalty(self):
+        wallet={key:value for key,value in local.empty_wallet().items() if key not in ('version','revision')}
+        wallet['programs'].append({'id':'loyalty','name':'Delta SkyMiles','catalog_id':'delta-skymiles','owner':'Me','balance':'','approximate':False,'status':'','preserve':False,'reported_on':'','notes':''})
+        local.validate_wallet(wallet)
+        wallet['cards'].append({'id':'card','name':'Delta SkyMiles Gold American Express Card','product_id':'delta-skymiles-gold-american-express-card','reward_account_id':'loyalty','owner':'Me','notes':'','reported_on':''})
+        local.validate_wallet(wallet)
+        wallet['cards'][0]['product_id']='invented-card'
+        with self.assertRaises(ValueError):local.validate_wallet(wallet)
+        wallet['cards'][0]['product_id']='delta-skymiles-gold-american-express-card'
+        wallet['programs'][0]['catalog_id']='hilton'
+        with self.assertRaises(ValueError):local.validate_wallet(wallet)
+
     def test_plugin_content_is_scoped_and_never_executed(self):
         root=self.root/'plugin';skill=root/'skills/example';skill.mkdir(parents=True)
         (skill/'SKILL.md').write_text('---\nname: example\ndescription: >\n  A folded\n  description.\n---\n<script>not executed</script>')

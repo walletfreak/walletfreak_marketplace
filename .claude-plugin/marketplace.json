@@ -5,18 +5,18 @@
   },
   "metadata": {
     "description": "Focused local travel, finance and shopping plugins with one private workspace.",
-    "version": "0.4.0"
+    "version": "0.4.1"
   },
   "plugins": [
     {
       "name": "walletfreak",
       "source": "./plugins/walletfreak",
-      "version": "0.4.0"
+      "version": "0.4.1"
     },
     {
       "name": "walletfreak-credit-cards",
       "source": "./plugins/walletfreak-credit-cards",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     {
       "name": "walletfreak-spending",

@@ -1,6 +1,6 @@
 {
   "name": "walletfreak-credit-cards",
-  "version": "0.3.0",
+  "version": "0.3.1+codex.20261027",
   "description": "Research card benefits, points and payment choices using the shared private WalletFreak wallet.",
   "author": {
     "name": "WalletFreak contributors"
@@ -22,7 +22,7 @@
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
-      "Open my Credit Cards workspace.",
+      "Open my Wallet workspace.",
       "Compare the cards in my wallet for this purchase."
     ],
     "brandColor": "#0788D9",

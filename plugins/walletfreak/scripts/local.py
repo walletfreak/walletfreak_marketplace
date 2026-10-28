@@ -37,8 +37,10 @@ sys.path.insert(0, str(PLUGIN / 'skills/trip-board/scripts'))
 import render_board as board
 
 PROVIDERS = json.loads((PLUGIN / 'providers.json').read_text())
+WALLET_PROGRAMS = {item['id'] for item in json.loads((PLUGIN / 'assets/wallet-programs.json').read_text())['programs']}
+CARD_PRODUCTS = {item['id']: item for item in json.loads((PLUGIN / 'assets/cards.json').read_text())}
 LIMIT = 2_000_000
-UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
+UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-programs.json', 'wallet-assets.json'}
 
 
 def now():
@@ -194,7 +196,9 @@ def validate_wallet(value):
         if not isinstance(rows, list) or len(rows) > 100:
             raise ValueError('Use at most 100 entries per wallet section.')
         for row in rows:
-            fields(row, (*allowed, 'id', 'reward_account_id', 'card_id', 'program_id', 'person_id', 'synced_at', 'sync_source', 'account_label', 'member_hint', 'credential_id'), tuple(k for k in allowed if k != 'nickname' and (k != 'notes' or section != 'programs')))
+            fields(row, (*allowed, 'id', 'reward_account_id', 'card_id', 'program_id', 'person_id', 'synced_at', 'sync_source', 'account_label', 'member_hint', 'credential_id', 'product_id', 'catalog_id'), tuple(k for k in allowed if k != 'nickname' and (k != 'notes' or section != 'programs')))
+            if 'product_id' in row and (section != 'cards' or row['product_id'] not in CARD_PRODUCTS): raise ValueError('Choose a supported card product.')
+            if 'catalog_id' in row and (section != 'programs' or row['catalog_id'] not in WALLET_PROGRAMS): raise ValueError('Choose a supported rewards program.')
             for key in allowed:
                 if key not in row: continue
                 if key in ('approximate', 'preserve'):
@@ -232,6 +236,11 @@ def validate_wallet(value):
                     raise ValueError('Invalid wallet relationship.')
                 if row[key] and row[key] not in {r.get('id') for r in value[target]}:
                     raise ValueError('Linked wallet entry no longer exists. Choose another or unlink it.')
+            if section == 'cards' and row.get('product_id') and row.get('reward_account_id'):
+                linked = next(r for r in value['programs'] if r.get('id') == row['reward_account_id'])
+                expected = CARD_PRODUCTS[row['product_id']].get('program_id')
+                if expected and linked.get('catalog_id') and linked['catalog_id'] != expected:
+                    raise ValueError('This card must link to its earning program, not another rewards currency.')
 
 
 def identify_wallet(value):

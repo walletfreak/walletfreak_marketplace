@@ -24,7 +24,7 @@ class Packages(unittest.TestCase):
         for host in ('codex','claude'):
             m=json.loads((PLUGIN/f'.{host}-plugin/plugin.json').read_text())
             self.assertEqual(m['name'],'walletfreak')
-            self.assertEqual(m['version'].split('+')[0],'0.4.0')
+            self.assertEqual(m['version'].split('+')[0],'0.4.1')
         ledger=json.loads((ROOT/'docs/provider-verification.json').read_text())
         self.assertEqual({r['id'] for r in ledger},EXPECTED)
         for p in PROVIDERS:
@@ -37,6 +37,22 @@ class Packages(unittest.TestCase):
             guide=(PLUGIN/p['guide']).read_text()
             self.assertIn(p['programs'][0],guide)
             self.assertIn('https://',guide)
+
+    def test_wallet_catalog_links_cards_to_known_programs(self):
+        catalog=json.loads((PLUGIN/'assets/wallet-programs.json').read_text())
+        programs={item['id']:item for item in catalog['programs']}
+        cards={item['id']:item for item in json.loads((PLUGIN/'assets/cards.json').read_text())}
+        self.assertEqual(len(programs),len(catalog['programs']))
+        self.assertGreaterEqual(len(programs),len(PROVIDERS))
+        self.assertGreaterEqual(sum('program_id' in card for card in cards.values()),60)
+        self.assertTrue(all(card['program_id'] in programs for card in cards.values() if 'program_id' in card))
+        for card_id,program_id in [('delta-skymiles-gold-american-express-card','delta-skymiles'),('the-world-of-hyatt-credit-card','hyatt'),('hilton-honors-aspire-card-from-american-express','hilton')]:
+            self.assertEqual(cards[card_id]['program_id'],program_id)
+        self.assertIn('World of Hyatt points',programs['hyatt']['aliases'])
+        self.assertIn('Hilton Honors points',programs['hilton']['aliases'])
+        self.assertIn('Diamond Reserve',programs['hilton']['tiers'])
+        self.assertEqual(programs['southwest-rapid-rewards']['future_tiers']['effective_on'],'2027-01-01')
+        self.assertTrue(all(item.get('tier_source','').startswith('https://') for item in programs.values() if item.get('tiers')))
 
     def test_one_browser_and_portable_package(self):
         self.assertEqual(list((ROOT/'plugins').rglob('.mcp.json')),[PLUGIN/'.mcp.json'])

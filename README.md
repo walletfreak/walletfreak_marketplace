@@ -33,7 +33,7 @@ WalletFreak Spending adds the spending-analysis skill and bank-specific guides f
 
 ## Compose your dashboard
 
-Travel uses the bundled Concierge template for every saved trip. The public component gallery shows design references; its layout JSON does not change the local dashboard. Use dashboard-builder when you explicitly want to change bundled components or styling. The plugin bundles catalog v1 and the renderer for offline use. Layouts contain component IDs and local data bindings, never financial data, URLs or executable code.
+Travel uses the bundled Concierge template for every saved trip. The agent builds from the installed `assets/components/v1` catalog and renderer; the public component gallery only previews those definitions. Use dashboard-builder when you explicitly want to change bundled components or styling. Layouts contain component IDs and local data bindings, never financial data, URLs or executable code.
 
 The website publishes the same catalog, schema and renderer at /components/v1/ and previews templates at /components.html. A separate read-only catalog MCP prototype lives in the website repository; deploying it is optional, and the local plugin needs no hosted service.
 
@@ -73,6 +73,6 @@ For a separate test data directory, set WALLETFREAK_DATA to a dedicated private 
 
 The separate walletfreak repository owns the public website. Source publication and website deployment are separate release actions. MIT applies to code; provider artwork retains its source/trademark notices.
 
-The wallet groups cards, rewards accounts and assets by person, retaining a Table view for bulk edits. Stable links keep shared rewards balances on one account. The v2 migration preserves existing values and saves wallet-v1-backup.json locally; deleting the personal wallet also deletes that backup. Travel templates show a compact timeline and route list. Street-map tiles are optional and contact OpenStreetMap only after Load street map. Exports retain an offline route list.
+The wallet groups cards, standalone loyalty accounts and credits. The bundled card and program catalogs cover supported earning relationships and membership tiers. Choosing a cataloged card creates or reuses its local earning account when saved; it never opens a provider account or confirms a balance. Removing a card keeps its loyalty account. The Cards/Table switch shows the same entries in a compact table with item editors. The v2 migration preserves existing values and saves wallet-v1-backup.json locally; deleting the personal wallet also deletes that backup. Travel templates show a compact timeline and route list. Street-map tiles are optional and contact OpenStreetMap only after Load street map. Exports retain an offline route list.
 
 WalletFreak Shopping researches current merchant prices, cash back and card choices, and publishes sourced offers to the same local Shopping board. Give flight or hotel confirmation details to your agent for review and a visual itinerary. The Travel page does not have an email paste form. Your agent can sync upcoming trips from a connected provider during an active conversation, with you completing any provider verification.

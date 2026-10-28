@@ -5,7 +5,7 @@ document.addEventListener('error', event => {
 
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let state, activeId = '', brands = {}, cards = [], draft, draftRevision, dirty = false, stopped = false, assetCatalog = [], vaultState, pluginInventory, currentTab = 'home';
+let state, activeId = '', brands = {}, cards = [], walletPrograms = [], draft, draftRevision, dirty = false, stopped = false, assetCatalog = [], vaultState, pluginInventory, currentTab = 'home';
 const programDraftCategories = new Map();
 $('#signins-dialog').append($('#saved-signins'));
 $('#wallet').append($('#credential-dialog'));
@@ -110,36 +110,44 @@ function walletImage(section, row) {
   if (section !== 'cards') return logo(assetCatalog.find(a=>a.name===row.name)?.provider || row.name);
   const alias = {'capital one venture x;':'capital-one-venture-x-rewards-credit-card','american express platinum;':'american-express-platinum-card','hilton honors american express aspire':'hilton-honors-aspire-card-from-american-express'};
   const name=row.name.toLowerCase();
-  const card = cards.find(c => c.name.toLowerCase() === name) || cards.find(c=>c.id === alias[Object.keys(alias).find(k=>name.startsWith(k))]);
+  const card = cards.find(c=>c.id===row.product_id) || cards.find(c => c.name.toLowerCase() === name) || cards.find(c=>c.id === alias[Object.keys(alias).find(k=>name.startsWith(k))]);
   return card ? `<img class="card-art" src="/assets${esc(card.path)}" alt="${esc(card.name)} artwork">` : '<span class="card-placeholder" aria-hidden="true">▰</span>';
 }
 const assetKinds = {'credit':'Card credit / offer','certificate':'Free-night certificate','gift-card':'Gift card','travel-bank':'TravelBank / stored funds','travel-credit':'Airline / trip credit','companion':'Companion certificate','upgrade':'Upgrade award','lounge-pass':'Lounge visits / passes','membership':'Membership','voucher':'Voucher / award','cashback':'Cash-back balance','other':'Other asset'};
 const columns = {
   cards: [['name','Card name'],['nickname','Nickname'],['reward_account_id','Rewards account','relationship'],['credential_id','Saved sign-in','credential'],['person_id','Person','person'],['reported_on','Reported on','date'],['notes','Card details','textarea']],
-  programs: [['name','Loyalty program'],['account_label','Account label'],['member_hint','Member ID hint (last 4)'],['credential_id','Saved sign-in','credential'],['balance','Points / miles'],['approximate','Approx.','checkbox'],['status','Elite status'],['preserve','Preserve','checkbox'],['person_id','Person','person'],['reported_on','Reported on','date'],['notes','Notes','textarea']],
+  programs: [['name','Loyalty program'],['account_label','Account label'],['member_hint','Member ID hint (last 4)'],['credential_id','Saved sign-in','credential'],['balance','Points / miles'],['approximate','Approx.','checkbox'],['status','Membership tier'],['preserve','Preserve','checkbox'],['person_id','Person','person'],['reported_on','Reported on','date'],['notes','Notes','textarea']],
   benefits: [['kind','Type','select'],['card_id','Linked card','relationship'],['program_id','Linked program','relationship'],['name','Asset name'],['remaining','Remaining / currency'],['person_id','Person','person'],['expires_on','Expires on','date'],['reported_on','Reported on','date'],['notes','Restrictions / period','textarea']]
 };
-function loyaltyChoices(){
-  const names={'capital-one-travel':'Capital One Miles','amex-travel':'Amex Membership Rewards','chase-travel':'Chase Ultimate Rewards','citi-travel':'Citi ThankYou Points'};
-  return (state?.providers||[]).map(provider=>({name:names[provider.id]||provider.programs[0],category:provider.category,provider:provider.name})).filter(item=>item.name);
-}
+function loyaltyChoices(){return walletPrograms;}
+function catalogProgram(row){return walletPrograms.find(p=>p.id===row.catalog_id)||walletPrograms.find(p=>[p.name,...p.aliases].some(name=>name.toLowerCase()===String(row.name||'').toLowerCase()));}
+function currentTiers(program){return program?.future_tiers&&new Date().toISOString().slice(0,10)>=program.future_tiers.effective_on?program.future_tiers.tiers:program?.tiers||[];}
 function programChoice(row,index){
-  const category=programDraftCategories.get(row.id),choices=loyaltyChoices().filter(item=>!category||item.category===category),selected=choices.find(item=>item.name.toLowerCase()===row.name?.toLowerCase()),custom=!!row.name&&!selected;
+  const category=programDraftCategories.get(row.id),choices=loyaltyChoices().filter(item=>!category||item.category===category),selected=catalogProgram(row),custom=!!row.name&&!selected;
   const groups=[...new Set(choices.map(item=>item.category))].map(category=>`<optgroup label="${esc(category==='Credit cards'?'Bank rewards':category)}">${choices.filter(item=>item.category===category).map(item=>`<option value="${esc(item.name)}" ${selected?.name===item.name?'selected':''}>${esc(item.name)}</option>`).join('')}</optgroup>`).join('');
   return `<select data-program-choice aria-label="Loyalty program ${index+1}" required><option value="" ${!row.name?'selected':''}>Choose a program</option>${groups}<option value="other" ${custom?'selected':''}>Other program…</option></select><input data-field="name" aria-label="Other loyalty program ${index+1}" type="text" maxlength="300" value="${custom?esc(row.name):''}" ${custom?'required':'hidden disabled'} placeholder="Program name">`;
 }
 function updateProgramChoice(select,row){
-  const input=select.parentElement.querySelector('[data-field=name]'),custom=select.value==='other';
+  const input=select.parentElement.querySelector('[data-field=name]'),custom=select.value==='other',previous=catalogProgram(row);
   input.hidden=!custom;input.disabled=!custom;input.required=custom;row.name=custom?input.value:select.value;
-  select.closest('[data-section]').querySelector('.wallet-image').innerHTML=walletImage('programs',row);
-  dirty=true;walletStatus();if(custom)input.focus();
+  const program=walletPrograms.find(item=>item.name===row.name);if(program)row.catalog_id=program.id;else delete row.catalog_id;
+  if(previous?.id!==program?.id)row.status='';
+  dirty=true;walletStatus();
+  if(custom){if(previous)programDraftCategories.set(row.id,previous.category);input.focus();return;}
+  editWallet('programs',Number(select.closest('[data-section]').dataset.index));
 }
 function cell(section, index, row, [key,label,type='text']) {
   const attrs = `data-field="${key}" aria-label="${label} ${index+1}"`;
   if(section==='programs'&&key==='name')return programChoice(row,index);
+  if(section==='programs'&&key==='status'){
+    const program=catalogProgram(row),tiers=currentTiers(program);
+    if(!tiers.length)return `<input ${attrs} type="text" maxlength="300" value="${esc(row.status||'')}" placeholder="Optional status as reported">`;
+    const legacy=row.status&&!tiers.includes(row.status)?`<option value="${esc(row.status)}" selected>${esc(row.status)} (saved)</option>`:'';
+    return `<select ${attrs}><option value="" ${!row.status?'selected':''}>Not provided</option>${tiers.map(tier=>`<option value="${esc(tier)}" ${row.status===tier?'selected':''}>${esc(tier)}</option>`).join('')}${legacy}</select>`;
+  }
   if (type === 'credential') return `<select ${attrs}><option value="">Not linked</option>${(vaultState?.entries||[]).map(e=>`<option value="${esc(e.id)}" ${row[key]===e.id?'selected':''}>${esc(e.provider)} · ${esc(e.label||'Saved sign-in')}</option>`).join('')}${row[key]&&!(vaultState?.entries||[]).some(e=>e.id===row[key])?`<option value="${esc(row[key])}" selected>Saved sign-in (unlock to view)</option>`:''}</select>`;
   if (type === 'person') return `<select ${attrs}><option value="">Unassigned</option>${draft.people.map(p=>`<option value="${esc(p.id)}" ${row.person_id===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select>`;
-  if (type === 'relationship') {const entries=draft[key==='card_id'?'cards':'programs'];return `<select ${attrs}><option value="">Not linked</option>${entries.map(r=>`<option value="${esc(r.id)}" ${row[key]===r.id?'selected':''}>${esc(r.account_label||r.name||'Unnamed')} ${r.owner?'· '+esc(r.owner):''}</option>`).join('')}</select>`;}
+  if (type === 'relationship') {let entries=draft[key==='card_id'?'cards':'programs'];const earning=section==='cards'&&key==='reward_account_id'?cards.find(card=>card.id===row.product_id)?.program_id:null;if(earning)entries=entries.filter(item=>catalogProgram(item)?.id===earning);return `<select ${attrs}><option value="">Not linked</option>${entries.map(r=>`<option value="${esc(r.id)}" ${row[key]===r.id?'selected':''}>${esc(r.account_label||r.name||'Unnamed')} ${r.owner?'· '+esc(r.owner):''}</option>`).join('')}</select>`;}
   if (type === 'textarea') return `<textarea ${attrs} maxlength="4000" rows="1">${esc(row[key] || '')}</textarea>`;
   if (type === 'select') return `<select ${attrs}>${Object.entries(assetKinds).map(([id,name])=>`<option value="${id}" ${row[key]===id?'selected':''}>${name}</option>`).join('')}</select>`;
   let extra = key === 'name' ? `required list="${section==='cards'?'card-names':section==='programs'?'program-names':'asset-names'}"` : '';
@@ -148,8 +156,14 @@ function cell(section, index, row, [key,label,type='text']) {
 }
 function renderWallet() {
   for (const section of ['cards','programs','benefits']) {
-    const cols=columns[section].filter(c=>draft.people.length>1||c[0]!=='person_id');
-    $(`#wallet-${section}`).innerHTML = `<table class="wallet-sheet"><thead><tr><th scope="col">#</th><th scope="col">${section==='cards'?'Card':'Program'}</th>${cols.map(c=>`<th scope="col">${c[1]}</th>`).join('')}<th scope="col">Remove</th></tr></thead><tbody>${draft[section].map((row,index)=>`<tr data-section="${section}" data-index="${index}"><th scope="row">${index+1}</th><td class="wallet-image provider">${walletImage(section,row)}</td>${cols.map(c=>`<td>${cell(section,index,row,c)}</td>`).join('')}<td><button type="button" data-remove="${section}" data-index="${index}" class="quiet danger" aria-label="Remove ${section==='cards'?'card':section==='programs'?'program':'asset'} ${index+1}">×</button></td></tr>`).join('')}</tbody></table>${draft[section].length?'':`<p class="muted empty-sheet">No ${section==='programs'?'loyalty programs':section==='benefits'?'assets':section} added yet.</p>`}`;
+    const rows=draft[section].map((row,index)=>{
+      const account=draft.programs.find(program=>program.id===row.reward_account_id),program=catalogProgram(row),product=cards.find(card=>card.id===row.product_id);
+      const name=row.nickname||row.account_label||row.name;
+      const detail=section==='cards'?(account?.name||'No earning program linked'):section==='programs'?(row.balance?`${row.approximate?'≈ ':''}${Number(row.balance).toLocaleString()} points / miles`:'Balance unknown'):(row.remaining||'Amount unknown');
+      const tier=section==='programs'?(program?.category==='Credit cards'?'—':row.status||'Not provided'):section==='cards'?(product?.status_benefit?`${product.status_benefit.tier} card benefit · confirm`:'—'):(row.expires_on?`Expires ${row.expires_on}`:'—');
+      return `<tr><th scope="row"><span class="wallet-list-name">${walletImage(section,row)}<span>${esc(name||'Unnamed')}</span></span></th><td data-label="${section==='cards'?'Earning program':section==='programs'?'Balance':'Remaining'}">${esc(detail)}</td><td data-label="${section==='benefits'?'Expiry':'Membership tier / benefit'}">${esc(tier)}</td><td data-label="Sign-in">${section==='benefits'?'—':syncControls(section,row)}</td><td><button type="button" data-edit-wallet="${section}" data-index="${index}">Edit</button></td></tr>`;
+    }).join('');
+    $(`#wallet-${section}`).innerHTML=`<table class="wallet-list"><thead><tr><th scope="col">${section==='cards'?'Card':section==='programs'?'Program':'Credit'}</th><th scope="col">${section==='cards'?'Earning program':section==='programs'?'Balance':'Remaining'}</th><th scope="col">${section==='benefits'?'Expiry':'Membership tier / benefit'}</th><th scope="col">Sign-in</th><th scope="col">Action</th></tr></thead><tbody>${rows||'<tr><td colspan="5">Nothing added yet.</td></tr>'}</tbody></table>`;
   }
   renderWalletTiles();walletStatus();
 }
@@ -189,6 +203,7 @@ $('#wallet-form').addEventListener('input', event => {
     row[event.target.dataset.field] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     if(event.target.dataset.field==='person_id')row.owner=draft.people.find(p=>p.id===row.person_id)?.name||'';
     if (event.target.dataset.field === 'name') {
+      if(entry.dataset.section==='cards'&&row.product_id&&cards.find(card=>card.id===row.product_id)?.name!==row.name)delete row.product_id;
       entry.querySelector('.wallet-image').innerHTML = walletImage(entry.dataset.section,row);
       if(entry.dataset.section==='benefits') { const template=assetCatalog.find(a=>a.name===row.name);if(template){row.kind=template.kind;entry.querySelector('[data-field=kind]').value=template.kind;} }
     }
@@ -206,11 +221,12 @@ $('#wallet-form').addEventListener('click', event => {
   const button = event.target.closest('button');
   if (button?.dataset.add) {
     const section = button.dataset.add;
+    if(section==='cards'){openCardPicker(-1);return;}
+    if(section==='programs'){openProgramPicker(button.dataset.programCategory||'');return;}
     if(!draft.people.length)draft.people.push({id:crypto.randomUUID(),name:'Me'});
     const person=draft.people.find(p=>p.id===$('#wallet-person').value)||draft.people[0];const common = {id:crypto.randomUUID(),name:'',person_id:person.id,owner:person.name,reported_on:''};
-    draft[section].push(section === 'cards' ? {...common,notes:''} : section === 'programs' ? {...common,balance:'',status:'',approximate:false,preserve:false,notes:''} : {...common,kind:'credit',remaining:'',expires_on:'',notes:''});
-    if(section==='programs'&&button.dataset.programCategory)programDraftCategories.set(common.id,button.dataset.programCategory);
-    dirty = true; renderPeople();renderWallet();if($('#wallet-tables').hidden)editWallet(section,draft[section].length-1,true);else $(`#wallet-${section} tbody tr:last-child ${section==='programs'?'[data-program-choice]':'[data-field=name]'}`).focus();
+    draft[section].push({...common,kind:'credit',remaining:'',expires_on:'',notes:''});
+    dirty = true; renderPeople();renderWallet();editWallet(section,draft[section].length-1,true);
   } else if (button?.dataset.remove) {
     if(!confirm('Remove this entry? Links to it will be cleared; other balances stay unchanged.'))return;
     removeWalletEntry(button.dataset.remove,Number(button.dataset.index));
@@ -236,7 +252,6 @@ $('#wallet-form').onsubmit = async event => {
   } catch(error) { notice(error.message,true); await refresh(); }
   button.disabled = false;
 };
-$('#reload-wallet').onclick = () => { if (!dirty || confirm('Discard unsaved wallet edits and reload the saved wallet?')) loadWallet(); };
 for (const id of ['search','kind','availability','shortlisted']) $('#'+id).addEventListener('input', renderFindings);
 $('#options').addEventListener('change', async event => {
   const t = trip(), target = event.target, key = target.dataset.shortlist ? 'shortlist' : 'selected', id = target.dataset.shortlist || target.dataset.select;
@@ -278,8 +293,8 @@ window.addEventListener('beforeunload', event => { if (dirty && !stopped) { even
   try {
     const token = new URLSearchParams(location.hash.slice(1)).get('key');
     if (token) { await api('session',{token}); history.replaceState(null,'',location.pathname + location.search); }
-    const loaded = await Promise.all(['/assets/brands.json','/assets/cards.json','/assets/wallet-assets.json'].map(path=>fetch(path).then(r=>r.json())));
-    [brands,cards] = loaded; assetCatalog=loaded[2].items;
+    const loaded = await Promise.all(['/assets/brands.json','/assets/cards.json','/assets/wallet-assets.json','/assets/wallet-programs.json'].map(path=>fetch(path).then(r=>r.json())));
+    [brands,cards] = loaded; assetCatalog=loaded[2].items;walletPrograms=loaded[3].programs;
     $('#asset-names').innerHTML=assetCatalog.map(a=>`<option value="${esc(a.name)}"></option>`).join('');
     $('#card-names').innerHTML = cards.map(c=>`<option value="${esc(c.name)}"></option>`).join('');
     await refresh();
@@ -362,11 +377,11 @@ function renderPlugins(){
 }
 $('#skill-search').oninput=renderPlugins;
 
-function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-table-actions').hidden=!table;$('#wallet-table-hint').hidden=!table;$('#wallet-view-menu>summary').textContent=table?'View: Table':'View: Cards';$('#wallet-view-menu').open=false;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
+function setWalletView(table){$('#wallet-tables').hidden=!table;$('#wallet-tiles').hidden=table;$('#wallet-view-table').setAttribute('aria-pressed',String(table));$('#wallet-view-cards').setAttribute('aria-pressed',String(!table));}
 $('#wallet-view-cards').onclick=()=>{renderWalletTiles();setWalletView(false);};
 $('#wallet-view-table').onclick=()=>{renderWallet();setWalletView(true);};
 function loyaltyGroup(row){
-  const name=String(row.name||'').toLowerCase(),known=loyaltyChoices().find(item=>item.name.toLowerCase()===name);
+  const name=String(row.name||'').toLowerCase(),known=catalogProgram(row);
   if(known)return known.category;
   if(/hilton|hyatt|marriott|ihg|accor|wyndham|choice hotels|best western|radisson/.test(name))return 'Hotels';
   if(/delta|skymiles|united|mileageplus|american airlines|aadvantage|southwest|rapid rewards|alaska|atmos|jetblue|trueblue|qantas|turkish|air canada|aeroplan/.test(name))return 'Flights';
@@ -386,9 +401,10 @@ function walletTile(section,r,i){
     const parts=String(r.name||'').split(';'),uncertain=/^Exact product not reported/i.test(parts[0]);
     const name=uncertain?'Card to identify':parts[0].trim()||'Card to identify';
     const note=uncertain?r.name:parts.slice(1).join(';').trim();
-    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.nickname||name)}</h4>${r.nickname?`<small>${esc(name)}</small>`:note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}${account?`<p class="wallet-linked">Rewards · <button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button></p>`:''}</div></div><div class="wallet-tile-bottom">${syncControls('cards',r)}<details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.nickname||name)}">•••</summary><div><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div></details></div>`;
+    const benefit=cards.find(card=>card.id===r.product_id)?.status_benefit;
+    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.nickname||name)}</h4>${r.nickname?`<small>${esc(name)}</small>`:note?`<small class="wallet-qualifier">${esc(note)}</small>`:''}${account?`<p class="wallet-linked">Earns · <button type="button" data-edit-wallet="programs" data-index="${draft.programs.indexOf(account)}">${esc(account.name)} ↗</button></p>`:''}${benefit?`<small class="wallet-status-benefit">${esc(benefit.tier)} card benefit · confirm in account</small>`:''}</div></div><div class="wallet-tile-bottom">${syncControls('cards',r)}<details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.nickname||name)}">•••</summary><div><button type="button" data-edit-wallet="cards" data-index="${i}">Edit card</button>${account?`<button type="button" data-unlink-wallet="cards" data-index="${i}">Unlink rewards</button>`:''}<button type="button" class="danger" data-remove-tile="cards" data-index="${i}">Remove card</button></div></details></div>`;
   } else if(section==='programs'){
-    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<p class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()} points`:'Balance unknown'}</p>${r.synced_at||r.reported_on?`<small>${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on)}</small>`:''}</div></div><div class="wallet-tile-bottom">${syncControls('programs',r)}<details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.account_label||r.name)}">•••</summary><div><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button>${r.credential_id?`<button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div></details></div>`;
+    content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.account_label||r.name||'Rewards account')}</h4>${r.account_label?`<small>${esc(r.name)}</small>`:''}<p class="wallet-balance">${r.balance?`${r.approximate?'≈ ':''}${Number(r.balance).toLocaleString()} points`:'Balance unknown'}</p>${r.status&&loyaltyGroup(r)!=='Credit cards'?`<small>${esc(r.status)} membership tier</small>`:''}${r.synced_at||r.reported_on?`<small>${r.synced_at?'Synced '+esc(r.synced_at.slice(0,10)):'Reported '+esc(r.reported_on)}</small>`:''}</div></div><div class="wallet-tile-bottom">${syncControls('programs',r)}<details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.account_label||r.name)}">•••</summary><div><button type="button" data-edit-wallet="programs" data-index="${i}">Edit account</button>${r.credential_id?`<button type="button" data-unlink-wallet="programs" data-index="${i}">Unlink sign-in</button>`:''}<button type="button" class="danger" data-remove-tile="programs" data-index="${i}">Remove account</button></div></details></div>`;
   } else {
     content=`<div class="wallet-tile-main">${art}<div class="wallet-tile-copy"><h4>${esc(r.name||'Travel credit or certificate')}</h4><p class="wallet-balance">${esc(r.remaining||'Amount to confirm')}</p>${r.expires_on?`<small>Expires ${esc(r.expires_on)}</small>`:''}${linked?`<small>${esc(linked.name)}</small>`:''}</div></div><div class="wallet-tile-bottom"><span></span><details class="wallet-tile-menu"><summary aria-label="Options for ${esc(r.name||'travel credit')}">•••</summary><div><button type="button" data-edit-wallet="benefits" data-index="${i}">Edit credit</button><button type="button" class="danger" data-remove-tile="benefits" data-index="${i}">Remove credit</button></div></details></div>`;
   }
@@ -402,6 +418,13 @@ function renderWalletTiles(){
   $('#wallet-tiles').querySelectorAll('[data-refresh-account]').forEach(b=>b.onclick=async()=>{const [section,id]=b.dataset.refreshAccount.split(':');try{await api('refresh-account',{section,id});await refresh();notice('Refresh requested. Ask your agent to process pending Wallet refreshes.');}catch(error){notice(error.message,true);}});
   $('#wallet-tiles').querySelectorAll('[data-edit-wallet]').forEach(b=>b.onclick=()=>editWallet(b.dataset.editWallet,Number(b.dataset.index)));
 }
+$('#wallet-tables').onclick=async event=>{
+  const button=event.target.closest('[data-edit-wallet],[data-account-signin],[data-refresh-account]');if(!button)return;
+  if(button.dataset.editWallet){editWallet(button.dataset.editWallet,Number(button.dataset.index));return;}
+  const [section,id]=(button.dataset.accountSignin||button.dataset.refreshAccount).split(':');
+  if(button.dataset.accountSignin){openAccountSignin(section,id);return;}
+  try{await api('refresh-account',{section,id});await refresh();notice('Refresh requested. Ask your agent to process pending Wallet refreshes.');}catch(error){notice(error.message,true);}
+};
 $('#wallet-tiles').addEventListener('click',async event=>{
   const button=event.target.closest('[data-unlink-wallet],[data-remove-tile]');if(!button)return;
   const section=button.dataset.unlinkWallet||button.dataset.removeTile,index=Number(button.dataset.index),row=draft[section]?.[index];if(!row)return;
@@ -417,15 +440,16 @@ async function editWallet(section,index,isNew=false){
  if(section==='programs')await refreshVault();
  if(!$('#wallet-editor').open){editorSnapshot=structuredClone(draft);editorDirty=dirty;if(isNew)editorSnapshot[section].splice(index,1);}
  const row=draft[section][index];$('#wallet-editor-title').textContent={cards:'Card & rewards',programs:'Rewards account',benefits:'Credit or travel fund'}[section];
- const basic=(section==='programs'?columns.programs.filter(c=>['name','account_label','balance','status','person_id'].includes(c[0])):section==='cards'?columns.cards.filter(c=>!['name','person_id','credential_id'].includes(c[0])):columns[section]).filter(c=>draft.people.length>1||c[0]!=='person_id');
- const more=section==='programs'?columns.programs.filter(c=>!basic.includes(c)&&(draft.people.length>1||c[0]!=='person_id')):[];
+ const showTier=section==='programs'&&(programDraftCategories.get(row.id)||loyaltyGroup(row))!=='Credit cards';
+ const basic=(section==='programs'?columns.programs.filter(c=>['name','account_label','balance','person_id',...(showTier?['status']:[])].includes(c[0])):section==='cards'?columns.cards.filter(c=>!['name','person_id','credential_id'].includes(c[0])):columns[section]).filter(c=>draft.people.length>1||c[0]!=='person_id');
+ const more=section==='programs'?columns.programs.filter(c=>!basic.includes(c)&&c[0]!=='status'&&(draft.people.length>1||c[0]!=='person_id')):[];
  const fields=items=>items.map(c=>`<label>${esc(c[1])}${cell(section,index,row,c)}</label>`).join('');
  const known=cards.some(c=>c.name.toLowerCase()===row.name.toLowerCase()),cardTitle=known?row.name:/^Exact product not reported/i.test(row.name)?'Card to identify':row.name||'Choose a card';
  const cardChoice=section==='cards'?`<button type="button" id="choose-card" class="card-choice">${walletImage('cards',row)}<span><strong>${esc(cardTitle)}</strong><small>Choose from card gallery</small></span></button><details class="wallet-extra"><summary>Card not in the gallery?</summary>${fields([columns.cards[0]])}</details>`:'';
  $('#wallet-editor-fields').innerHTML=`<div data-section="${section}" data-index="${index}">${cardChoice||`<div class="wallet-image provider">${walletImage(section,row)}</div>`}<div class="wallet-edit-grid">${fields(basic)}</div>${more.length?`<details class="wallet-extra"><summary>More account details</summary><div class="wallet-edit-grid">${fields(more)}</div></details>`:''}</div>`;
  if(section==='cards')$('#choose-card').onclick=()=>openCardPicker(index);
  updateRewardSuggestion();if(!$('#wallet-editor').open)$('#wallet-editor').showModal();
- if(section==='cards'&&isNew)openCardPicker(index);else $('#wallet-editor-fields '+(section==='programs'?'[data-program-choice]':section==='cards'?'[data-field=nickname]':'[data-field=name]')).focus();
+ $('#wallet-editor-fields '+(section==='programs'?'[data-field=account_label]':section==='cards'?'[data-field=nickname]':'[data-field=name]')).focus();
 }
 let cardPickerIndex=-1;
 function openCardPicker(index){
@@ -435,18 +459,56 @@ function renderCardPicker(){
  const q=$('#card-picker-search').value.trim().toLowerCase();
  const featured=['delta-skymiles-gold-american-express-card','united-explorer-card','united-quest-card','united-gateway-card','chase-sapphire-reserve','american-express-platinum-card','capital-one-venture-x-rewards-credit-card','hilton-honors-aspire-card-from-american-express'];
  const results=q?cards.filter(c=>c.name.toLowerCase().includes(q)).slice(0,48):featured.map(id=>cards.find(c=>c.id===id)).filter(Boolean);
- $('#card-picker-results').innerHTML=results.map(c=>`<button type="button" data-card-id="${esc(c.id)}"><img src="/assets${esc(c.path)}" alt="" loading="lazy"><span>${esc(c.name)}</span></button>`).join('')||'<p>No matching card. Use “Card not in the gallery?” in the editor.</p>';
+ $('#card-picker-results').innerHTML=results.map(c=>`<button type="button" data-card-id="${esc(c.id)}"><img src="/assets${esc(c.path)}" alt="" loading="${q?'lazy':'eager'}"><span>${esc(c.name)}</span>${c.program_id?`<small>Earns ${esc(walletPrograms.find(p=>p.id===c.program_id)?.name||'rewards')}</small>`:''}</button>`).join('')||'<p>No matching card. Use “Card not in the gallery” below.</p>';
  $('#card-picker-count').textContent=q?`${results.length} matches shown`:`Popular cards · search ${cards.length} products`;
 }
 $('#card-picker-search').oninput=renderCardPicker;
 $('#card-picker-close').onclick=()=>$('#card-picker').close();
-$('#card-picker-results').onclick=e=>{const button=e.target.closest('[data-card-id]');if(!button)return;const card=cards.find(c=>c.id===button.dataset.cardId);if(!card||!draft.cards[cardPickerIndex])return;draft.cards[cardPickerIndex].name=card.name;dirty=true;$('#card-picker').close();editWallet('cards',cardPickerIndex);walletStatus();};
-function suggestedProgram(name){
- const n=name.toLowerCase();
- const pairs=[['hilton','Hilton Honors'],['hyatt','World of Hyatt'],['marriott','Marriott Bonvoy'],['united','MileagePlus'],['delta','SkyMiles'],['southwest','Rapid Rewards'],['sapphire','Chase Ultimate Rewards'],['freedom','Chase Ultimate Rewards'],['venture','Capital One Miles'],['american express platinum','Amex Membership Rewards'],['american express gold','Amex Membership Rewards']];
- return pairs.find(([key])=>n.includes(key))?.[1];
+function newWalletRow(section){
+  if(!draft.people.length)draft.people.push({id:crypto.randomUUID(),name:'Me'});
+  const person=draft.people.find(p=>p.id===$('#wallet-person').value)||draft.people[0];
+  return {id:crypto.randomUUID(),name:'',person_id:person.id,owner:person.name,reported_on:'',...(section==='cards'?{notes:''}:{balance:'',status:'',approximate:false,preserve:false,notes:''})};
 }
-function updateRewardSuggestion(){const entry=$('#wallet-editor-fields [data-section]'),box=$('#reward-suggestion');box.innerHTML='';if(entry?.dataset.section!=='cards')return;const card=draft.cards[Number(entry.dataset.index)],name=suggestedProgram(card.name);if(card.reward_account_id||!name)return;box.innerHTML=`<p class="muted">Suggested earning program: ${esc(name)}. Choose an existing account above, or create a separate account below. Transfer partners are separate from the earning account.</p><button type="button" id="create-reward-account">Create ${esc(name)} account</button>`;$('#create-reward-account').onclick=()=>{const account={id:crypto.randomUUID(),name,owner:card.owner,person_id:card.person_id,balance:'',approximate:false,status:'',preserve:false,reported_on:'',notes:''};draft.programs.push(account);card.reward_account_id=account.id;dirty=true;editWallet('cards',Number(entry.dataset.index));};}
+function chooseCard(card){
+  const isNew=cardPickerIndex<0,index=isNew?draft.cards.length:cardPickerIndex;
+  if(isNew)draft.cards.push(newWalletRow('cards'));
+  const row=draft.cards[index],old=cards.find(c=>c.id===row.product_id);
+  if(old?.program_id!==card?.program_id)row.reward_account_id='';
+  row.name=card?.name||'';if(card)row.product_id=card.id;else delete row.product_id;
+  dirty=true;$('#card-picker').close();renderPeople();renderWallet();editWallet('cards',index,isNew);walletStatus();
+}
+$('#card-picker-results').onclick=e=>{const button=e.target.closest('[data-card-id]');if(!button)return;const card=cards.find(c=>c.id===button.dataset.cardId);if(card)chooseCard(card);};
+$('#card-picker-other').onclick=()=>chooseCard(null);
+function updateRewardSuggestion(){
+  const entry=$('#wallet-editor-fields [data-section]'),box=$('#reward-suggestion');box.innerHTML='';if(entry?.dataset.section!=='cards')return;
+  const row=draft.cards[Number(entry.dataset.index)],product=cards.find(c=>c.id===row.product_id),program=walletPrograms.find(p=>p.id===product?.program_id);
+  if(program)box.innerHTML=`<p class="muted">${esc(program.name)} will be linked when you save. Its balance stays unknown until you add it or sync.</p>${product.status_benefit?`<p class="muted">Card benefit: ${esc(product.status_benefit.tier)}. Confirm the active tier in your loyalty account.</p>`:''}`;
+}
+function linkEarningProgram(row){
+  const product=cards.find(card=>card.id===row.product_id),program=walletPrograms.find(item=>item.id===product?.program_id);
+  if(!program||row.reward_account_id)return;
+  const matches=draft.programs.filter(item=>item.person_id===row.person_id&&catalogProgram(item)?.id===program.id);
+  if(matches.length>1)throw new Error(`Several ${program.name} accounts exist. Choose the right rewards account before saving this card.`);
+  if(!matches.length)draft.programs.push({...newWalletRow('programs'),name:program.name,catalog_id:program.id,person_id:row.person_id,owner:row.owner});
+  row.reward_account_id=(matches[0]||draft.programs.at(-1)).id;
+  dirty=true;
+}
+let programPickerCategory='';
+function openProgramPicker(category){programPickerCategory=category;$('#program-picker-title').textContent=category==='Flights'?'Add airline loyalty':category==='Hotels'?'Add hotel loyalty':category==='Credit cards'?'Add card rewards':'Add loyalty or rewards';$('#program-picker-search').value='';renderProgramPicker();$('#program-picker').showModal();$('#program-picker-search').focus();}
+function renderProgramPicker(){
+  const q=$('#program-picker-search').value.trim().toLowerCase(),items=walletPrograms.filter(p=>(!programPickerCategory||p.category===programPickerCategory)&&(!q||p.name.toLowerCase().includes(q)));
+  $('#program-picker-results').innerHTML=items.map(p=>`<button type="button" data-program-id="${esc(p.id)}">${logo(p.provider_id)||'<span aria-hidden="true">✦</span>'}<strong>${esc(p.name)}</strong><small>${esc(p.category==='Credit cards'?'Card rewards':p.category==='Flights'?'Airline loyalty':'Hotel loyalty')}</small></button>`).join('')||'<p>No matching program. Use “Program not listed” below.</p>';
+}
+$('#program-picker-search').oninput=renderProgramPicker;
+$('#program-picker-close').onclick=()=>$('#program-picker').close();
+function chooseProgram(program){
+  const row=newWalletRow('programs');if(program){row.name=program.name;row.catalog_id=program.id;}else programDraftCategories.set(row.id,programPickerCategory);
+  const existing=program&&draft.programs.find(item=>item.person_id===row.person_id&&catalogProgram(item)?.id===program.id);
+  if(existing){$('#program-picker').close();editWallet('programs',draft.programs.indexOf(existing));return;}
+  draft.programs.push(row);dirty=true;$('#program-picker').close();renderPeople();renderWallet();editWallet('programs',draft.programs.length-1,true);
+}
+$('#program-picker-results').onclick=e=>{const button=e.target.closest('[data-program-id]');if(button)chooseProgram(walletPrograms.find(p=>p.id===button.dataset.programId));};
+$('#program-picker-other').onclick=()=>chooseProgram(null);
 async function persistWallet(){
  notice('Saving wallet…');
  const sent=JSON.stringify(draft),result=await api('wallet',{wallet:JSON.parse(sent),expected_revision:draftRevision});state.wallet=result.wallet;
@@ -455,7 +517,7 @@ async function persistWallet(){
 }
 function cancelWalletEditor(){draft=editorSnapshot;dirty=editorDirty;programDraftCategories.clear();$('#wallet-editor').close();$('#wallet-editor-fields').innerHTML='';renderWallet();}
 $('#wallet-editor-close').onclick=cancelWalletEditor;
-$('#wallet-editor-done').onclick=async()=>{const entry=$('#wallet-editor-fields [data-section]');if(entry?.dataset.section==='cards'&&!draft.cards[Number(entry.dataset.index)].name.trim()){openCardPicker(Number(entry.dataset.index));return;}if(![...$('#wallet-editor-fields').querySelectorAll('input,select,textarea')].every(el=>el.reportValidity()))return;const button=$('#wallet-editor-done');button.disabled=true;try{await persistWallet();$('#wallet-editor').close();$('#wallet-editor-fields').innerHTML='';}catch(e){notice(e.message,true);}finally{button.disabled=false;}};
+$('#wallet-editor-done').onclick=async()=>{const entry=$('#wallet-editor-fields [data-section]');if(entry?.dataset.section==='cards'&&!draft.cards[Number(entry.dataset.index)].name.trim()){openCardPicker(Number(entry.dataset.index));return;}if(![...$('#wallet-editor-fields').querySelectorAll('input,select,textarea')].every(el=>el.reportValidity()))return;const button=$('#wallet-editor-done');button.disabled=true;try{if(entry?.dataset.section==='cards')linkEarningProgram(draft.cards[Number(entry.dataset.index)]);await persistWallet();$('#wallet-editor').close();$('#wallet-editor-fields').innerHTML='';}catch(e){notice(e.message,true);}finally{button.disabled=false;}};
 $('#wallet-editor').addEventListener('cancel',e=>{e.preventDefault();cancelWalletEditor();});
 
 function renderPeople(){$('#wallet-person').innerHTML='<option value="">My wallet</option>'+draft.people.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');$('#wallet-person').value='';$('.people-toolbar').hidden=true;}

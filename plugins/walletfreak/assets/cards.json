@@ -4,84 +4,112 @@
     "name": "American Express Platinum Card",
     "path": "/cards/american-express-platinum-card.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/american-express-platinum-card.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "chase-sapphire-reserve",
     "name": "Chase Sapphire Reserve",
     "path": "/cards/chase-sapphire-reserve.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/chase-sapphire-reserve.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "capital-one-venture-x-rewards-credit-card",
     "name": "Capital One Venture X Rewards Credit Card",
     "path": "/cards/capital-one-venture-x-rewards-credit-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/capital-one-venture-x-rewards-credit-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "capital-one-miles"
   },
   {
     "id": "hilton-honors-aspire-card-from-american-express",
     "name": "Hilton Honors Aspire Card From American Express",
     "path": "/cards/hilton-honors-aspire-card-from-american-express.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/hilton-honors-aspire-card-from-american-express.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "hilton",
+    "status_benefit": {
+      "tier": "Diamond",
+      "source": "https://global.americanexpress.com/card-benefits/terms/hilton-aspire"
+    }
   },
   {
     "id": "hilton-honors-american-express-surpass-card",
     "name": "Hilton Honors American Express Surpass Card",
     "path": "/cards/hilton-honors-american-express-surpass-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/hilton-honors-american-express-surpass-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "hilton",
+    "status_benefit": {
+      "tier": "Gold",
+      "source": "https://global.americanexpress.com/card-benefits/detail/complimentary-gold-status/hilton-surpass"
+    }
   },
   {
     "id": "marriott-bonvoy-brilliant-american-express-card",
     "name": "Marriott Bonvoy Brilliant American Express Card",
     "path": "/cards/marriott-bonvoy-brilliant-american-express-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/marriott-bonvoy-brilliant-american-express-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "marriott",
+    "status_benefit": {
+      "tier": "Platinum Elite",
+      "source": "https://global.americanexpress.com/card-benefits/detail/marriott-bonvoy-platinum-elite/marriott-bonvoy-brilliant"
+    }
   },
   {
     "id": "the-world-of-hyatt-credit-card",
     "name": "The World Of Hyatt Credit Card",
     "path": "/cards/the-world-of-hyatt-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/the-world-of-hyatt-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "hyatt",
+    "status_benefit": {
+      "tier": "Discoverist",
+      "source": "https://world.hyatt.com/content/gp/en/tiers-and-benefits.html"
+    }
   },
   {
     "id": "united-explorer-card",
     "name": "United Explorer Card",
     "path": "/cards/united-explorer-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/united-explorer-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "united-mileageplus"
   },
   {
     "id": "aadvantage-aviator-business-mastercard",
     "name": "Aadvantage Aviator Business Mastercard",
     "path": "/cards/aadvantage-aviator-business-mastercard.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/aadvantage-aviator-business-mastercard.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "aadvantage-aviator-red-world-elite-mastercard",
     "name": "Aadvantage Aviator Red World Elite Mastercard",
     "path": "/cards/aadvantage-aviator-red-world-elite-mastercard.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/aadvantage-aviator-red-world-elite-mastercard.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "aadvantage-aviator-silver-mastercard",
     "name": "Aadvantage Aviator Silver Mastercard",
     "path": "/cards/aadvantage-aviator-silver-mastercard.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/aadvantage-aviator-silver-mastercard.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "aeroplan-credit-card",
     "name": "Aeroplan Credit Card",
     "path": "/cards/aeroplan-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/aeroplan-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "air-canada-aeroplan"
   },
   {
     "id": "alliant-cashback-visa-signature-card",
@@ -116,28 +144,32 @@
     "name": "American Airlines Aadvantage Mileup Card",
     "path": "/cards/american-airlines-aadvantage-mileup-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/american-airlines-aadvantage-mileup-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "american-express-business-gold-card",
     "name": "American Express Business Gold Card",
     "path": "/cards/american-express-business-gold-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/american-express-business-gold-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "american-express-gold-card",
     "name": "American Express Gold Card",
     "path": "/cards/american-express-gold-card.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/american-express-gold-card.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "american-express-green-card",
     "name": "American Express Green Card",
     "path": "/cards/american-express-green-card.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/american-express-green-card.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "apple-card",
@@ -235,7 +267,8 @@
     "name": "Bilt Mastercard",
     "path": "/cards/bilt-mastercard.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/bilt-mastercard.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "bilt-rewards"
   },
   {
     "id": "blue-business-cash-card-from-american-express",
@@ -249,7 +282,8 @@
     "name": "Blue Business Plus Credit Card From American Express",
     "path": "/cards/blue-business-plus-credit-card-from-american-express.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/blue-business-plus-credit-card-from-american-express.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "blue-cash-everyday-card-from-american-express",
@@ -270,14 +304,16 @@
     "name": "British Airways Visa Signature Card",
     "path": "/cards/british-airways-visa-signature-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/british-airways-visa-signature-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "british-airways-club"
   },
   {
     "id": "business-green-rewards-card-from-american-express",
     "name": "Business Green Rewards Card From American Express",
     "path": "/cards/business-green-rewards-card-from-american-express.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/business-green-rewards-card-from-american-express.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "capital-one-platinum-credit-card",
@@ -361,56 +397,64 @@
     "name": "Capital One Spark Miles For Business",
     "path": "/cards/capital-one-spark-miles-for-business.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/capital-one-spark-miles-for-business.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "capital-one-miles"
   },
   {
     "id": "capital-one-venture-rewards-credit-card",
     "name": "Capital One Venture Rewards Credit Card",
     "path": "/cards/capital-one-venture-rewards-credit-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/capital-one-venture-rewards-credit-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "capital-one-miles"
   },
   {
     "id": "capital-one-venture-x-business",
     "name": "Capital One Venture X Business",
     "path": "/cards/capital-one-venture-x-business.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/capital-one-venture-x-business.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "capital-one-miles"
   },
   {
     "id": "capital-one-ventureone-rewards-credit-card",
     "name": "Capital One Ventureone Rewards Credit Card",
     "path": "/cards/capital-one-ventureone-rewards-credit-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/capital-one-ventureone-rewards-credit-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "capital-one-miles"
   },
   {
     "id": "chase-freedom-flex",
     "name": "Chase Freedom Flex",
     "path": "/cards/chase-freedom-flex.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/chase-freedom-flex.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "chase-freedom-unlimited",
     "name": "Chase Freedom Unlimited",
     "path": "/cards/chase-freedom-unlimited.jpg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/chase-freedom-unlimited.jpg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "chase-sapphire-preferred-card",
     "name": "Chase Sapphire Preferred Card",
     "path": "/cards/chase-sapphire-preferred-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/chase-sapphire-preferred-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "chase-sapphire-reserve-business",
     "name": "Chase Sapphire Reserve Business",
     "path": "/cards/chase-sapphire-reserve-business.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/chase-sapphire-reserve-business.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "chase-slate-edge",
@@ -424,35 +468,40 @@
     "name": "Citi Aadvantage Business World Elite Mastercard",
     "path": "/cards/citi-aadvantage-business-world-elite-mastercard.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-aadvantage-business-world-elite-mastercard.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "citi-aadvantage-executive-world-elite-mastercard",
     "name": "Citi Aadvantage Executive World Elite Mastercard",
     "path": "/cards/citi-aadvantage-executive-world-elite-mastercard.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-aadvantage-executive-world-elite-mastercard.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "citi-aadvantage-globe-mastercard",
     "name": "Citi Aadvantage Globe Mastercard",
     "path": "/cards/citi-aadvantage-globe-mastercard.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-aadvantage-globe-mastercard.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "citi-aadvantage-platinum-select-world-elite-mastercard",
     "name": "Citi Aadvantage Platinum Select World Elite Mastercard",
     "path": "/cards/citi-aadvantage-platinum-select-world-elite-mastercard.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-aadvantage-platinum-select-world-elite-mastercard.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "aadvantage"
   },
   {
     "id": "citi-custom-cash-card",
     "name": "Citi Custom Cash Card",
     "path": "/cards/citi-custom-cash-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-custom-cash-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "citi-thankyou-points"
   },
   {
     "id": "citi-diamond-preferred-card",
@@ -466,7 +515,8 @@
     "name": "Citi Double Cash Card",
     "path": "/cards/citi-double-cash-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-double-cash-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "citi-thankyou-points"
   },
   {
     "id": "citi-secured-mastercard",
@@ -487,14 +537,16 @@
     "name": "Citi Strata Elite Card",
     "path": "/cards/citi-strata-elite-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-strata-elite-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "citi-thankyou-points"
   },
   {
     "id": "citi-strata-premier-card",
     "name": "Citi Strata Premier Card",
     "path": "/cards/citi-strata-premier-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/citi-strata-premier-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "citi-thankyou-points"
   },
   {
     "id": "costco-anywhere-visa-card-by-citi",
@@ -508,49 +560,56 @@
     "name": "Delta SkyMiles Blue American Express Card",
     "path": "/cards/delta-skymiles-blue-american-express-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-blue-american-express-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "delta-skymiles-gold-american-express-card",
     "name": "Delta SkyMiles Gold American Express Card",
     "path": "/cards/delta-skymiles-gold-american-express-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-gold-american-express-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "delta-skymiles-gold-business-american-express-card",
     "name": "Delta SkyMiles Gold Business American Express Card",
     "path": "/cards/delta-skymiles-gold-business-american-express-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-gold-business-american-express-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "delta-skymiles-platinum-american-express-card",
     "name": "Delta SkyMiles Platinum American Express Card",
     "path": "/cards/delta-skymiles-platinum-american-express-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-platinum-american-express-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "delta-skymiles-platinum-business-american-express-card",
     "name": "Delta SkyMiles Platinum Business American Express Card",
     "path": "/cards/delta-skymiles-platinum-business-american-express-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-platinum-business-american-express-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "delta-skymiles-reserve-american-express-card",
     "name": "Delta SkyMiles Reserve American Express Card",
     "path": "/cards/delta-skymiles-reserve-american-express-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-reserve-american-express-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "delta-skymiles-reserve-business-american-express-card",
     "name": "Delta SkyMiles Reserve Business American Express Card",
     "path": "/cards/delta-skymiles-reserve-business-american-express-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/delta-skymiles-reserve-business-american-express-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "delta-skymiles"
   },
   {
     "id": "discover-it-cash-back",
@@ -613,7 +672,8 @@
     "name": "Hilton Honors American Express Card",
     "path": "/cards/hilton-honors-american-express-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/hilton-honors-american-express-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "hilton"
   },
   {
     "id": "huntington-voice-visa-card",
@@ -627,21 +687,24 @@
     "name": "IHG One Rewards Premier Business Credit Card",
     "path": "/cards/ihg-one-rewards-premier-business-credit-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/ihg-one-rewards-premier-business-credit-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "ihg"
   },
   {
     "id": "ihg-one-rewards-premier-credit-card",
     "name": "IHG One Rewards Premier Credit Card",
     "path": "/cards/ihg-one-rewards-premier-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/ihg-one-rewards-premier-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "ihg"
   },
   {
     "id": "ihg-one-rewards-traveler-credit-card",
     "name": "IHG One Rewards Traveler Credit Card",
     "path": "/cards/ihg-one-rewards-traveler-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/ihg-one-rewards-traveler-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "ihg"
   },
   {
     "id": "indigo-mastercard-for-less-than-perfect-credit",
@@ -655,14 +718,16 @@
     "name": "Ink Business Cash Credit Card",
     "path": "/cards/ink-business-cash-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/ink-business-cash-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "ink-business-preferred-credit-card",
     "name": "Ink Business Preferred Credit Card",
     "path": "/cards/ink-business-preferred-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/ink-business-preferred-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "ink-business-premier-credit-card",
@@ -676,7 +741,8 @@
     "name": "Ink Business Unlimited Credit Card",
     "path": "/cards/ink-business-unlimited-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/ink-business-unlimited-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "chase-ultimate-rewards"
   },
   {
     "id": "lowes-advantage-card",
@@ -690,21 +756,24 @@
     "name": "Marriott Bonvoy Bevy American Express Card",
     "path": "/cards/marriott-bonvoy-bevy-american-express-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/marriott-bonvoy-bevy-american-express-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "marriott"
   },
   {
     "id": "marriott-bonvoy-boundless-credit-card",
     "name": "Marriott Bonvoy Boundless Credit Card",
     "path": "/cards/marriott-bonvoy-boundless-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/marriott-bonvoy-boundless-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "marriott"
   },
   {
     "id": "marriott-bonvoy-business-american-express-card",
     "name": "Marriott Bonvoy Business American Express Card",
     "path": "/cards/marriott-bonvoy-business-american-express-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/marriott-bonvoy-business-american-express-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "marriott"
   },
   {
     "id": "mission-lane-visa-credit-card",
@@ -844,35 +913,40 @@
     "name": "Southwest Rapid Rewards Performance Business Credit Card",
     "path": "/cards/southwest-rapid-rewards-performance-business-credit-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/southwest-rapid-rewards-performance-business-credit-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "southwest-rapid-rewards"
   },
   {
     "id": "southwest-rapid-rewards-plus-credit-card",
     "name": "Southwest Rapid Rewards Plus Credit Card",
     "path": "/cards/southwest-rapid-rewards-plus-credit-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/southwest-rapid-rewards-plus-credit-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "southwest-rapid-rewards"
   },
   {
     "id": "southwest-rapid-rewards-premier-business-credit-card",
     "name": "Southwest Rapid Rewards Premier Business Credit Card",
     "path": "/cards/southwest-rapid-rewards-premier-business-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/southwest-rapid-rewards-premier-business-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "southwest-rapid-rewards"
   },
   {
     "id": "southwest-rapid-rewards-premier-credit-card",
     "name": "Southwest Rapid Rewards Premier Credit Card",
     "path": "/cards/southwest-rapid-rewards-premier-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/southwest-rapid-rewards-premier-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "southwest-rapid-rewards"
   },
   {
     "id": "southwest-rapid-rewards-priority-credit-card",
     "name": "Southwest Rapid Rewards Priority Credit Card",
     "path": "/cards/southwest-rapid-rewards-priority-credit-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/southwest-rapid-rewards-priority-credit-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "southwest-rapid-rewards"
   },
   {
     "id": "synchrony-premier-world-mastercard",
@@ -886,14 +960,16 @@
     "name": "The Business Platinum Card From American Express",
     "path": "/cards/the-business-platinum-card-from-american-express.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/the-business-platinum-card-from-american-express.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "amex-membership-rewards"
   },
   {
     "id": "the-hilton-honors-american-express-business-card",
     "name": "The Hilton Honors American Express Business Card",
     "path": "/cards/the-hilton-honors-american-express-business-card.jpeg",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/the-hilton-honors-american-express-business-card.jpeg",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "hilton"
   },
   {
     "id": "the-plum-card-from-american-express",
@@ -907,28 +983,32 @@
     "name": "United Business Card",
     "path": "/cards/united-business-card.webp",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/united-business-card.webp",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "united-mileageplus"
   },
   {
     "id": "united-club-card",
     "name": "United Club Card",
     "path": "/cards/united-club-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/united-club-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "united-mileageplus"
   },
   {
     "id": "united-gateway-card",
     "name": "United Gateway Card",
     "path": "/cards/united-gateway-card.png",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/united-gateway-card.png",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "united-mileageplus"
   },
   {
     "id": "united-quest-card",
     "name": "United Quest Card",
     "path": "/cards/united-quest-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/united-quest-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "united-mileageplus"
   },
   {
     "id": "us-bank-altitude-connect-visa-signature-card",
@@ -1040,6 +1120,11 @@
     "name": "World Of Hyatt Business Credit Card",
     "path": "/cards/world-of-hyatt-business-credit-card.avif",
     "source": "walletfreak git a890586:walletfreak/static/images/credit_cards/world-of-hyatt-business-credit-card.avif",
-    "status": "historical-artwork; current design not certified"
+    "status": "historical-artwork; current design not certified",
+    "program_id": "hyatt",
+    "status_benefit": {
+      "tier": "Discoverist",
+      "source": "https://world.hyatt.com/content/gp/en/rewards/hyatt-credit-card.html"
+    }
   }
 ]

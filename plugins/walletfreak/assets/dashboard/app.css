@@ -314,11 +314,30 @@ main>.panel:not(#home){padding:clamp(18px,2.2vw,32px)}
 #wallet .wallet-heading-actions{display:flex;align-items:center;gap:12px}
 #wallet-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:10px 0 14px}
 #wallet-status{margin-right:auto;color:#9b6a20}
-#wallet-view-menu{position:relative}
-#wallet-view-menu>summary{list-style:none;min-width:112px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;color:#4056c4;font-weight:650}
-#wallet-view-menu>summary::-webkit-details-marker{display:none}
-#wallet-view-menu>div{position:absolute;right:0;top:calc(100% + 4px);z-index:6;display:grid;min-width:112px;padding:5px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 12px 32px #15223924}
-#wallet-view-menu button{min-height:34px;text-align:left;border:0;font-size:12px}
-#wallet-view-menu button[aria-pressed=true]{background:#edf0ff;color:#4056c4}
+#wallet-view-switch{position:relative;display:flex;gap:2px;padding:3px;border:1px solid var(--border);border-radius:999px;background:#eef1f7}
+#wallet-view-switch button{position:relative;z-index:1;min-height:32px;min-width:64px;padding:5px 12px;border:0;border-radius:999px;background:transparent;color:#657187;font-size:12px;font-weight:700}
+#wallet-view-switch button[aria-pressed=true]{background:#fff;color:#4056c4;box-shadow:0 1px 5px #15223920}
+#wallet-view-switch button:focus-visible{outline:2px solid #2d71cf;outline-offset:2px}
+#wallet-tables{display:grid;gap:24px}
+#wallet-tables[hidden]{display:none}
+#wallet-tables .section-heading{margin-bottom:8px}
+.wallet-list{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.wallet-list th,.wallet-list td{padding:12px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle;font-size:12px}
+.wallet-list thead th{background:#f6f7fa;color:#657187;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.wallet-list tbody tr:last-child>*{border-bottom:0}
+.wallet-list-name{display:flex;align-items:center;gap:10px;min-width:170px;color:var(--ink);font-weight:700}
+.wallet-list-name img{width:54px;height:36px;object-fit:contain;flex:none}
+.wallet-list-name .card-placeholder{display:grid;place-items:center;width:54px;height:36px;flex:none}
+.wallet-list .wallet-sync-actions{display:flex;flex-wrap:wrap;gap:4px}
+.wallet-list .wallet-sync-actions button,.wallet-list td>button{min-height:30px;padding:4px 8px;font-size:11px}
+.wallet-status-benefit{color:#50705b}
+#program-picker{width:min(820px,calc(100vw - 28px));max-height:90dvh;overflow:auto}
+#program-picker-search{width:100%;margin:5px 0 14px}
+.program-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:10px;margin-bottom:14px}
+.program-picker-grid button{display:grid;align-content:center;justify-items:start;gap:7px;min-height:100px;padding:14px;text-align:left;background:#fff;border:1px solid var(--border);border-radius:12px;color:var(--ink)}
+.program-picker-grid button:hover,.program-picker-grid button:focus-visible{border-color:#4056c4;background:#f5f7ff}
+.program-picker-grid img{width:48px;height:32px;object-fit:contain}
+.program-picker-grid strong{font-size:13px}.program-picker-grid small{color:var(--soft)}
+@media(max-width:700px){.wallet-list,.wallet-list tbody,.wallet-list tr{display:block}.wallet-list thead{display:none}.wallet-list tbody tr{padding:12px;border-bottom:1px solid var(--border)}.wallet-list tbody tr:last-child{border:0}.wallet-list th,.wallet-list td{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;border:0}.wallet-list td:before{content:attr(data-label);color:var(--soft);font-size:11px}.wallet-list td:last-child{justify-content:flex-end}.wallet-list td:last-child:before{content:none}.wallet-list-name{min-width:0}.wallet-list .wallet-sync-actions{justify-content:flex-end}}
 #signins-dialog{width:min(600px,calc(100vw - 24px));max-height:90dvh;overflow:auto}
 #signins-dialog .section-heading{margin-bottom:12px}

@@ -11,7 +11,7 @@ Use the existing walletfreak-browser connection and the official provider guide 
 
 Submit the login form through the browser when authorized by the refresh request. Stop after a failed credential attempt; do not loop. Let the user complete MFA/CAPTCHA and resume after completion. No SMS reader is installed. Do not read credential files, take screenshots of filled forms, print passwords, book, enroll, transfer points or redeem benefits.
 
-On the authenticated balance page, verify the person/account and read only the requested points/miles and status. Record the observation time and a public provider source URL without account identifiers. Do not treat pending points as available. If access fails or the balance is ambiguous, retain the old balance and reporting date and report the gap.
+On the authenticated balance page, verify the person/account and read only the requested points/miles and membership tier. Use the core plugin's local `assets/wallet-programs.json` for known tier names; preserve a provider-displayed tier that differs and flag it for catalog review. Never infer an active tier from a card benefit. Record the observation time and a public provider source URL without account identifiers. Do not treat pending points as available. If access fails or the balance is ambiguous, retain the old balance and reporting date and report the gap.
 
 Publish observations using `local.py wallet-sync --input -`:
 

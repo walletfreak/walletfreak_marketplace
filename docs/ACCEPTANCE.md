@@ -14,7 +14,7 @@
 - Live provider evidence is recorded independently. Passing synthetic tests never changes authored status.
 - Publication/deployment follow review of the concrete build and migration instructions.
 
-- Compact wallet tables preserve legacy reporting dates, unknowns and asset types; import never overwrites an existing wallet.
+- The compact Wallet table and item editors preserve legacy reporting dates, unknowns and asset types; import never overwrites an existing wallet. Card selection reuses an existing earning account, and loyalty programs can exist without cards.
 - Vault wrong-password/tampering, session isolation, stale writes, atomic failure and expiry tested; credentials absent from state and exports.
 - Each purchase can show its payment card and planned/used/not-used/conditional/unavailable benefits; used requires dated evidence.
 - Local plugin/skill browsing is read-only and scopes document reads to listed packages.
