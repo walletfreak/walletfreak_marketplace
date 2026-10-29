@@ -21,7 +21,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   let browser;
   try {
-    browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' });
+    browser = await chromium.launch({args:['--headless=new'], headless: true, executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' });
     const page = await browser.newPage();
     const errors = [];
     const requests = [];
@@ -33,26 +33,33 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     for (const url of [pathToFileURL(output).href, `http://127.0.0.1:${server.address().port}/index.html`]) {
       await page.goto(url);
       await page.getByRole('heading', { name: 'A week in Tokyo' }).waitFor();
-      if(!await page.locator('#export-alternatives').getAttribute('open'))await page.locator('#export-alternatives>summary').click();
-      assert.equal(await page.locator('.option:visible').count(), 5);
+      assert.equal(await page.locator('#export-alternatives').getAttribute('open'),'');
+      assert.equal(await page.locator('.option:visible').count(), 3);
+      assert.equal(await page.locator('#export-tabs [role="tab"]').count(),2);
       assert.match(await page.locator('.notice').innerText(), /Fictional prices/);
+      await page.locator('#option-0 .compare-button').click();
+      await page.locator('#option-1 .compare-button').click();
+      await page.locator('#export-compare-open').click();
+      assert.match(await page.locator('#export-comparison').innerText(),/Not directly comparable/);
+      await page.getByRole('tab',{name:/Stays/}).click();
+      assert.equal(await page.locator('.option:visible').count(),2);
+      await page.getByRole('tab',{name:/Flights/}).click();
       await page.getByRole('searchbox', { name: 'Search', exact: true }).fill('connecting');
       assert.equal(await page.locator('.option:visible').count(), 1);
       await page.getByRole('button', { name: 'Reset filters' }).click();
-      await page.getByLabel('Type', { exact: true }).selectOption('flight');
       await page.getByLabel('Availability', { exact: true }).selectOption('available');
       assert.equal(await page.locator('.option:visible').count(), 2);
       await page.getByRole('checkbox', { name: 'Shortlist The same route, using miles', exact: true }).check();
       await page.getByRole('checkbox', { name: 'Shortlisted only', exact: true }).check();
       assert.equal(await page.locator('.option:visible').count(), 1);
-      // A filtered-out itinerary option must become visible when its link is followed.
-      await page.locator('.wf-itinerary details').nth(1).locator('summary').click();await page.locator('.wf-itinerary a[href="#option-3"]').click();
+      // A deep link must reveal a filtered-out itinerary option.
+      await page.evaluate(() => { location.hash = '#option-3'; });
       await page.locator('#option-3').waitFor({ state: 'visible' });
       await page.locator('#option-3 details[open]').waitFor();
       await page.getByRole('searchbox', { name: 'Search', exact: true }).fill('not-a-result');
       assert.ok(await page.locator('#no-results').isVisible());
       await page.getByRole('button', { name: 'Reset filters' }).click();
-      assert.equal(await page.locator('.option:visible').count(), 5);
+      assert.equal(await page.locator('.option:visible').count(), 3);
       await page.reload();
       assert.equal(await page.locator('.option input:checked').count(), 0);
       for (const width of [1440, 768, 390, 320]) {
@@ -70,7 +77,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     const noJS = await browser.newContext({ javaScriptEnabled: false });
     const fallback = await noJS.newPage();
     await fallback.goto(pathToFileURL(output).href);
-    await fallback.locator('#export-alternatives>summary').click();assert.equal(await fallback.locator('.option:visible').count(), 5);
+    assert.equal(await fallback.locator('.option:visible').count(), 5);
     await noJS.close();
     console.log('Passed: offline + HTTP, filters, shortlist, itinerary links, reload, 4 widths, no JS fallback, no errors/external requests.');
   } finally {

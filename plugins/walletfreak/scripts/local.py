@@ -40,7 +40,7 @@ PROVIDERS = json.loads((PLUGIN / 'providers.json').read_text())
 WALLET_PROGRAMS = {item['id'] for item in json.loads((PLUGIN / 'assets/wallet-programs.json').read_text())['programs']}
 CARD_PRODUCTS = {item['id']: item for item in json.loads((PLUGIN / 'assets/cards.json').read_text())}
 LIMIT = 2_000_000
-UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-programs.json', 'wallet-assets.json'}
+UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'dashboard/research-board.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-programs.json', 'wallet-assets.json'}
 
 
 def now():

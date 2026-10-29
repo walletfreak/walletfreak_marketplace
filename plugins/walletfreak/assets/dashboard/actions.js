@@ -66,9 +66,7 @@
     if (target.dataset.trip) {if (currentTab !== 'overview') tab('overview'); window.selectTravelTrip(target.dataset.trip);}
     if (target.dataset.actionTarget === 'research') {
       tab('overview'); $('#trip-library').open = true; $('#trip-alternatives').open = true;
-      if (target.dataset.actionOption) {$('#search').value='';$('#kind').value='';$('#availability').value='';$('#shortlisted').checked=false;renderFindings();}
-      const option = [...document.querySelectorAll('[data-option-id]')].find(item => item.dataset.optionId === target.dataset.actionOption);
-      (option || $('#options')).scrollIntoView({behavior: 'smooth'});
+      window.showResearchOption(target.dataset.actionOption);
     } else if (target.dataset.actionTarget === 'trip') {
       tab('overview'); $('#overview-content').scrollIntoView({behavior: 'smooth'});
     } else if (target.dataset.actionTarget === 'spending') {
