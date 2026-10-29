@@ -71,6 +71,16 @@ class TripBoard(unittest.TestCase):
         self.assertIn('No itinerary drafted yet.', html)
         self.assertNotIn('Illustrative example', html)
 
+    def test_dated_events_and_booking_labels_match_structured_fields(self):
+        for change in (
+            lambda d: d['itinerary'][0].pop('day'),
+            lambda d: d['itinerary'][0].update(title='Booked departure', booking_status='proposed'),
+            lambda d: d['itinerary'][1].update(stay={'check_in':'2027-04-14','check_out':'2027-04-16'}),
+        ):
+            data=copy.deepcopy(self.data)
+            change(data)
+            with self.assertRaises(ValueError):board.validate(data)
+
     def test_payment_cards_and_benefit_states_are_validated_and_escaped(self):
         option=self.data['options'][0]
         option['payment']={'card':'<script>private</script>','reason':'Existing card required', 'benefits':[

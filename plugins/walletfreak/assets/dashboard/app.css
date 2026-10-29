@@ -69,6 +69,7 @@ body[data-view=wallet],body[data-view=spending],body[data-view=shopping]{--green
 #confirmation-import{order:5}
 #overview-customize{order:6}
 #overview-content.travel-route-preview>.wf-title,#overview-content [data-component=itinerary]>h3{display:none}
+#overview-content .wf-trip-brief-empty .wf-trip-brief-copy>strong{display:none}
 #overview-content.travel-route-preview .wf-block:first-of-type{margin-top:0}
 #overview-content [data-component=itinerary]>.wf-trip>.wf-trip-columns{grid-template-columns:minmax(0,1.65fr) minmax(290px,.85fr);gap:clamp(20px,3vw,44px)}
 #overview-content .wf-trip .wf-route{grid-column:1;grid-row:1;position:static;background:transparent;border:0;padding:0}
@@ -197,3 +198,76 @@ body{background:var(--paper);color:var(--ink)}header{background:#fbfaf8;border-c
 #overview-content.travel-route-preview:not(.travel-route-mapped) .wf-itinerary{position:static;max-height:none;width:min(100%,900px);margin:auto;overflow:visible}
 #overview-content.travel-route-preview:not(.travel-route-mapped) .wf-trip-switch{display:none}
 @media(max-width:900px){#overview-content.travel-route-mapped .wf-trip-switch{display:flex}#overview-content.travel-route-mapped .wf-trip:not([data-view=map]) .wf-route{display:none}#overview-content.travel-route-mapped .wf-trip[data-view=map] .wf-itinerary{display:none}#overview-content .wf-itinerary>li,#overview-content .wf-itinerary>li.wf-needed{grid-template-columns:54px minmax(0,1fr)}}
+
+/* Shared workspace icons and focused working views. */
+.nav-sprite{position:absolute;width:0;height:0;overflow:hidden}
+.workspace-nav .nav-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#overview .travel-hero h1{font-size:clamp(30px,3.1vw,44px);line-height:1.12;max-width:28ch}
+#overview-layout-note{order:2;margin:-4px 0 16px;padding:10px 14px;border-radius:9px;background:#f0f2f8}
+#overview-costs{order:3;margin:0 0 18px}
+#overview-costs[hidden]{display:none}
+#overview-costs article{min-width:0;padding:10px 14px;border:1px solid var(--border);border-radius:9px;background:#fff}
+#overview-costs strong{font-size:17px}
+#travel-actions{order:4}
+#overview-content{order:5}
+#overview-content.travel-route-preview:not(.travel-route-mapped) .wf-itinerary{width:min(100%,790px)}
+#overview-content .wf-itinerary>li{align-items:start}
+#overview-content .wf-cal-date:empty{visibility:hidden}
+#overview-content .wf-cal-event{padding:9px 12px}
+#overview-content .wf-step-heading>strong{font-size:13px;font-weight:700}
+#wallet .section-heading h2{font-size:clamp(30px,3.1vw,44px)}
+#wallet-tiles{display:grid;gap:28px}
+#wallet .wallet-section>.section-heading{margin-bottom:13px;padding-bottom:12px}
+#wallet .wallet-section>.section-heading h3{font:500 24px Georgia,serif;margin:0}
+#wallet .wallet-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin:0}
+#wallet .wallet-tile{display:flex;flex-direction:column;gap:7px;min-width:0;min-height:245px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff}
+#wallet .wallet-tile h4{font-size:16px;line-height:1.25;margin:2px 0 0;overflow-wrap:anywhere}
+#wallet .wallet-tile p,#wallet .wallet-tile small{margin:0}
+#wallet .wallet-tile .wallet-qualifier{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;color:#7b6870}
+#wallet .wallet-tile .wallet-linked{font-size:12px;color:#64758b}
+#wallet .wallet-tile .wallet-linked button{padding:0;border:0;background:none;color:#4056c4;text-align:left;min-height:25px}
+#wallet .wallet-tile .wallet-balance{font-size:23px;line-height:1.2;margin-top:4px}
+#wallet .wallet-tile .wallet-tile-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:11px}
+#wallet .wallet-tile .wallet-tile-actions button{min-height:32px;padding:5px 8px;font-size:11px}
+#wallet .wallet-tile .wallet-tile-actions button:first-child{border-color:#d8ddf1;color:#3d55c7;background:#f4f5ff}
+#sync-request-dialog{width:min(520px,calc(100vw - 32px));border:1px solid var(--border);border-radius:14px;padding:22px;color:var(--ink);box-shadow:0 25px 70px #14243b45}
+#sync-request-dialog::backdrop{background:#101d3470}
+#sync-request-dialog textarea{width:100%;margin:9px 0 12px}
+.wallet-extra{border-top:1px solid var(--border);padding-top:13px;margin-top:12px}
+.wallet-extra>summary{color:#4056c4;font-weight:650}
+@media(max-width:700px){#overview .travel-hero h1{font-size:clamp(27px,8vw,39px)}#wallet .wallet-tile{min-height:0}}
+
+/* Keep each workspace's content inside the panel edge. */
+main>.panel:not(#home){padding:clamp(18px,2.2vw,32px)}
+#trip-toolbar{order:1;display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:0 0 24px}
+#trip-toolbar[hidden]{display:none}
+#trip-toolbar #overview-trip-label{order:0;margin:0}
+#trip-toolbar>button{min-height:36px}
+#trip-manager{width:min(580px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--border);border-radius:15px;padding:24px;background:#fff;color:var(--ink);box-shadow:0 25px 70px #14243b45}
+#trip-manager::backdrop{background:#101d3470}
+#trip-manager .section-heading{align-items:center;margin:0 0 12px}
+#trip-manager .section-heading h2{margin:0;font:500 27px Georgia,serif}
+#trip-manager-list article{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border)}
+#trip-manager-list strong{overflow-wrap:anywhere}
+#trip-manager .actions{margin:18px 0 10px}
+#clear-signins{margin:8px 0 20px}
+#wallet .wallet-tile-actions .danger{color:#a03830;background:transparent;border-color:#e3d8d6}
+@media(max-width:600px){main>.panel:not(#home){padding:16px}#trip-toolbar{align-items:stretch}#trip-toolbar #overview-trip-label{width:100%}#trip-toolbar>button{width:max-content}#trip-manager{padding:17px}}
+
+/* An empty itinerary has one starting point; card selection uses the existing artwork catalog. */
+.travel-empty{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.9fr);gap:clamp(24px,4vw,64px);align-items:center;margin:14px 0 28px;padding:clamp(24px,4vw,52px);border:1px solid var(--border);border-radius:20px;background:#fff}
+.travel-empty h2{font:clamp(30px,4vw,50px)/1.08 Georgia,serif;letter-spacing:-.045em;margin:12px 0}
+.travel-empty p{color:var(--soft);font-size:15px;line-height:1.5;max-width:42ch}
+.travel-empty details{margin-top:28px;color:var(--soft)}.travel-empty details p{font-size:13px}.travel-empty details button{margin-top:7px}
+.travel-empty-map{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:260px;padding:22px;overflow:hidden;border-radius:17px;background:linear-gradient(145deg,#173b53,#101b36);color:#c4d5e7}
+.travel-empty-map .eyebrow{color:#a7d6dc}.travel-empty-map svg{width:100%;max-height:200px}.travel-empty-map>span:last-child{font-size:12px}
+#card-picker{width:min(920px,calc(100vw - 28px));max-height:90dvh;overflow:auto}
+#card-picker .section-heading{margin-bottom:15px}#card-picker-search{width:100%;margin-bottom:8px}
+.card-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:10px;margin:14px 0}
+.card-picker-grid button{display:grid;align-content:start;gap:10px;min-width:0;min-height:150px;padding:12px;text-align:left;background:#fff;border:1px solid var(--border);border-radius:12px;color:var(--ink)}
+.card-picker-grid button:hover,.card-picker-grid button:focus-visible{border-color:var(--green);background:#f5f7ff}
+.card-picker-grid img{width:100%;height:92px;object-fit:contain}.card-picker-grid span{font-size:12px;line-height:1.3}
+.card-choice{width:100%;display:flex;align-items:center;gap:18px;text-align:left;padding:14px;margin-top:16px;border:1px solid var(--border);color:var(--ink)}
+.card-choice img{width:100px;height:66px;object-fit:contain}.card-choice strong,.card-choice small{display:block}.card-choice small{margin-top:5px;color:var(--green)}
+#wallet-data{margin-top:28px;padding-bottom:10px}#wallet-data>summary{font-size:12px}
+@media(max-width:700px){.travel-empty{grid-template-columns:1fr;padding:22px}.travel-empty-map{min-height:200px}.card-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

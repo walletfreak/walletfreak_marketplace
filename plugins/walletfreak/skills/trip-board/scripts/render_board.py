@@ -193,10 +193,16 @@ def validate(data):
         for name in ("when", "title", "detail"):
             text(item.get(name), f"itinerary {name}", True)
         if 'day' in item:
+            if not isinstance(item['day'], str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', item['day']):
+                raise ValueError('Itinerary day needs YYYY-MM-DD')
             date.fromisoformat(item['day'])
+        elif re.search(r'\b\d{4}-\d{2}-\d{2}\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}(?:[–-]\d{1,2})?,?\s+\d{4}\b', item['when'], re.I):
+            raise ValueError('Add day for a dated itinerary entry')
         if 'price' in item and (not isinstance(item['price'],str) or len(item['price'])>80): raise ValueError('Invalid itinerary price')
         if 'booking_status' in item and item['booking_status'] not in ('proposed','booked','cancelled'):
             raise ValueError('Unknown booking status')
+        if re.match(r'Booked\b', item['title'], re.I) and item.get('booking_status') != 'booked':
+            raise ValueError('Booked titles require booked status')
         if 'place' in item:
             place = item['place']
             if not isinstance(place, dict) or set(place) != {'label','lat','lng','confidence','source_url'}:
@@ -217,6 +223,8 @@ def validate(data):
                     raise ValueError('Stay dates need YYYY-MM-DD')
             if date.fromisoformat(stay['check_out']) <= date.fromisoformat(stay['check_in']):
                 raise ValueError('Check-out must follow check-in')
+            if item.get('day') and item['day'] != stay['check_in']:
+                raise ValueError('Stay day must match check-in')
         if 'route' in item:
             route = item['route']
             if not isinstance(route, dict) or set(route) - {'mode','duration','source_url'} or 'mode' not in route:
@@ -262,14 +270,15 @@ def render(data):
         anchor = anchors[option["id"]]
         detail = "".join(f'<dt>{name.title()}</dt><dd>{escape(option.get(name) or "Not recorded")}</dd>' for name in DETAILS)
         sources = " · ".join(link(source["label"], source["url"]) for source in option.get("sources", [])) or "No source recorded"
-        cards.append(f'''<article class="option" id="{anchor}" data-kind="{option['kind']}" data-status="{option['status']}">
+        cost = option.get('cost') or {}
+        amount = cost.get('cash') if option['kind'] == 'flight' and option['status'] == 'available' and cost.get('complete') and not cost.get('points') else ''
+        cards.append(f'''<article class="option" id="{anchor}" data-kind="{option['kind']}" data-status="{option['status']}" data-amount="{escape(amount)}" data-currency="{escape(cost.get('currency', ''))}" data-group="{escape(option.get('choice_group', ''), quote=True)}">
 {photo_html(option)}
-<div class="eyebrow"><span>{option['kind'].title()}</span><span class="status {option['status']}">{option['status'].title()} at observation</span></div>
-<h3>{escape(option['title'])}</h3><p class="provider">{escape(option.get('provider') or 'Provider not recorded')} · {escape(option.get('program') or 'Cash / program not recorded')}</p>
-<p class="price">{escape(option.get('price') or 'Price unknown')}</p><p class="observed">Observed: {escape(option.get('observed_at') or 'Not recorded')}</p>
-{payment_html(option)}
-<label class="shortlist"><input type="checkbox" aria-label="Shortlist {escape(option['title'], quote=True)}"> Add to shortlist</label>
-<details><summary>Research &amp; restrictions</summary><dl>{detail}</dl><p>{sources}</p></details></article>''')
+<div class="card-top"><div><small>{escape(option.get('provider') or 'Provider not recorded')}</small><h3>{escape(option['title'])}</h3></div><span class="status {option['status']}">{option['status'].title()} at observation</span></div>
+<div class="quote"><div><small>{option['kind'].upper()} / {escape(option.get('program') or 'Program to confirm')}</small><p>{escape(option.get('product') or 'Product and schedule not recorded.')}</p></div><div><strong>{escape(option.get('price') or 'Price unknown')}</strong><small>{'WHOLE OPTION · RECHECK BEFORE BOOKING' if amount else 'TOTAL NOT VERIFIED'}</small></div></div>
+<div class="card-actions"><span>Observed {escape(option.get('observed_at') or 'not recorded')}</span><label class="shortlist"><input type="checkbox" aria-label="Shortlist {escape(option['title'], quote=True)}"><span aria-hidden="true">☆</span></label><button type="button" class="compare-button" aria-pressed="false">+ Compare</button><button type="button" class="evidence-button">View evidence ›</button></div>
+<p class="caution">{escape(option.get('uncertainty') or 'Review current terms before booking.')}</p>
+<details><summary>View evidence</summary><dl>{detail}</dl>{payment_html(option)}<p>{sources}</p></details></article>''')
     research = []
     for item in data.get("research", []):
         source = link("Official source", item["url"]) if item.get("url") else "No source recorded"
@@ -290,6 +299,17 @@ def render(data):
             if row.get(key, {}).get('source_url'): row[key] = {**row[key], 'source_url':source_url(row[key]['source_url'])}
     payload = json.dumps(rows).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
     window_payload = json.dumps(data.get('lodging_window')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+    insights = []
+    for kind in KINDS:
+        same_kind = [o for o in options if o['kind'] == kind]
+        if not same_kind:
+            continue
+        complete = [o for o in same_kind if kind == 'flight' and o['status'] == 'available' and o.get('cost', {}).get('complete') and not o['cost'].get('points') and o.get('choice_group')]
+        group = next((o for o in complete if any(p is not o and p['choice_group'] == o['choice_group'] and p['cost']['currency'] == o['cost']['currency'] for p in complete)), None)
+        peers = [o for o in complete if group and o['choice_group'] == group['choice_group'] and o['cost']['currency'] == group['cost']['currency']]
+        quotes = ''.join(f'<div><span>{escape(o["title"])}</span><strong>{escape(o.get("price") or "Price unknown")}</strong></div>' for o in peers)
+        checks = ''.join(f'<li>{escape(gap)}</li>' for gap in data.get('gaps', [])[:5]) or '<li>No open questions recorded. Recheck current terms.</li>'
+        insights.append(f'<div data-insight-kind="{kind}"><section><small>QUOTE COMPARISON / 01</small><h3>{"What does the choice cost?" if peers else "One benchmark. More to verify."}</h3><p>{"Complete cash quotes in the same choice group and currency." if peers else "No directly comparable complete cash quotes in this category."}</p>{quotes}</section><section><small>BEFORE YOU BOOK / 02</small><h3>The missing pieces.</h3><ol>{checks}</ol><p>Points, conditional credits and unknown costs are not deducted from quotes.</p></section></div>')
     style = (ASSETS / "board.css").read_text() + '\n' + (components / 'components.css').read_text() + '\n.wf-load-map,.wf-route>.wf-map-note:last-of-type{display:none!important}'
     script = (ASSETS / "board.js").read_text()
     script += '\n' + (components / 'components.js').read_text() + '\nWalletFreakComponents.renderTrip(document.querySelector("#export-trip"),'+payload+','+window_payload+');'
@@ -297,6 +317,12 @@ def render(data):
     replacements = {
         "TITLE": escape(data["title"]), "SUMMARY": escape(data.get("summary", "")),
         "GENERATED": escape(data["generated_at"]), "COUNT": str(len(options)),
+        "METRICS": ''.join(f'<div><small>{label}</small><strong>{value}</strong><span>{detail}</span></div>' for label,value,detail in (
+            ('RESEARCHED OPTIONS',len(options),'All finding types'),
+            ('AVAILABLE AT OBSERVATION',sum(o['status']=='available' for o in options),'Recheck before booking'),
+            ('COMPLETE QUOTES',sum(o['status']=='available' and bool(o.get('cost',{}).get('complete')) for o in options),'Gross amounts only'),
+            ('OPEN QUESTIONS',len(data.get('gaps',[])),'Review below'))),
+        "INSIGHTS": ''.join(insights),
         "NOTICE": "Illustrative example · Fictional prices and availability, not live quotes." if data.get("illustrative") else "Research snapshot · Recheck prices, availability and terms before booking.",
         "OPTIONS": "".join(cards) or '<p class="empty">No options researched yet.</p>',
         "RESEARCH": "".join(research) or '<p class="empty">No additional research notes yet. Evidence for each option is under Research &amp; restrictions.</p>',

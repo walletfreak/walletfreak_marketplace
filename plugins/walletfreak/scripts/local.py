@@ -38,7 +38,7 @@ import render_board as board
 
 PROVIDERS = json.loads((PLUGIN / 'providers.json').read_text())
 LIMIT = 2_000_000
-UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/confirmations.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
+UI_ASSETS = {'components/v1/vendor/leaflet.js', 'components/v1/vendor/leaflet.css', 'dashboard/wallet-setup.js', 'dashboard/onboarding.js', 'dashboard/app.js', 'dashboard/spending.js', 'dashboard/finance.js', 'dashboard/shopping.js', 'dashboard/confirmations.js', 'dashboard/overview.js', 'dashboard/actions.js', 'components/v1/components.js', 'components/v1/components.css', 'components/v1/catalog.json', 'components/v1/layout.schema.json', 'dashboard/app.css', 'dashboard/research-board.css', 'mascot.png', 'brands.json', 'cards.json', 'wallet-assets.json'}
 
 
 def now():
@@ -186,7 +186,7 @@ def validate_wallet(value):
         short_text(person['name'],'person name',True,300)
         person_ids.add(person['id'])
     columns = {
-        'cards': ('name', 'owner', 'notes', 'reported_on'),
+        'cards': ('name', 'nickname', 'owner', 'notes', 'reported_on'),
         'programs': ('name', 'owner', 'balance', 'approximate', 'status', 'preserve', 'reported_on', 'notes'),
         'benefits': ('name', 'owner', 'kind', 'remaining', 'expires_on', 'notes', 'reported_on')}
     for section, allowed in columns.items():
@@ -194,7 +194,7 @@ def validate_wallet(value):
         if not isinstance(rows, list) or len(rows) > 100:
             raise ValueError('Use at most 100 entries per wallet section.')
         for row in rows:
-            fields(row, (*allowed, 'id', 'reward_account_id', 'card_id', 'program_id', 'person_id', 'synced_at', 'sync_source', 'account_label', 'member_hint', 'credential_id'), tuple(k for k in allowed if k != 'notes' or section != 'programs'))
+            fields(row, (*allowed, 'id', 'reward_account_id', 'card_id', 'program_id', 'person_id', 'synced_at', 'sync_source', 'account_label', 'member_hint', 'credential_id'), tuple(k for k in allowed if k != 'nickname' and (k != 'notes' or section != 'programs')))
             for key in allowed:
                 if key not in row: continue
                 if key in ('approximate', 'preserve'):
@@ -416,7 +416,12 @@ class Store:
             atomic_json(self.root / 'settings.json', settings)
             return {'message': 'Saved. Restart the browser connection to apply on its next use.'}
         state = self.read_results()
-        if action == 'delete-results':
+        if action == 'clear-results':
+            fields(body, ('confirm', 'expected_trips'), ('confirm', 'expected_trips'))
+            if body['confirm'] != 'clear-all-trips' or body['expected_trips'] != [{'id': trip['id'], 'revision': trip['revision']} for trip in state['trips']]:
+                raise ValueError('Trips changed. Refresh before clearing all trips.')
+            state['trips'] = []
+        elif action == 'delete-results':
             fields(body, ('id', 'expected_revision'), ('id', 'expected_revision'))
             trip = self.trip(body['id'], state)
             if body['expected_revision'] != trip['revision']:
@@ -448,7 +453,7 @@ class Store:
         else:
             raise ValueError('Unknown action.')
         atomic_json(self.path, state)
-        return {'message': 'Results deleted. Your personal wallet is unchanged.'} if action == 'delete-results' else {}
+        return {'message': 'Trips deleted. Your personal wallet is unchanged.'} if action == 'clear-results' else {'message': 'Results deleted. Your personal wallet is unchanged.'} if action == 'delete-results' else {}
 
     def agent_action(self, action, body):
         if action == 'shopping-publish': return self.shopping.publish(body)

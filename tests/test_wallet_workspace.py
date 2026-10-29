@@ -81,6 +81,11 @@ class WorkspaceTests(unittest.TestCase):
 
     def test_extended_assets_and_old_wallet_compatibility(self):
         data=parse_profile(PROFILE)
+        data['cards'][0]['nickname']='Everyday card';local.validate_wallet(data)
+        data['cards'][0].pop('nickname');local.validate_wallet(data)
+        data['cards'][0]['nickname']='x'*301
+        with self.assertRaises(ValueError):local.validate_wallet(data)
+        data['cards'][0].pop('nickname')
         for kind in ('travel-bank','gift-card','companion','upgrade','lounge-pass','membership','voucher','cashback','other'):
             data['benefits'][0]['kind']=kind;local.validate_wallet(data)
         data['programs'][0].pop('notes');local.validate_wallet(data)
@@ -157,6 +162,15 @@ class VaultTests(unittest.TestCase):
         self.assertEqual(self.v.status('browser-A')['entries'],[])
         with self.assertRaises(ValueError):self.v.action('create',{'master_password':self.password},'browser-A')
         self.assertTrue(self.v.path.exists())
+
+    def test_clear_signins_requires_confirmation_and_current_revision(self):
+        self.save(); self.save('second synthetic password')
+        with self.assertRaises(ValueError): self.v.action('clear',{'confirm':'wrong','expected_revision':self.v.revision},'browser-A')
+        with self.assertRaises(ValueError): self.v.action('clear',{'confirm':'clear-all-sign-ins','expected_revision':'stale'},'browser-A')
+        self.assertEqual(len(self.v.status('browser-A')['entries']),2)
+        self.v.action('clear',{'confirm':'clear-all-sign-ins','expected_revision':self.v.revision},'browser-A')
+        self.assertEqual(self.v.status('browser-A')['entries'],[])
+        self.assertNotIn('second synthetic password',self.v.path.read_text())
 
 
 if __name__=='__main__':unittest.main()

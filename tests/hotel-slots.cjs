@@ -38,11 +38,32 @@ assert.match(flight,/Outbound flight/);
 assert.match(flight,/class="wf-time">10:35 → 2:15/);
 assert.match(flight,/10:35 AM EDT → 2:15 PM JST/);
 assert.match(flight,/class="wf-price">USD 900/);
+const legacy=show([{when:'February 16–19, 2027',title:'Three Seville nights',price:'Exact-date cash total and reward inventory unverified; verify before booking.'},{when:'February 20, 2027',title:'Return flight',price:'USD 1,295.99 charged; USD 1,095.99 net after posted credit.'}]);
+assert.match(legacy,/Tue<strong>Feb 16<\/strong>/);
+assert.match(legacy,/class="wf-price">USD 1,295.99/);
+assert.doesNotMatch(legacy,/<span class="wf-price">Exact-date/);
+assert.match(legacy,/<dt>Price<\/dt><dd>Exact-date cash total/);
 assert.match(flight,/Hotel night to book/);
 assert.match(flight,/class="wf-info"/);
 assert.match(flight,/class="wf-evidence"/);
 assert.doesNotMatch(flight,/Details & evidence/);
 assert.doesNotMatch(flight,/Payment card: to confirm/);
+renderTrip(target,[
+  {when:'February 13, 2027 · 18:20 America/New_York',title:'Booked JFK departure',booking_status:'proposed',detail:'Long research note stays in the dialog.'},
+  {when:'To confirm',title:'Connection to arrange',detail:'No date supplied.'}
+]);
+assert.match(target.innerHTML,/Feb 13/);
+assert.match(target.innerHTML,/Status to confirm/);
+assert.match(target.innerHTML,/Unscheduled/);
+assert.doesNotMatch(target.innerHTML,/Date TBD/);
+assert.match(target.innerHTML,/Long research note stays in the dialog/);
+renderTrip(target,[
+  {when:'February 13, 2027',title:'Departure'},
+  {when:'February 13, 2027',title:'Arrival'},
+  {when:'2027-02-30',title:'Invalid date'}
+]);
+assert.equal((target.innerHTML.match(/<strong>Feb 13<\/strong>/g)||[]).length,1);
+assert.match(target.innerHTML,/Unscheduled/);
 let click,opened=0,closed=0;
 const dialog={showModal(){opened++},close(){closed++}};
 const trip={addEventListener(type,handler){if(type==='click')click=handler},querySelector(){return dialog}};

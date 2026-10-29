@@ -145,6 +145,17 @@ class DataTests(unittest.TestCase):
         (self.root/'wallet.json').unlink()
         self.assertEqual(self.store.wallet(),local.empty_wallet())
 
+    def test_clear_all_trips_requires_current_list_and_keeps_wallet(self):
+        self.save_wallet(); saved=self.store.wallet()
+        self.store.agent_action('publish',{'findings':findings()})
+        expected=[{'id':trip['id'],'revision':trip['revision']} for trip in self.store.snapshot()['trips']]
+        with self.assertRaises(ValueError): self.store.user_action('clear-results',{'confirm':'clear-all-trips','expected_trips':expected[:-1]})
+        with self.assertRaises(ValueError): self.store.user_action('clear-results',{'confirm':'wrong','expected_trips':expected})
+        self.assertEqual(len(self.store.snapshot()['trips']),2)
+        self.store.user_action('clear-results',{'confirm':'clear-all-trips','expected_trips':expected})
+        self.assertEqual(self.store.snapshot()['trips'],[])
+        self.assertEqual(self.store.wallet(),saved)
+
     def test_legacy_migration_and_no_resurrection(self):
         trip=self.store.trip(self.id)
         trip.update(brief={'title':'Original'},brief_revision=1,brief_history=[],findings_brief_revision=1)
