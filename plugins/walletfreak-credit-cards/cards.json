@@ -608,5 +608,68 @@
       "bilt palladium card"
     ],
     "guide": "skills/card-travel-benefits/references/cards/bilt-palladium.md"
+  },
+  {
+    "id": "us-bank-altitude-connect",
+    "name": "U.S. Bank Altitude Connect",
+    "variant": "personal",
+    "family": "us-bank",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "altitude connect"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/us-bank-altitude-connect.md"
+  },
+  {
+    "id": "us-bank-altitude-go",
+    "name": "U.S. Bank Altitude Go",
+    "variant": "personal",
+    "family": "us-bank",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "altitude go"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/us-bank-altitude-go.md"
+  },
+  {
+    "id": "us-bank-cash-plus",
+    "name": "U.S. Bank Cash+",
+    "variant": "personal",
+    "family": "us-bank",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "us bank cash plus",
+      "cash plus visa signature"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/us-bank-cash-plus.md"
+  },
+  {
+    "id": "us-bank-smartly",
+    "name": "U.S. Bank Smartly Visa Signature",
+    "variant": "personal",
+    "family": "us-bank",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "us bank smartly",
+      "smartly visa"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/us-bank-smartly.md"
+  },
+  {
+    "id": "us-bank-altitude-reserve",
+    "name": "U.S. Bank Altitude Reserve",
+    "variant": "personal",
+    "family": "us-bank",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "altitude reserve",
+      "usbar"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/us-bank-altitude-reserve.md"
   }
 ]

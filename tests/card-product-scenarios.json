@@ -100,5 +100,19 @@
       "Check benefit effective dates and never add replaced credits",
       "Apply only the selected category and verify housing reward-mode/spending requirements"
     ]
+  },
+  {
+    "id": "us-bank-product-boundaries",
+    "family": "us-bank",
+    "prompt": "Synthetic offline case: I hold Altitude Go and Smartly, not Reserve. Apply Reserve mobile-wallet earning and a historic unlimited Smartly relationship rate. I have not confirmed my eligible deposit balances. Do not browse.",
+    "expected_products": [
+      "us-bank-altitude-go",
+      "us-bank-smartly"
+    ],
+    "expected": [
+      "Do not borrow Reserve earning/credit/lounge rules",
+      "Verify network/account version and current Smartly tier/cap conditions",
+      "Keep the unverified banking boost conditional and compare actual cash-back redemption value"
+    ]
   }
 ]
