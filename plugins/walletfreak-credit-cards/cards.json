@@ -1215,5 +1215,70 @@
       "aa business citi"
     ],
     "guide": "skills/card-travel-benefits/references/cards/aadvantage-business.md"
+  },
+  {
+    "id": "southwest-rapid-rewards-plus",
+    "name": "Southwest Rapid Rewards Plus",
+    "variant": "personal",
+    "family": "southwest",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "southwest plus",
+      "rapid rewards plus"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/southwest-rapid-rewards-plus.md"
+  },
+  {
+    "id": "southwest-rapid-rewards-premier",
+    "name": "Southwest Rapid Rewards Premier",
+    "variant": "personal",
+    "family": "southwest",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "southwest premier personal",
+      "rapid rewards premier"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/southwest-rapid-rewards-premier.md"
+  },
+  {
+    "id": "southwest-rapid-rewards-priority",
+    "name": "Southwest Rapid Rewards Priority",
+    "variant": "personal",
+    "family": "southwest",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "southwest priority",
+      "rapid rewards priority"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/southwest-rapid-rewards-priority.md"
+  },
+  {
+    "id": "southwest-premier-business",
+    "name": "Southwest Rapid Rewards Premier Business",
+    "variant": "business",
+    "family": "southwest",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "southwest premier business",
+      "rapid rewards premier business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/southwest-premier-business.md"
+  },
+  {
+    "id": "southwest-performance-business",
+    "name": "Southwest Rapid Rewards Performance Business",
+    "variant": "business",
+    "family": "southwest",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "southwest performance business",
+      "rapid rewards performance business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/southwest-performance-business.md"
   }
 ]

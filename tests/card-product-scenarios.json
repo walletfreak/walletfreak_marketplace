@@ -256,5 +256,20 @@
       "Do not import baggage privileges to MileUp",
       "Verify account/network version and effective dates before using changed benefits"
     ]
+  },
+  {
+    "id": "southwest-product-boundaries",
+    "family": "southwest",
+    "prompt": "Synthetic offline case: compare Plus, Priority and Performance Business for flights next year. Use last year's unverified seating/boarding benefits, count Companion Pass qualifying points as redeemable miles and merge their annual credits. Do not browse.",
+    "expected_products": [
+      "southwest-rapid-rewards-plus",
+      "southwest-rapid-rewards-priority",
+      "southwest-performance-business"
+    ],
+    "expected": [
+      "Verify account and travel-date effective terms for each product",
+      "Separate redeemable points from qualification boosts and actual Companion Pass issuance",
+      "Keep personal/business credit pools and employee eligibility separate"
+    ]
   }
 ]
