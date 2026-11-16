@@ -85,5 +85,20 @@
       "Keep unverified relationship bonus conditional",
       "Distinguish statement-credit redemption value from unsupported partner transfers"
     ]
+  },
+  {
+    "id": "bilt-product-boundaries",
+    "family": "bilt",
+    "prompt": "Synthetic offline case: compare Bilt Blue, Obsidian and Palladium. Assume Bilt Cash transfers 1:1 to Hyatt and add an older hotel credit to the replacement annual Bilt Cash credit. Obsidian currently has dining selected, but the user wants the same top rate on groceries. Do not browse.",
+    "expected_products": [
+      "bilt-blue",
+      "bilt-obsidian",
+      "bilt-palladium"
+    ],
+    "expected": [
+      "Keep Bilt Cash and transferable Bilt points distinct",
+      "Check benefit effective dates and never add replaced credits",
+      "Apply only the selected category and verify housing reward-mode/spending requirements"
+    ]
   }
 ]

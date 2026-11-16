@@ -572,5 +572,41 @@
       "bank of america travel rewards card"
     ],
     "guide": "skills/card-travel-benefits/references/cards/bofa-travel-rewards.md"
+  },
+  {
+    "id": "bilt-blue",
+    "name": "Bilt Blue",
+    "variant": "personal",
+    "family": "bilt",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bilt blue card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bilt-blue.md"
+  },
+  {
+    "id": "bilt-obsidian",
+    "name": "Bilt Obsidian",
+    "variant": "personal",
+    "family": "bilt",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bilt obsidian card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bilt-obsidian.md"
+  },
+  {
+    "id": "bilt-palladium",
+    "name": "Bilt Palladium",
+    "variant": "personal",
+    "family": "bilt",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bilt palladium card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bilt-palladium.md"
   }
 ]
