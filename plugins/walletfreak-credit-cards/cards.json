@@ -986,5 +986,78 @@
       "one key+"
     ],
     "guide": "skills/card-travel-benefits/references/cards/one-key-plus-mastercard.md"
+  },
+  {
+    "id": "united-gateway",
+    "name": "United Gateway",
+    "variant": "personal",
+    "family": "united",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "united gateway card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/united-gateway.md"
+  },
+  {
+    "id": "united-explorer",
+    "name": "United Explorer",
+    "variant": "personal",
+    "family": "united",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "united explorer card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/united-explorer.md"
+  },
+  {
+    "id": "united-quest",
+    "name": "United Quest",
+    "variant": "personal",
+    "family": "united",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "united quest card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/united-quest.md"
+  },
+  {
+    "id": "united-club",
+    "name": "United Club Card",
+    "variant": "personal",
+    "family": "united",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "united club card",
+      "united club infinite"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/united-club.md"
+  },
+  {
+    "id": "united-business",
+    "name": "United Business Card",
+    "variant": "business",
+    "family": "united",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "united business card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/united-business.md"
+  },
+  {
+    "id": "united-club-business",
+    "name": "United Club Business Card",
+    "variant": "business",
+    "family": "united",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "united club business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/united-club-business.md"
   }
 ]

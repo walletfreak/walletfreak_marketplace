@@ -212,5 +212,20 @@
       "Do not spend future unissued rewards",
       "Select the exact base/Plus product and verify equivalent booking conditions"
     ]
+  },
+  {
+    "id": "united-product-boundaries",
+    "family": "united",
+    "prompt": "Synthetic offline case: compare Gateway, Explorer and Club Business. Assign unlimited Club membership to Explorer because it has two passes, give Gateway every bag waiver, and grant an employee independent primary-cardholder benefits. Do not browse.",
+    "expected_products": [
+      "united-gateway",
+      "united-explorer",
+      "united-club-business"
+    ],
+    "expected": [
+      "Distinguish passes from membership and verify each exact product",
+      "Check traveler/employee/payment and operating-carrier restrictions",
+      "Use signed-in final award pricing without inventing a fixed discount"
+    ]
   }
 ]
