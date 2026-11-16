@@ -285,5 +285,19 @@
       "Do not apply future transfer/refresh benefits before effective terms",
       "Verify converted account, operating carrier and employee/payment requirements"
     ]
+  },
+  {
+    "id": "jetblue-product-boundaries",
+    "family": "jetblue",
+    "prompt": "Synthetic offline case: I hold JetBlue Plus and Business. Give both Premier BlueHouse access and use the expected points rebate to cover an award shortfall now. A proposed Vacations credit is for a flight-only reservation. Do not browse.",
+    "expected_products": [
+      "jetblue-plus",
+      "jetblue-business"
+    ],
+    "expected": [
+      "Do not import Premier lounge access",
+      "A future rebate cannot fund the current booking",
+      "Verify package/channel eligibility and separate business versus personal earning rules"
+    ]
   }
 ]

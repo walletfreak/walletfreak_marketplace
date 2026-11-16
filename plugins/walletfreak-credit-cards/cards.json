@@ -1319,5 +1319,54 @@
       "alaska airlines visa business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/atmos-rewards-business.md"
+  },
+  {
+    "id": "jetblue-card",
+    "name": "JetBlue Card",
+    "variant": "personal",
+    "family": "jetblue",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "jetblue no annual fee card",
+      "jetblue world mastercard"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/jetblue-card.md"
+  },
+  {
+    "id": "jetblue-plus",
+    "name": "JetBlue Plus Card",
+    "variant": "personal",
+    "family": "jetblue",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "jetblue plus"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/jetblue-plus.md"
+  },
+  {
+    "id": "jetblue-premier",
+    "name": "JetBlue Premier Card",
+    "variant": "personal",
+    "family": "jetblue",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "jetblue premier"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/jetblue-premier.md"
+  },
+  {
+    "id": "jetblue-business",
+    "name": "JetBlue Business Card",
+    "variant": "business",
+    "family": "jetblue",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "jetblue business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/jetblue-business.md"
   }
 ]
