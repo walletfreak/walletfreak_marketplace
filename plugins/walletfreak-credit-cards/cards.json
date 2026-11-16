@@ -1,0 +1,106 @@
+[
+  {
+    "id": "capital-one-venture-x",
+    "name": "Capital One Venture X Rewards",
+    "variant": "personal",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "venture x",
+      "venture x personal"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-venture-x.md"
+  },
+  {
+    "id": "capital-one-venture",
+    "name": "Capital One Venture Rewards",
+    "variant": "personal",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "venture rewards",
+      "capital one venture"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-venture.md"
+  },
+  {
+    "id": "capital-one-ventureone",
+    "name": "Capital One VentureOne Rewards",
+    "variant": "personal",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ventureone",
+      "venture one rewards"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-ventureone.md"
+  },
+  {
+    "id": "capital-one-savor",
+    "name": "Capital One Savor Rewards",
+    "variant": "personal",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "capital one savor",
+      "savor rewards"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-savor.md"
+  },
+  {
+    "id": "capital-one-quicksilver",
+    "name": "Capital One Quicksilver Rewards",
+    "variant": "personal",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "quicksilver rewards",
+      "capital one quicksilver"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-quicksilver.md"
+  },
+  {
+    "id": "capital-one-venture-x-business",
+    "name": "Capital One Venture X Business",
+    "variant": "business",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "venture x business",
+      "venture x biz"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-venture-x-business.md"
+  },
+  {
+    "id": "capital-one-venture-business",
+    "name": "Capital One Venture Business",
+    "variant": "business",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "venture business",
+      "capital one venture business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-venture-business.md"
+  },
+  {
+    "id": "capital-one-ventureone-business",
+    "name": "Capital One VentureOne Business",
+    "variant": "business",
+    "family": "capital-one",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ventureone business",
+      "venture one business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/capital-one-ventureone-business.md"
+  }
+]

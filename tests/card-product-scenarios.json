@@ -1,0 +1,16 @@
+[
+  {
+    "id": "capital-one-product-boundaries",
+    "family": "capital-one",
+    "prompt": "Synthetic offline case: I hold personal Venture X and Venture X Business. My personal portal credit has USD 70 left; the business credit has USD 120 left. A USD 100 personal booking cannot use the business account. Its personal checkout quote already applies USD 70. Compare with paying USD 95 direct; do not browse or save.",
+    "expected_products": [
+      "capital-one-venture-x",
+      "capital-one-venture-x-business"
+    ],
+    "expected": [
+      "Keep personal and business credit pools separate",
+      "Portal cash due is USD 30 after the already-applied credit; do not subtract it twice",
+      "Verify product-specific earning on credited spending; do not infer old lounge guest rules"
+    ]
+  }
+]

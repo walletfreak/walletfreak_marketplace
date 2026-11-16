@@ -27,6 +27,8 @@ Start a fresh host session and ask for your research. Use `walletfreak-setup` if
 
 Travel supplies the shared browser for authenticated research in the other packages. Spending works independently with downloaded files. See [installation and migration](docs/INSTALL.md).
 
+Credit Cards selects individual U.S. personal, business and special/legacy product guides from its [card catalog](plugins/walletfreak-credit-cards/cards.json). Exact names and aliases route to only the relevant guides; shared comparisons use current official terms and the user's actual remaining benefits. See [card-family coverage](plugins/walletfreak-credit-cards/README.md).
+
 ## Manual Chrome login
 
 When an account is needed, the agent opens the official provider page and notifies you to log in in Chrome. Enter your username/password and complete verification there, then tell the agent you are done. It verifies a non-sensitive signed-in view before resuming in the same session. Never paste passwords or MFA codes into the conversation.

@@ -1,3 +1,15 @@
 # WalletFreak Credit Cards
 
-traveler-profile, card-travel-benefits, wallet-optimizer and wallet-sync evaluate existing cards and points from relevant conversation facts. A private non-secret profile is saved only when requested. Live portal research uses Travel's shared browser and manual provider login; no dashboard or stored sign-in is needed.
+Individual U.S. card guides are selected by exact product, market and personal/business variant from [cards.json](cards.json). Names and aliases resolve to one guide; ambiguous family names require clarification. Existing-card/limited-access entries do not establish current application availability. Catalog coverage is authored guidance, not account or live-benefit certification.
+
+The four shared skills remain traveler-profile, card-travel-benefits, wallet-optimizer and wallet-sync. Only relevant guides load for a task. Comparisons, card-specific credits, earning, redemptions, lounges, status, certificates, rentals and protections use current official terms. Facts stay in conversation; private non-secret profiles and exports are saved only when requested. Live research uses Travel's existing browser and manual Chrome login.
+
+## Product coverage
+
+8 individual guides across 1 families. Package version 0.5.0.
+
+| Family | Guides |
+| --- | --- |
+| capital-one | 8 |
+
+See cards.json for every product, alias, variant and bundled guide path. Family scenarios in tests/card-product-scenarios.json are synthetic review cases, not executed model/provider tests.

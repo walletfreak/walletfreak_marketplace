@@ -1,3 +1,9 @@
+# Credit Cards 0.5 — Individual card families
+
+- Add exact-product U.S. guides and aliases, with separate personal/business and existing-card variants.
+- Route benefits, earning/payment comparisons and requested credit checks to only the relevant product guides.
+- Publish validated families incrementally; see the Credit Cards README and Git history for current coverage.
+
 # 0.5.0 — Skills and manual browser login
 
 - Remove the local dashboard, layouts, credential vault/bridge and startup hooks. Existing private data is retained.

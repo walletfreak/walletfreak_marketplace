@@ -1,6 +1,6 @@
 ---
 name: card-travel-benefits
-description: "Evaluate credit-card hotel and flight benefits for trip comparisons, including Hilton Aspire and Surpass, free-night certificates, travel credits, baggage, lounges and portal perks. Use when a traveler's existing cards could change price, booking channel or benefits."
+description: "Research exact U.S. credit-card products and their earning, credits, redemptions, lounges, hotel/airline perks, rental benefits and protections for an existing-card comparison."
 ---
 
 # Card travel benefits
@@ -11,7 +11,9 @@ This skill is part of the optional `walletfreak-credit-cards` plugin. Load `trav
 
 Reuse the core intake’s dated, user-reported profile facts and current conversation corrections; do not repeat completed wallet intake. Ask only for missing facts that could change this trip: exact issuer/product and issuing country, personal/business variant, which traveler holds it, primary/additional-card relationship, active status, relevant enrollment or selected airline, and remaining credits/certificates with their benefit periods or expiry. Distinguish separate accounts from additional cards sharing one allowance. Use non-sensitive aliases such as “traveler A's Aspire”; never request card numbers, security codes, certificate redemption codes or account credentials. Label user-reported facts and keep them in conversation unless the user requests a sanitized saved plan or an update through this package’s `traveler-profile` skill. Accept self-reported balances without requiring account proof; verify benefit terms separately. Do not create a separate card profile.
 
-For Hilton Aspire or Surpass, read [Hilton card checks](references/hilton-cards.md). For other cards, use [other card and airline checks](references/other-cards.md). These are source-finding guides, not a benefits database. Open current official issuer terms, provider rules and any necessary user-visible benefit tracker. A marketing headline or search snippet does not establish account eligibility. Record the observation date, country, applicable terms and evidence gaps; if official sources conflict, do not pick the most generous interpretation.
+Match the exact name or explicit alias in the bundled [individual card catalog](../../cards.json), confirming market and personal/business variant. Read only matching `guide` paths, resolved from this plugin root, and the [shared product checks](references/card-checks.md). A family name or an ambiguous nickname such as "Platinum", "Gold" or "Reserve" requires clarification; never select the most generous variant. Limited-access/legacy entries require the held account's actual agreement and do not establish application availability. A missing card or non-U.S. product can use clearly labeled generic research with its exact official issuer terms.
+
+For uncataloged Hilton products, the [Hilton fallback](references/hilton-cards.md) remains available; [other card and airline checks](references/other-cards.md) supplies generic source routes. These are source-finding guides, not a benefits database. Open current official issuer terms, provider rules and any necessary user-visible benefit tracker. A marketing headline or search snippet does not establish account eligibility. Record the observation date, country, applicable terms and evidence gaps; if official sources conflict, do not pick the most generous interpretation.
 
 Reuse relevant user-reported cards and balances; ask only for material missing facts.
 
