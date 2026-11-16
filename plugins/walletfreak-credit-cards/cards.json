@@ -484,5 +484,54 @@
       "citi prestige card"
     ],
     "guide": "skills/card-travel-benefits/references/cards/citi-prestige.md"
+  },
+  {
+    "id": "wells-fargo-autograph",
+    "name": "Wells Fargo Autograph",
+    "variant": "personal",
+    "family": "wells-fargo",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "autograph card",
+      "wells fargo autograph card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wells-fargo-autograph.md"
+  },
+  {
+    "id": "wells-fargo-autograph-journey",
+    "name": "Wells Fargo Autograph Journey",
+    "variant": "personal",
+    "family": "wells-fargo",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "autograph journey"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wells-fargo-autograph-journey.md"
+  },
+  {
+    "id": "wells-fargo-premier-autograph",
+    "name": "Wells Fargo Premier Autograph",
+    "variant": "personal",
+    "family": "wells-fargo",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "premier autograph"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wells-fargo-premier-autograph.md"
+  },
+  {
+    "id": "wells-fargo-active-cash",
+    "name": "Wells Fargo Active Cash",
+    "variant": "personal",
+    "family": "wells-fargo",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "active cash"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wells-fargo-active-cash.md"
   }
 ]

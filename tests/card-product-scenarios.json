@@ -57,5 +57,19 @@
       "The stipulated pretax threshold is not met by adding taxes",
       "Withhold an unconditional redemption ranking until actual product eligibility and ratios are verified"
     ]
+  },
+  {
+    "id": "wells-fargo-product-boundaries",
+    "family": "wells-fargo",
+    "prompt": "Synthetic offline case: I hold Active Cash and Autograph Journey. Treat both as Premier Autograph and apply its unverified lounge access. Journey's stipulated airline credit requires one USD 50 airline purchase, but I have two USD 30 agency charges. Do not browse.",
+    "expected_products": [
+      "wells-fargo-active-cash",
+      "wells-fargo-autograph-journey"
+    ],
+    "expected": [
+      "Do not replace either product with Premier Autograph",
+      "Check the stipulated merchant and single-transaction threshold rather than summing ineligible agency charges",
+      "Keep cash-back conversion/transfer eligibility conditional on actual held-card rules"
+    ]
   }
 ]
