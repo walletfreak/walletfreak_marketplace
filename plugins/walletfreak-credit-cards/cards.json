@@ -1280,5 +1280,44 @@
       "rapid rewards performance business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/southwest-performance-business.md"
+  },
+  {
+    "id": "atmos-rewards-ascent",
+    "name": "Atmos Rewards Ascent",
+    "variant": "personal",
+    "family": "atmos",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "atmos ascent",
+      "alaska airlines visa signature"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/atmos-rewards-ascent.md"
+  },
+  {
+    "id": "atmos-rewards-summit",
+    "name": "Atmos Rewards Summit",
+    "variant": "personal",
+    "family": "atmos",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "atmos summit"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/atmos-rewards-summit.md"
+  },
+  {
+    "id": "atmos-rewards-business",
+    "name": "Atmos Rewards Visa Business",
+    "variant": "business",
+    "family": "atmos",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "atmos business",
+      "atmos visa business",
+      "alaska airlines visa business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/atmos-rewards-business.md"
   }
 ]

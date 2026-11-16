@@ -271,5 +271,19 @@
       "Separate redeemable points from qualification boosts and actual Companion Pass issuance",
       "Keep personal/business credit pools and employee eligibility separate"
     ]
+  },
+  {
+    "id": "atmos-product-boundaries",
+    "family": "atmos",
+    "prompt": "Synthetic offline case: I hold Ascent and Atmos Visa Business. Give both Summit's global award and activate a bank-to-Atmos transfer feature announced for 2027 today. My business refresh effective date is unconfirmed. Do not browse.",
+    "expected_products": [
+      "atmos-rewards-ascent",
+      "atmos-rewards-business"
+    ],
+    "expected": [
+      "Distinguish paid companion fares from Summit award certificates",
+      "Do not apply future transfer/refresh benefits before effective terms",
+      "Verify converted account, operating carrier and employee/payment requirements"
+    ]
   }
 ]
