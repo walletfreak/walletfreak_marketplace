@@ -71,5 +71,19 @@
       "Check the stipulated merchant and single-transaction threshold rather than summing ineligible agency charges",
       "Keep cash-back conversion/transfer eligibility conditional on actual held-card rules"
     ]
+  },
+  {
+    "id": "bank-of-america-product-boundaries",
+    "family": "bank-of-america",
+    "prompt": "Synthetic offline case: I hold ordinary Premium Rewards and Travel Rewards, not Elite. Assume both get Elite lounges and its portal discount. My bank assets might qualify for a higher relationship tier, but I have not confirmed enrollment. Do not browse.",
+    "expected_products": [
+      "bofa-premium-rewards",
+      "bofa-travel-rewards"
+    ],
+    "expected": [
+      "Do not assign Elite perks to either product",
+      "Keep unverified relationship bonus conditional",
+      "Distinguish statement-credit redemption value from unsupported partner transfers"
+    ]
   }
 ]

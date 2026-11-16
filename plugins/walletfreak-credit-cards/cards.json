@@ -533,5 +533,44 @@
       "active cash"
     ],
     "guide": "skills/card-travel-benefits/references/cards/wells-fargo-active-cash.md"
+  },
+  {
+    "id": "bofa-premium-rewards-elite",
+    "name": "Bank of America Premium Rewards Elite",
+    "variant": "personal",
+    "family": "bank-of-america",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bofa premium rewards elite",
+      "premium rewards elite"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bofa-premium-rewards-elite.md"
+  },
+  {
+    "id": "bofa-premium-rewards",
+    "name": "Bank of America Premium Rewards",
+    "variant": "personal",
+    "family": "bank-of-america",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bofa premium rewards",
+      "bank of america premium rewards card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bofa-premium-rewards.md"
+  },
+  {
+    "id": "bofa-travel-rewards",
+    "name": "Bank of America Travel Rewards",
+    "variant": "personal",
+    "family": "bank-of-america",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bofa travel rewards",
+      "bank of america travel rewards card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bofa-travel-rewards.md"
   }
 ]
