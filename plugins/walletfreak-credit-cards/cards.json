@@ -102,5 +102,138 @@
       "venture one business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/capital-one-ventureone-business.md"
+  },
+  {
+    "id": "chase-sapphire-reserve",
+    "name": "Chase Sapphire Reserve",
+    "variant": "personal",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "sapphire reserve",
+      "csr"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-sapphire-reserve.md"
+  },
+  {
+    "id": "chase-sapphire-preferred",
+    "name": "Chase Sapphire Preferred",
+    "variant": "personal",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "sapphire preferred",
+      "csp"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-sapphire-preferred.md"
+  },
+  {
+    "id": "chase-freedom-flex",
+    "name": "Chase Freedom Flex",
+    "variant": "personal",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "freedom flex",
+      "cff"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-freedom-flex.md"
+  },
+  {
+    "id": "chase-freedom-unlimited",
+    "name": "Chase Freedom Unlimited",
+    "variant": "personal",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "freedom unlimited",
+      "cfu"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-freedom-unlimited.md"
+  },
+  {
+    "id": "chase-sapphire-reserve-business",
+    "name": "Chase Sapphire Reserve for Business",
+    "variant": "business",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "sapphire reserve for business",
+      "sapphire reserve business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-sapphire-reserve-business.md"
+  },
+  {
+    "id": "chase-ink-business-preferred",
+    "name": "Chase Ink Business Preferred",
+    "variant": "business",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ink business preferred",
+      "ink preferred",
+      "cip"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-ink-business-preferred.md"
+  },
+  {
+    "id": "chase-ink-business-cash",
+    "name": "Chase Ink Business Cash",
+    "variant": "business",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ink business cash",
+      "ink cash",
+      "cic"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-ink-business-cash.md"
+  },
+  {
+    "id": "chase-ink-business-unlimited",
+    "name": "Chase Ink Business Unlimited",
+    "variant": "business",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ink business unlimited",
+      "ink unlimited",
+      "ciu"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-ink-business-unlimited.md"
+  },
+  {
+    "id": "chase-ink-business-premier",
+    "name": "Chase Ink Business Premier",
+    "variant": "business",
+    "family": "chase",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ink business premier",
+      "ink premier"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-ink-business-premier.md"
+  },
+  {
+    "id": "chase-freedom-original",
+    "name": "Chase Freedom (original)",
+    "variant": "personal",
+    "family": "chase",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "original chase freedom",
+      "chase freedom visa"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-freedom-original.md"
   }
 ]

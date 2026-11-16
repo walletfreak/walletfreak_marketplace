@@ -12,5 +12,20 @@
       "Portal cash due is USD 30 after the already-applied credit; do not subtract it twice",
       "Verify product-specific earning on credited spending; do not infer old lounge guest rules"
     ]
+  },
+  {
+    "id": "chase-product-boundaries",
+    "family": "chase",
+    "prompt": "Synthetic offline case: compare Sapphire Preferred, personal Reserve and Ink Premier. The user says every Chase card can transfer to Hyatt and every old point has the same fixed portal value. A Reserve hotel credit requires a prepaid two-night eligible booking, but the quote is one night pay-at-hotel. Do not browse.",
+    "expected_products": [
+      "chase-sapphire-preferred",
+      "chase-sapphire-reserve",
+      "chase-ink-business-premier"
+    ],
+    "expected": [
+      "Resolve three distinct products and verify their current transfer/redemption rules",
+      "Do not assume Ink Premier transfers or fixed historical portal values",
+      "Exclude the stipulated ineligible hotel credit and keep gross price visible"
+    ]
   }
 ]
