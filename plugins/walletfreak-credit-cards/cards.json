@@ -409,5 +409,80 @@
       "edp"
     ],
     "guide": "skills/card-travel-benefits/references/cards/amex-everyday-preferred.md"
+  },
+  {
+    "id": "citi-strata-elite",
+    "name": "Citi Strata Elite",
+    "variant": "personal",
+    "family": "citi",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "strata elite"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/citi-strata-elite.md"
+  },
+  {
+    "id": "citi-strata-premier",
+    "name": "Citi Strata Premier",
+    "variant": "personal",
+    "family": "citi",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "strata premier",
+      "citi premier"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/citi-strata-premier.md"
+  },
+  {
+    "id": "citi-strata",
+    "name": "Citi Strata",
+    "variant": "personal",
+    "family": "citi",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "citi strata no annual fee",
+      "strata card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/citi-strata.md"
+  },
+  {
+    "id": "citi-double-cash",
+    "name": "Citi Double Cash",
+    "variant": "personal",
+    "family": "citi",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "double cash"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/citi-double-cash.md"
+  },
+  {
+    "id": "citi-custom-cash",
+    "name": "Citi Custom Cash",
+    "variant": "personal",
+    "family": "citi",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "custom cash"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/citi-custom-cash.md"
+  },
+  {
+    "id": "citi-prestige",
+    "name": "Citi Prestige",
+    "variant": "personal",
+    "family": "citi",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "prestige card",
+      "citi prestige card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/citi-prestige.md"
   }
 ]

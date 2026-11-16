@@ -6,12 +6,13 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 
 ## Product coverage
 
-31 individual guides across 3 families. Package version 0.5.2.
+37 individual guides across 4 families. Package version 0.5.3.
 
 | Family | Guides |
 | --- | --- |
 | capital-one | 8 |
 | chase | 10 |
 | amex | 13 |
+| citi | 6 |
 
 See cards.json for every product, alias, variant and bundled guide path. Family scenarios in tests/card-product-scenarios.json are synthetic review cases, not executed model/provider tests.

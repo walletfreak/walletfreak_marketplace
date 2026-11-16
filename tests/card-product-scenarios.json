@@ -42,5 +42,20 @@
       "Do not relabel Blue Business Cash as Membership Rewards or Blue Business Plus",
       "Leave unverified lounge/transfer benefits unknown instead of importing Platinum"
     ]
+  },
+  {
+    "id": "citi-product-boundaries",
+    "family": "citi",
+    "prompt": "Synthetic offline case: compare Strata Elite, Strata Premier and Double Cash. The user assumes Elite lounge credits apply to Premier and all three have identical partner transfer ratios. A hotel benefit requires USD 500 before taxes, but the quote is USD 470 plus USD 60 taxes. Do not browse.",
+    "expected_products": [
+      "citi-strata-elite",
+      "citi-strata-premier",
+      "citi-double-cash"
+    ],
+    "expected": [
+      "Keep product-specific lounge/credit/transfer rules separate",
+      "The stipulated pretax threshold is not met by adding taxes",
+      "Withhold an unconditional redemption ranking until actual product eligibility and ratios are verified"
+    ]
   }
 ]
