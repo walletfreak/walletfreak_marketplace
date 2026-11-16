@@ -6,7 +6,7 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 
 ## Product coverage
 
-110 individual guides across 23 families. Package version 0.5.22.
+111 individual guides across 24 families. Package version 0.5.23.
 
 | Family | Guides |
 | --- | --- |
@@ -33,5 +33,6 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 | jetblue | 4 |
 | avios | 3 |
 | aeroplan | 1 |
+| air-france-klm | 1 |
 
 See cards.json for every product, alias, variant and bundled guide path. Family scenarios in tests/card-product-scenarios.json are synthetic review cases, not executed model/provider tests.

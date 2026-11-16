@@ -326,5 +326,18 @@
       "Require issued eligible reward inventory",
       "Verify actual operating-carrier/status/cardholder eligibility instead of assuming partner coverage"
     ]
+  },
+  {
+    "id": "air-france-klm-product-boundaries",
+    "family": "air-france-klm",
+    "prompt": "Synthetic offline case: I hold the Bank of America Air France KLM card but only have an old World Elite description. Count XP as redeemable miles, add unissued anniversary miles and assume all SkyTeam lounges are included. Do not browse.",
+    "expected_products": [
+      "bofa-air-france-klm"
+    ],
+    "expected": [
+      "Verify held network and current agreement before using old protections",
+      "Keep XP, redeemable miles and unissued anniversary rewards distinct",
+      "Do not invent partner lounge/baggage benefits or ignore award surcharges"
+    ]
   }
 ]

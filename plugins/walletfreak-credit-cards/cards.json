@@ -1418,5 +1418,19 @@
       "air canada aeroplan chase"
     ],
     "guide": "skills/card-travel-benefits/references/cards/chase-aeroplan.md"
+  },
+  {
+    "id": "bofa-air-france-klm",
+    "name": "Bank of America Air France KLM Visa Signature",
+    "variant": "personal",
+    "family": "air-france-klm",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "air france klm card",
+      "air france klm visa signature",
+      "flying blue bank of america"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/bofa-air-france-klm.md"
   }
 ]

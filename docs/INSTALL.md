@@ -28,7 +28,7 @@ When login is required, the agent opens the official provider page, tells you to
 
 ## Upgrade to 0.5
 
-Update the installed packages through the host's plugin manager, then restart the host so old skills, startup hooks and browser tools are unloaded. Core 0.5.0, Credit Cards 0.4.0, Spending 0.2.0 and Shopping 0.2.0 remove dashboard dependencies. Do not edit installed plugin caches manually.
+Update the installed packages through the host's plugin manager, then restart the host so old skills, startup hooks and browser tools are unloaded. Core 0.5.0+, Credit Cards 0.4.0+, Spending 0.2.0+ and Shopping 0.2.0+ remove dashboard dependencies. Credit Cards 0.5.x adds individual U.S. product guides; use the marketplace-listed current version. Do not edit installed plugin caches manually.
 
 The dashboard, trip-board, dashboard-builder, credential vault/bridge, remembered-session settings and dashboard startup hook are removed. Existing ~/.walletfreak/local data, credential files, device keys and browser profiles are not migrated, read or deleted by the new browser configuration. Close an old dashboard process/window you still have open. Removing code does not revoke provider-side sessions or erase old data. Keep backups and remove old data only by a separate explicit cleanup decision.
 
