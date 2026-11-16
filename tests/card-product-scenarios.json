@@ -227,5 +227,19 @@
       "Check traveler/employee/payment and operating-carrier restrictions",
       "Use signed-in final award pricing without inventing a fixed discount"
     ]
+  },
+  {
+    "id": "delta-product-boundaries",
+    "family": "delta",
+    "prompt": "Synthetic offline case: I hold ordinary Amex Platinum, Delta Platinum and Delta Reserve Business. The user wants one shared unlimited lounge pool and a Reserve-cabin companion certificate for Delta Platinum. An award is partner-operated and already discounted. Do not browse.",
+    "expected_products": [
+      "delta-skymiles-platinum",
+      "delta-skymiles-reserve-business"
+    ],
+    "expected": [
+      "Clarify ordinary Amex Platinum through its separate family; keep Delta products distinct",
+      "Verify card-specific lounge limits and companion cabin rules",
+      "Do not apply TakeOff to ineligible partners or discount already-reduced miles again"
+    ]
   }
 ]

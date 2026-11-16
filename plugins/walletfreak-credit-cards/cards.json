@@ -1059,5 +1059,96 @@
       "united club business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/united-club-business.md"
+  },
+  {
+    "id": "delta-skymiles-blue",
+    "name": "Delta SkyMiles Blue American Express Card",
+    "variant": "personal",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta blue",
+      "skymiles blue"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-blue.md"
+  },
+  {
+    "id": "delta-skymiles-gold",
+    "name": "Delta SkyMiles Gold American Express Card",
+    "variant": "personal",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta gold",
+      "skymiles gold"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-gold.md"
+  },
+  {
+    "id": "delta-skymiles-platinum",
+    "name": "Delta SkyMiles Platinum American Express Card",
+    "variant": "personal",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta platinum",
+      "skymiles platinum"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-platinum.md"
+  },
+  {
+    "id": "delta-skymiles-reserve",
+    "name": "Delta SkyMiles Reserve American Express Card",
+    "variant": "personal",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta reserve",
+      "skymiles reserve"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-reserve.md"
+  },
+  {
+    "id": "delta-skymiles-gold-business",
+    "name": "Delta SkyMiles Gold Business American Express Card",
+    "variant": "business",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta gold business",
+      "skymiles gold business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-gold-business.md"
+  },
+  {
+    "id": "delta-skymiles-platinum-business",
+    "name": "Delta SkyMiles Platinum Business American Express Card",
+    "variant": "business",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta platinum business",
+      "skymiles platinum business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-platinum-business.md"
+  },
+  {
+    "id": "delta-skymiles-reserve-business",
+    "name": "Delta SkyMiles Reserve Business American Express Card",
+    "variant": "business",
+    "family": "delta",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "delta reserve business",
+      "skymiles reserve business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-reserve-business.md"
   }
 ]
