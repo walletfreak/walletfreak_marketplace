@@ -235,5 +235,179 @@
       "chase freedom visa"
     ],
     "guide": "skills/card-travel-benefits/references/cards/chase-freedom-original.md"
+  },
+  {
+    "id": "amex-platinum",
+    "name": "The Platinum Card from American Express",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "amex platinum",
+      "american express platinum",
+      "personal platinum"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-platinum.md"
+  },
+  {
+    "id": "amex-gold",
+    "name": "American Express Gold Card",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "amex gold",
+      "american express gold",
+      "personal amex gold"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-gold.md"
+  },
+  {
+    "id": "amex-green",
+    "name": "American Express Green Card",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "amex green",
+      "american express green",
+      "amex classic green"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-green.md"
+  },
+  {
+    "id": "amex-blue-cash-preferred",
+    "name": "American Express Blue Cash Preferred",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "blue cash preferred",
+      "bcp"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-blue-cash-preferred.md"
+  },
+  {
+    "id": "amex-blue-cash-everyday",
+    "name": "American Express Blue Cash Everyday",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "blue cash everyday",
+      "bce"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-blue-cash-everyday.md"
+  },
+  {
+    "id": "amex-business-platinum",
+    "name": "American Express Business Platinum",
+    "variant": "business",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "amex business platinum",
+      "business platinum",
+      "biz plat"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-business-platinum.md"
+  },
+  {
+    "id": "amex-business-gold",
+    "name": "American Express Business Gold",
+    "variant": "business",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "amex business gold",
+      "business gold"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-business-gold.md"
+  },
+  {
+    "id": "amex-blue-business-plus",
+    "name": "American Express Blue Business Plus",
+    "variant": "business",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "blue business plus",
+      "bbp"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-blue-business-plus.md"
+  },
+  {
+    "id": "amex-blue-business-cash",
+    "name": "American Express Blue Business Cash",
+    "variant": "business",
+    "family": "amex",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "blue business cash",
+      "bbc"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-blue-business-cash.md"
+  },
+  {
+    "id": "amex-platinum-schwab",
+    "name": "American Express Platinum Card for Charles Schwab",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "schwab platinum",
+      "charles schwab platinum"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-platinum-schwab.md"
+  },
+  {
+    "id": "amex-platinum-morgan-stanley",
+    "name": "American Express Platinum Card for Morgan Stanley",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "morgan stanley platinum",
+      "ms platinum"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-platinum-morgan-stanley.md"
+  },
+  {
+    "id": "amex-everyday",
+    "name": "Amex EveryDay Credit Card",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "amex everyday",
+      "american express everyday"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-everyday.md"
+  },
+  {
+    "id": "amex-everyday-preferred",
+    "name": "Amex EveryDay Preferred Credit Card",
+    "variant": "personal",
+    "family": "amex",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "amex everyday preferred",
+      "everyday preferred",
+      "edp"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/amex-everyday-preferred.md"
   }
 ]

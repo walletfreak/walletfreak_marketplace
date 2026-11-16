@@ -27,5 +27,20 @@
       "Do not assume Ink Premier transfers or fixed historical portal values",
       "Exclude the stipulated ineligible hotel credit and keep gross price visible"
     ]
+  },
+  {
+    "id": "amex-product-boundaries",
+    "family": "amex",
+    "prompt": "Synthetic offline case: I have personal Amex Gold, Business Gold and Blue Business Cash. Use the personal grocery multiplier for all business purchases, transfer cash-back dollars as Membership Rewards, and give every card Platinum lounges. All terms are unverified; do not browse.",
+    "expected_products": [
+      "amex-gold",
+      "amex-business-gold",
+      "amex-blue-business-cash"
+    ],
+    "expected": [
+      "Use separate personal and business category/credit rules",
+      "Do not relabel Blue Business Cash as Membership Rewards or Blue Business Plus",
+      "Leave unverified lounge/transfer benefits unknown instead of importing Platinum"
+    ]
   }
 ]
