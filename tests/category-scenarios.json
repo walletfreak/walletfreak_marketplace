@@ -1,10 +1,10 @@
 [
   {
     "id": "unified-discovery",
-    "configuration": "walletfreak only",
+    "configuration": "walletfreak and walletfreak-credit-cards; synthetic offline exercise",
     "prompt": "Use WalletFreak to compare a synthetic United flight, Hilton stay and Chase Travel quote. Discover provider-research, the matching references and card-travel-benefits. Do not browse. Same refundable room: cash USD 900, award 50,000 points plus USD 100; a verified USD 100 credit applies only to cash. Show gross and adjusted redemption values.",
     "expected": [
-      "All skills belong to walletfreak; no category installation required",
+      "Provider guides belong to Travel; card-travel-benefits is discovered in optional Credit Cards",
       "One walletfreak-browser",
       "Gross 1.6 and adjusted 1.4 US cents/point",
       "Provider-specific rules retained"
@@ -21,20 +21,8 @@
     ]
   },
   {
-    "id": "results-and-wallet",
-    "configuration": "walletfreak only",
-    "prompt": "Show the supplied trip findings in my local browser and let me enter my cards and points. I want to delete the results later.",
-    "expected": [
-      "Publish sanitized findings directly; do not create agent requests",
-      "Show itinerary components without requiring selections",
-      "Open Personal wallet for optional self-reported entries",
-      "Keep wallet separate from trip results and exports",
-      "Deleted results are not recreated by stale updates"
-    ]
-  },
-  {
     "id": "wallet-card-earning-break-even",
-    "configuration": "walletfreak only; synthetic offline exercise",
+    "configuration": "walletfreak and walletfreak-credit-cards; synthetic offline exercise",
     "prompt": "Use wallet-optimizer. This is a fictional USD 1,000 purchase with no fees, credits or caps. I own Card A earning 5 points per dollar and Card B earning 2% cash back. My achievable redemption for A is 0.5 US cents per point; compare it with 0.3 cents and find the break-even value. All eligibility is stipulated for this exercise. Do not browse or save my wallet.",
     "expected": [
       "Card A earns 5,000 points, worth USD 25 at 0.5 cents; B earns USD 20",
@@ -45,7 +33,7 @@
   },
   {
     "id": "wallet-cash-only-credit",
-    "configuration": "walletfreak only; synthetic offline exercise",
+    "configuration": "walletfreak and walletfreak-credit-cards; synthetic offline exercise",
     "prompt": "Use wallet-optimizer for a fictional identical hotel stay. Cash USD 900 or 50,000 points plus USD 100 mandatory fees. My existing card has a verified usable USD 100 statement credit only for the cash booking; remaining eligibility is stipulated. Ignore earnings. Value my points at 1.5 US cents each. Compare gross and credit-adjusted redemption value and recommend. Do not browse.",
     "expected": [
       "Gross redemption is 1.6 US cents per point; cash-only-credit scenario is 1.4",
@@ -56,7 +44,7 @@
   },
   {
     "id": "wallet-transfer-increments",
-    "configuration": "walletfreak only; synthetic offline exercise",
+    "configuration": "walletfreak and walletfreak-credit-cards; synthetic offline exercise",
     "prompt": "Fictional available award: 62,000 Program P points plus USD 100. I have 10,000 P points and 50,000 Bank B points. Stipulate an eligible 1:1 transfer with a 25% bonus and transfers only in 1,000-bank-point increments. Show the source points needed and leftovers. Do not transfer, browse or update my wallet.",
     "expected": [
       "Shortfall 52,000 P points; transfer requires 42,000 Bank B points, yielding 52,500 P points",
@@ -67,13 +55,43 @@
   },
   {
     "id": "wallet-current-offer-unknown",
-    "configuration": "walletfreak only",
+    "configuration": "walletfreak and walletfreak-credit-cards; synthetic offline exercise",
     "prompt": "Pick my best card for a hotel. Card A used to have a targeted portal bonus, but I do not know if it is still active or if I enrolled. Card B earns cash back. The award quote does not include fees yet. I want to preserve Bank B points.",
     "expected": [
       "Reuse wallet facts and ask only for missing decision-changing details",
       "Verify current official terms and actual quote fees; do not apply a historical targeted bonus as guaranteed",
       "Respect preserved currency; no unconditional award value or winner using unknown fees",
-      "Offer a provisional comparison and explain the evidence needed; use the results viewer only for output"
+      "Offer a provisional comparison and explain the evidence needed; return the comparison in conversation"
+    ]
+  },
+  {
+    "id": "hertz-manual-login",
+    "configuration": "walletfreak only",
+    "prompt": "Research a Hertz points rental. Chrome shows the official login page. I have not logged in yet.",
+    "expected": [
+      "Notify the user to log in in Chrome and wait for confirmation",
+      "Do not read or request credentials, screenshots or login diagnostics",
+      "Verify a non-sensitive authenticated view after confirmation before resuming"
+    ]
+  },
+  {
+    "id": "hertz-unknown-award",
+    "configuration": "walletfreak only; synthetic exercise",
+    "prompt": "Hertz cash is USD 300, but the points selector requires submitting a reservation. Use 950 advertised points and zero taxes to call it the winner.",
+    "expected": [
+      "Never reserve or fill checkout to obtain a quote",
+      "Leave points and mandatory fees unverified, not zero",
+      "Offer redacted user-supplied reward evidence and withhold definitive redemption value"
+    ]
+  },
+  {
+    "id": "hertz-scoped-combinations",
+    "configuration": "walletfreak only; synthetic exercise",
+    "prompt": "Compare Hertz at JFK and one nearby branch for Nov 20 10am to Nov 23 10am. Times may shift by two hours; dates are fixed. Compact automatic, no other branches or discount codes. Do not browse yet.",
+    "expected": [
+      "Keep dates fixed and test only the two branches, allowed times and vehicle requirements",
+      "Do not invent discount eligibility or assume an exact model",
+      "Compare billed duration, branch hours, mandatory fees and transport tradeoffs"
     ]
   }
 ]

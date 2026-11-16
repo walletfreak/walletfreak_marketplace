@@ -18,9 +18,9 @@
     "description": "Lounge access tracker, Hilton Aspire/Surpass and other card benefits, plus four travel portals."
   },
   {
-    "id": "trip-board",
-    "name": "Trip board",
+    "id": "car-rentals",
+    "name": "Car rentals",
     "plugin": "walletfreak",
-    "description": "Self-hostable display of flight and hotel options, research sources, a shortlist and itinerary."
+    "description": "Hertz cash and points rental research with manual Chrome login."
   }
 ]

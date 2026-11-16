@@ -9,12 +9,12 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / 'plugins/walletfreak'
 PROVIDERS = json.loads((ROOT / 'providers.json').read_text())
-EXPECTED = {'marriott','hilton','hyatt','ihg','accor','wyndham','choice','best-western','american','delta','united','southwest','jetblue','alaska-hawaiian','air-canada','british-airways','iberia','air-france-klm','lufthansa-group','emirates','qatar','singapore','ana','jal','cathay-pacific','qantas','turkish','capital-one-travel','amex-travel','chase-travel','citi-travel'}
+EXPECTED = {'marriott','hilton','hyatt','ihg','accor','wyndham','choice','best-western','american','delta','united','southwest','jetblue','alaska-hawaiian','air-canada','british-airways','iberia','air-france-klm','lufthansa-group','emirates','qatar','singapore','ana','jal','cathay-pacific','qantas','turkish','capital-one-travel','amex-travel','chase-travel','citi-travel','hertz'}
 
 class Packages(unittest.TestCase):
     def test_unified_coverage_and_catalogs(self):
         self.assertEqual({p['id'] for p in PROVIDERS}, EXPECTED)
-        self.assertEqual(len(PROVIDERS), 31)
+        self.assertEqual(len(PROVIDERS), 32)
         self.assertEqual(json.loads((PLUGIN/'providers.json').read_text()), PROVIDERS)
         for path in (ROOT/'.agents/plugins/marketplace.json', ROOT/'.claude-plugin/marketplace.json'):
             catalog=json.loads(path.read_text())
@@ -24,49 +24,45 @@ class Packages(unittest.TestCase):
         for host in ('codex','claude'):
             m=json.loads((PLUGIN/f'.{host}-plugin/plugin.json').read_text())
             self.assertEqual(m['name'],'walletfreak')
-            self.assertEqual(m['version'].split('+')[0],'0.4.1')
+            self.assertEqual(m['version'],'0.5.0')
         ledger=json.loads((ROOT/'docs/provider-verification.json').read_text())
         self.assertEqual({r['id'] for r in ledger},EXPECTED)
         for p in PROVIDERS:
             self.assertEqual(p['plugin'],'walletfreak')
-            self.assertEqual(p['skill'],'provider-research')
+            self.assertEqual(p['skill'],'hertz-research' if p['id']=='hertz' else 'provider-research')
             self.assertTrue((PLUGIN/p['guide']).is_file())
-            self.assertTrue(p['legacySkill'])
+            if p['id'] != 'hertz': self.assertTrue(p['legacySkill'])
             evidence=next(r for r in ledger if r['id']==p['id'])
             self.assertEqual(p['verification'],evidence['stage'])
             guide=(PLUGIN/p['guide']).read_text()
             self.assertIn(p['programs'][0],guide)
             self.assertIn('https://',guide)
 
-    def test_wallet_catalog_links_cards_to_known_programs(self):
-        catalog=json.loads((PLUGIN/'assets/wallet-programs.json').read_text())
-        programs={item['id']:item for item in catalog['programs']}
-        cards={item['id']:item for item in json.loads((PLUGIN/'assets/cards.json').read_text())}
-        self.assertEqual(len(programs),len(catalog['programs']))
-        self.assertGreaterEqual(len(programs),len(PROVIDERS))
-        self.assertGreaterEqual(sum('program_id' in card for card in cards.values()),60)
-        self.assertTrue(all(card['program_id'] in programs for card in cards.values() if 'program_id' in card))
-        for card_id,program_id in [('delta-skymiles-gold-american-express-card','delta-skymiles'),('the-world-of-hyatt-credit-card','hyatt'),('hilton-honors-aspire-card-from-american-express','hilton')]:
-            self.assertEqual(cards[card_id]['program_id'],program_id)
-        self.assertIn('World of Hyatt points',programs['hyatt']['aliases'])
-        self.assertIn('Hilton Honors points',programs['hilton']['aliases'])
-        self.assertIn('Diamond Reserve',programs['hilton']['tiers'])
-        self.assertEqual(programs['southwest-rapid-rewards']['future_tiers']['effective_on'],'2027-01-01')
-        self.assertTrue(all(item.get('tier_source','').startswith('https://') for item in programs.values() if item.get('tiers')))
+    def test_manifest_paths_and_versions(self):
+        market=json.loads((ROOT/'.claude-plugin/marketplace.json').read_text())
+        for entry in market['plugins']:
+            package=ROOT/entry['source']
+            for host in ('codex','claude'):
+                manifest=json.loads((package/f'.{host}-plugin/plugin.json').read_text())
+                self.assertEqual(manifest['version'],entry['version'])
+                self.assertNotIn('hooks',manifest)
+                for key in ('composerIcon','logo'):
+                    target=manifest.get('interface',{}).get(key)
+                    if target: self.assertTrue((package/target).is_file(),target)
+                for key in ('skills','mcpServers'):
+                    if key in manifest: self.assertTrue((package/manifest[key]).exists())
 
     def test_one_browser_and_portable_package(self):
         self.assertEqual(list((ROOT/'plugins').rglob('.mcp.json')),[PLUGIN/'.mcp.json'])
         config=json.loads((PLUGIN/'.mcp.json').read_text())['mcpServers']
         self.assertEqual(list(config),['walletfreak-browser'])
-        self.assertEqual(config['walletfreak-browser']['command'],'python3')
-        self.assertEqual(config['walletfreak-browser']['args'][0], '-c')
-        self.assertEqual(config['walletfreak-browser']['args'][-1], '${CLAUDE_PLUGIN_ROOT}/scripts/browser.py')
-        self.assertEqual(config['walletfreak-browser']['cwd'], '.')
+        self.assertEqual(config['walletfreak-browser']['command'],'npx')
+        self.assertEqual(config['walletfreak-browser']['args'], ['-y','@playwright/mcp@0.0.68','--browser','chrome','--isolated','--output-mode','stdout','--codegen','none'])
         with tempfile.TemporaryDirectory() as temporary:
             isolated=Path(temporary)/'walletfreak'
             shutil.copytree(PLUGIN,isolated)
             names={s.parent.name for s in isolated.glob('skills/*/SKILL.md')}
-            self.assertEqual(names,{'travel-plan','provider-research','lounge-access','trip-board','walletfreak-setup','dashboard-builder','stay-route-map','confirmation-import'})
+            self.assertEqual(names,{'travel-plan','provider-research','hertz-research','lounge-access','walletfreak-setup','stay-route-map','confirmation-import'})
             for path in isolated.rglob('*.md'):
                 for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
                     if target.startswith('https://'):
@@ -83,6 +79,18 @@ class Packages(unittest.TestCase):
                     if target.startswith('https://'): continue
                     self.assertTrue((path.parent/target.split('#')[0]).resolve().is_relative_to(cards.resolve()),(path,target))
                     self.assertTrue((path.parent/target.split('#')[0]).is_file(),(path,target))
+
+    def test_all_package_links_and_removed_runtime(self):
+        for package in (ROOT/'plugins').iterdir():
+            for path in package.rglob('*.md'):
+                for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
+                    if target.startswith(('https://','http://','#')): continue
+                    resolved=(path.parent/target.split('#')[0]).resolve()
+                    self.assertTrue(resolved.is_relative_to(package.resolve()),(path,target))
+                    self.assertTrue(resolved.is_file(),(path,target))
+        self.assertFalse((PLUGIN/'scripts').exists())
+        self.assertFalse((PLUGIN/'requirements-vault.txt').exists())
+        self.assertEqual({p.name for p in (PLUGIN/'assets').iterdir()},{'mascot.png'})
 
 spec = importlib.util.spec_from_file_location("redemption_value", ROOT / "plugins/walletfreak/skills/travel-plan/scripts/redemption_value.py")
 calculator = importlib.util.module_from_spec(spec)

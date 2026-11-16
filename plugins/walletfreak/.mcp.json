@@ -1,14 +1,18 @@
 {
   "mcpServers": {
     "walletfreak-browser": {
-      "command": "python3",
+      "command": "npx",
       "args": [
-        "-c",
-        "import pathlib, runpy, sys; script = pathlib.Path('scripts/browser.py') if sys.argv[1].startswith('$') else pathlib.Path(sys.argv[1]); sys.path.insert(0, str(script.resolve().parent)); runpy.run_path(str(script), run_name='__main__')",
-        "${CLAUDE_PLUGIN_ROOT}/scripts/browser.py"
-      ],
-      "cwd": ".",
-      "env_vars": ["WALLETFREAK_DATA"]
+        "-y",
+        "@playwright/mcp@0.0.68",
+        "--browser",
+        "chrome",
+        "--isolated",
+        "--output-mode",
+        "stdout",
+        "--codegen",
+        "none"
+      ]
     }
   }
 }

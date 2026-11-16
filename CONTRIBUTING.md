@@ -1,11 +1,11 @@
 # Contributing
 
-Maintain one installable walletfreak plugin. Provider additions belong in providers.json and skills/provider-research/references; keep the bundled provider catalog identical to the root catalog. Preserve stable IDs, aliases and provider-specific verification records.
+Keep four focused skill packages and one shared browser configuration. Prefer short task-specific instructions and relevant provider references over repeated common rules or application infrastructure. Results belong in conversation; files and profiles are optional requested outputs.
 
-Seven focused skills share research, privacy and browser contracts. Avoid copying the full common contract into each provider reference. Keep links within the installed plugin valid; no imports from neighboring packages or symlinks.
+For provider changes, update root providers.json and its byte-identical bundled copy, the provider-specific guide and docs/provider-verification.json. Preserve stable IDs, program aliases and existing verification evidence. Authored guidance and official-link checks are not live search certification. Hertz routes to hertz-research; other providers use provider-research references.
 
-Local dashboard code lives in plugins/walletfreak/scripts and assets/dashboard. Use standard-library Python and plain browser JavaScript. Agent updates and browser actions have separate authority. Any new action needs boundary validation and observable tests, including invalid inputs and interrupted requests.
+Keep relative Markdown links within their installed package. Discover cross-package skills through the host instead of importing neighboring plugin files. Update both host manifests and marketplace versions for a release. Do not add a credential service, dashboard dependency, startup hook or private data to an artifact.
 
-Run repository unit tests, official plugin/skill validators, native Claude validation and the local dashboard browser suite. Use synthetic trip data and a temporary WALLETFREAK_DATA. Never test account login without a user-operated sign-in. Run real provider checks separately and record limits in the verification ledger.
+Run `python3 -m unittest discover -s tests -v` and available plugin/skill validators. Use synthetic data in temporary directories. Run `python3 tests/browser-mcp-smoke.py` for an optional real-Chrome isolation check; provider login/testing is separate and user-operated. Preserve spending's row validation, duplicate review, decimal arithmetic, revision checks, atomic writes, locks and CSV injection protection.
 
-The public website owns its checked-in provider snapshot and local assets. Sync explicitly; no runtime sibling-repository dependency. Release source and website together only after verifying published guide links. Do not deploy as part of a code-only change.
+The website repository owns a static landing page and Firebase configuration, with no runtime sibling-checkout dependency. Commit/push source and deploy hosting only within the user's requested scope; they are separate actions.

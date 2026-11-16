@@ -1,7 +1,7 @@
 {
   "name": "walletfreak-credit-cards",
-  "version": "0.3.1+codex.20261027",
-  "description": "Research card benefits, points and payment choices using the shared private WalletFreak wallet.",
+  "version": "0.4.0",
+  "description": "Compare existing cards, points and benefits; check requested balances with manual Chrome login.",
   "author": {
     "name": "WalletFreak contributors"
   },
@@ -17,13 +17,13 @@
   "interface": {
     "displayName": "WalletFreak Credit Cards",
     "shortDescription": "Cards, points and benefits.",
-    "longDescription": "Review your cards and loyalty accounts, verify current benefits, and choose cards or points for travel and shopping.",
+    "longDescription": "Compare existing cards, points and benefits; check requested balances with manual Chrome login.",
     "developerName": "WalletFreak",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
-      "Open my Wallet workspace.",
-      "Compare the cards in my wallet for this purchase."
+      "Compare my existing cards for this purchase.",
+      "Check my requested loyalty balance after I log in in Chrome."
     ],
     "brandColor": "#0788D9",
     "composerIcon": "./assets/mascot.png",

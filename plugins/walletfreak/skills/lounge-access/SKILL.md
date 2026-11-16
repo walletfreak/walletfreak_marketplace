@@ -13,7 +13,7 @@ Ask for only material gaps: exact card product and issuing country, personal/bus
 
 Read [official source routes and verification checks](references/lounge-programs.md). Research both the issuer’s exact card entitlement and the selected lounge’s current entry rules. Use official airport maps for terminal/security access; membership does not permit passage through an otherwise inaccessible terminal. Confirm opening hours on the travel date, departure/connection entry window, departure versus arrival rights, minimum age, carrier/fare exclusions, accepted credential, guest limits/fees, and any booking requirement. A listing or card marketing page alone does not confirm admission. Do not recommend a lounge detour that threatens the connection or requires unverified immigration/security access.
 
-Run core’s startup balance check if this skill starts the travel session. Reuse an already completed check on provider handoffs.
+Reuse relevant card and membership facts; ask only for material gaps.
 
 ## Maintain two linked tables in the conversation
 

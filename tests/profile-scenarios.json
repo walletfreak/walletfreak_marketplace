@@ -46,7 +46,7 @@
     "id": "returning-session-balance-check",
     "prompt": "Start a new WalletFreak travel session using the synthetic profile supplied by the test operator. It reports about 75,000 miles as of yesterday. Plan another trip; I have not confirmed my balance today. Do not browse yet.",
     "expected": [
-      "Show the dated self-reported balance and ask once to confirm, update, use the estimate or skip",
+      "Mention the dated self-reported balance; ask about freshness only when it affects the decision",
       "Do not silently refresh its reporting date or save a change",
       "Continue independent trip intake while the optional answer is pending"
     ]
@@ -55,7 +55,7 @@
     "id": "provider-first-and-handoff",
     "prompt": "Start with united-research for a new trip. I have not reported my balances in this session. After intake, also compare hotel options. Do not browse yet.",
     "expected": [
-      "Load core and perform its startup balance check even though the provider is the entry point",
+      "Resolve the provider alias and ask only for trip/balance facts that affect the requested research",
       "Do not ask again on the hotel handoff",
       "Skip or cash-only answers are respected without proof or saving requirements"
     ]

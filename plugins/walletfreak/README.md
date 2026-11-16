@@ -1,11 +1,7 @@
-# WalletFreak
+# WalletFreak Travel
 
-WalletFreak Travel: guided intake, 31 provider references, lounge tracking and a private local trip dashboard. The optional Credit Cards plugin adds wallet profile, card benefit, optimization and balance sync skills.
+Travel research skills for Codex and Claude Code: travel-plan, provider-research, hertz-research, lounge-access, confirmation-import, stay-route-map and walletfreak-setup. Includes 31 flight/hotel/portal provider guides plus Hertz rental research.
 
-Use walletfreak-setup after installation. Python 3.10+, Node.js 18+ and Chrome are required. Start the dashboard with `python3 scripts/local.py start` from this plugin directory. Its private link works on this device only.
+One pinned Playwright MCP connection opens temporary Chrome sessions. When needed, users log in on the provider's website and notify the agent to continue. No dashboard or stored passwords. Results stay in conversation unless an export is requested. Users complete transactions themselves.
 
-Planning stays in the Codex or Claude conversation. The browser displays published results and an editable personal wallet; it has no agent controls. Results can be downloaded or deleted without changing the wallet. Users sign in and book themselves. Temporary browser sessions are default; remembered sessions are opt-in. Profiles and trips stay outside this package.
-
-See [planning](skills/travel-plan/SKILL.md), [dashboard](skills/trip-board/SKILL.md) and [browser/session guidance](skills/travel-plan/references/browser.md).
-
-The shared MCP launch command accepts Claude's expanded plugin-root argument; Codex uses the plugin-relative working directory. The path is a separate process argument, never interpolated into shell or Python source. Both routes run the same browser wrapper.
+Install `walletfreak@walletfreak`; optionally add Credit Cards, Spending or Shopping. See the repository installation and privacy guides.

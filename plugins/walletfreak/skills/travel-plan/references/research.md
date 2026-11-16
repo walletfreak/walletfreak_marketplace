@@ -6,7 +6,7 @@ Return one record per product/source. Include failed searches and keep quoted ev
 | --- | --- |
 | Search | Dates/flexibility, airports/destination, travelers/ages as needed, rooms, cabin/room filters, country of sale |
 | Provider / program / source | Provider, loyalty program, marketing/operating airline or property, official booking source |
-| Product | Full itinerary, cabin per segment, local dates/time zones and connections; or room, bed, occupancy, nights and payment timing |
+| Product | Full itinerary, cabin per segment, local dates/time zones and connections; or room, bed, occupancy, nights and payment timing; or rental branches, local pickup/return times, duration and vehicle class |
 | Price | Total cash or points plus all mandatory cash charges; currency for every amount; party/stay totals, per-unit basis, unknown fees |
 | Availability / observed at | Available, unavailable, waitlisted, blocked or unverified; number of seats/rooms if shown; ISO observation timestamp with time zone |
 | Terms | Fare/room restrictions, cancellation deadline/time zone, penalties, refund/redeposit/change rules, baggage or mandatory property fees |
@@ -22,9 +22,13 @@ Match airports, dates, traveler count, cabin on every segment, fare flexibility,
 
 Match dates, nights, number of rooms, exact room/bed/occupancy, meals, payment timing and cancellation deadline. Include taxes, resort/destination/service fees and mandatory pay-at-property amounts in the same total or flag them unknown. A headline nightly rate is not a stay total. Verify each award night and certificate eligibility. Do not assume direct-booking elite benefits or earnings apply to portal rates.
 
+## Rental cars
+
+Match pickup/return branches, exact local dates/times, billed duration, driver age, vehicle class, mileage/fuel rules and cancellation/payment terms. Include mandatory rental taxes and surcharges; optional extras and refundable deposits stay separate. Points plus cash must be an actual eligible redemption quote, not an award-chart estimate. If the reward selector requires checkout or a hold, leave the value unverified or use clearly labeled redacted user-supplied evidence. Use Hertz's dedicated skill for the search workflow.
+
 ## Card travel benefits
 
-Use `walletfreak`’s `card-travel-benefits` skill through host discovery when cards could change flight/hotel/portal choices. If missing, run setup diagnostics in `travel-plan` and leave card savings unverified. Attach its per-card benefit ledger to the shared findings: eligibility evidence, exact period and remaining allowance, booking/payment constraints, quote/charge allocation and unresolved checks. Keep gross price, checkout amount, expected statement credits and noncash perks distinct. Allocate shared allowances once across the chosen itinerary. For a card-adjusted redemption scenario, adjust the cash comparator and award charges consistently; retain the gross comparison and mark uncertain credits conditional.
+Use `walletfreak-credit-cards`’s `card-travel-benefits` skill through host discovery when cards could change flight/hotel/portal choices. If missing, run setup diagnostics in `travel-plan` and leave card savings unverified. Attach its per-card benefit ledger to the shared findings: eligibility evidence, exact period and remaining allowance, booking/payment constraints, quote/charge allocation and unresolved checks. Keep gross price, checkout amount, expected statement credits and noncash perks distinct. Allocate shared allowances once across the chosen itinerary. For a card-adjusted redemption scenario, adjust the cash comparator and award charges consistently; retain the gross comparison and mark uncertain credits conditional.
 
 ## Lounge tracker
 

@@ -1,57 +1,41 @@
-# Installation and upgrading
+# Installation and upgrades
 
-Requires Python 3.10+, Node.js 18+ and Chrome. Both hosts can install four focused packages; Travel owns the one local dashboard and browser MCP connection.
+Use a host with plugin support. Travel research requires Node.js 18+, npx and Chrome; optional arithmetic/spending helpers require Python 3. No paid API, dashboard service, credential config or cryptography package is required.
 
-## Fresh install
+## Codex
 
-Codex: `codex plugin marketplace add walletfreak/walletfreak_marketplace`, then `codex plugin add walletfreak@walletfreak`.
+```sh
+codex plugin marketplace add walletfreak/walletfreak_marketplace
+codex plugin add walletfreak@walletfreak
+```
 
-Claude Code: `claude plugin marketplace add walletfreak/walletfreak_marketplace`, then `claude plugin install walletfreak@walletfreak`.
+Optional packages use `codex plugin add <name>@walletfreak`: walletfreak-credit-cards, walletfreak-spending, walletfreak-shopping.
 
-Start a fresh host session and invoke walletfreak-setup. Codex exposes the packaged onboarding skill after installation; Claude Code offers it in a new session. The private dashboard starts with the Concierge travel design shown on the website; first-run setup offers wallet details and optional connected accounts. Saved trips fill the fixed Travel template. For an unpublished development build, add the explicit marketplace checkout path instead of the GitHub source. Verify which source the host is using before reinstalling.
+## Claude Code
 
-## Upgrade from 0.1 or 0.2
+```sh
+claude plugin marketplace add walletfreak/walletfreak_marketplace
+claude plugin install walletfreak@walletfreak
+```
 
-1. Retain existing trip files and ~/.walletfreak/traveler-profile.md. The revised viewer migrates old dashboard findings and selections once into results.json; obsolete intake/request/account controls are removed. The optional Markdown profile is unchanged.
-2. Stop an already-running dashboard before updating; saved records remain. Update the marketplace and install the current walletfreak package. Verify the Travel skills and shared server, then install the current walletfreak-credit-cards package if card research is wanted.
-3. Remove previously installed legacy category plugins walletfreak-hotels, walletfreak-flights and walletfreak-trip-board. Replace a 0.2 walletfreak-credit-cards installation with the current package after verifying the new skills. Codex uses `codex plugin remove <name>@walletfreak`; Claude uses `claude plugin uninstall <name>@walletfreak`. Remove 0.1 individual provider plugins too if still installed.
-4. Close the old host session and start a fresh one. Verify exactly one walletfreak-browser connection.
-5. Old provider commands such as united-research map to provider-research and the united reference. Every old skill name remains in the provider catalog's legacySkill field.
+Optional packages use `claude plugin install <name>@walletfreak` with the same names. For local development, register this checkout's absolute path instead of the GitHub marketplace source. Start a new host session after installation/update. Ask `walletfreak-setup` to check discovery only if needed.
 
-Plugin removal should remove installed package code only, not the private WalletFreak data directory. Do not delete a personal profile to resolve package discovery.
+## Browser and login
 
-## Local dashboard
+Core's .mcp.json supplies one pinned Playwright MCP browser with headed Chrome, isolated temporary profiles, stdout output and no code generation. Providers reuse that connection. Each host has its own isolated session; do not run concurrent actions on one tab. npx may need network access on first launch.
 
-Resolve the installed plugin path from walletfreak-setup, then run `python3 <plugin>/scripts/local.py start`. It reuses an existing healthy service or chooses an available port and prints a private loopback URL. Keep the fragment access key private. No cloud account or API key is required.
+When login is required, the agent opens the official provider page, tells you to log in directly and waits for confirmation. Enter credentials and MFA/CAPTCHA only there. After you confirm, the agent verifies a non-sensitive authenticated view and resumes. Expiry requires another manual login. Never configure username/password files or attach your personal Chrome profile.
 
-Plan in the host conversation. The agent publishes findings to Travel → Saved trips, where you can explore itinerary components, compare options, download a standalone trip file or delete results. Personal wallet separately saves cards, loyalty balances, status, credits and certificates. `local.py stop` stops the service without deleting saved data.
+## Upgrade to 0.5
 
-WALLETFREAK_DATA can point to a dedicated private directory for tests or another local user-selected location. Keep it consistent between the dashboard and host browser process. Default: ~/.walletfreak/local. Never use a repository, home directory itself, shared folder or installed plugin directory.
+Update the installed packages through the host's plugin manager, then restart the host so old skills, startup hooks and browser tools are unloaded. Core 0.5.0, Credit Cards 0.4.0, Spending 0.2.0 and Shopping 0.2.0 remove dashboard dependencies. Do not edit installed plugin caches manually.
 
-## Compact wallet and optional encrypted sign-ins
+The dashboard, trip-board, dashboard-builder, credential vault/bridge, remembered-session settings and dashboard startup hook are removed. Existing ~/.walletfreak/local data, credential files, device keys and browser profiles are not migrated, read or deleted by the new browser configuration. Close an old dashboard process/window you still have open. Removing code does not revoke provider-side sessions or erase old data. Keep backups and remove old data only by a separate explicit cleanup decision.
 
-The viewer starts on Travel. Open Wallet to add cards, loyalty accounts and optional encrypted provider sign-ins. A new wallet starts with one personal profile; older multi-person wallets remain readable. Pick a common loyalty program from the bundled provider list or choose Other program. Enter balances manually if preferred. If an older traveler-profile.md exists beside the local data directory, Load existing wallet imports it into an empty wallet without changing the original. Import is explicit and does not silently refresh old reporting dates. Add separate rows for gift cards, TravelBank, airline credits, certificates, passes and other assets; blank values remain unknown.
+The optional ~/.walletfreak/traveler-profile.md remains a plain-text, non-secret profile. For an old structured wallet/result file, explicitly ask the agent to review only that named non-secret file if you want a sanitized export; do not ask it to read credential/key files. Spending's standalone helper retains the spending.json format and WALLETFREAK_DATA location, so an existing requested ledger remains usable. Old source downloads/exports remain independent.
 
-To connect an account, add a credit card, airline loyalty or hotel loyalty tile in Wallet, then choose Connect sign-in on that tile. Enter login details in the private browser. Refresh on that tile queues a request; ask your agent in the active conversation to process pending Wallet refreshes, sync upcoming trips or check a balance. The agent opens the approved provider site and may ask you to complete verification; the dashboard does not initiate a background login. Wallet keeps passwords encrypted in private local JSON. Saved sign-ins and privacy controls are at the bottom of Wallet. The optional dependency is `python3 -m pip install -r <plugin>/requirements-vault.txt` in the Python environment used to run local.py; use an isolated environment if required by your Python installation. The wallet and results viewer require no additional package. Never enter secrets in shell arguments or chat. New storage initializes automatically with a device-held key. Older master-password sign-ins can migrate after one unlock. Saving a sign-in does not automatically log in.
+Pre-unified category installs can be replaced with current Travel and optional Credit Cards through the host's plugin manager. Legacy provider skill names resolve through providers.json. Missing categories do not require a dependency manager.
 
-Plugins & skills displays local Codex installations and their skill documents. If the native CLI is unavailable it shows this bundled WalletFreak package with an explicit discovery limitation. Restart the viewer after installing/removing plugins to refresh its inventory.
+## Troubleshooting
 
-## Browser sessions
-
-Temporary mode is default. Ask the setup skill to remember sign-ins or forget saved sessions; it updates the local setting only at your request. Mode changes apply on the first browser action after the next MCP connection start. Fully close/restart the host's WalletFreak connection after changing it; browser_close alone does not restart the wrapper.
-
-The wrapper prevents concurrent hosts from sharing a profile. Tool discovery remains available without a lock. The first browser action acquires ownership until that host connection closes; close the other connection if locked. Never delete lock files or connect a personal browser. Sign in on the provider's official page; handle MFA/CAPTCHA directly. A prior sign-in is not a guarantee that a session remains valid.
-
-Forget all local sessions schedules removal of the dedicated saved profile when the restarted connection first uses the browser, after checking exclusive ownership. Close any remaining dedicated Chrome window first. It preserves trips and the optional traveler profile; provider-side sessions are not revoked.
-
-If starting fails, run `local.py serve` in a terminal for the error. Preserve data on failures; do not reset settings to hide corruption. Port conflicts do not require killing other applications.
-
-## Credit Cards, Spending and Shopping plugins
-
-Install walletfreak-credit-cards@walletfreak, walletfreak-spending@walletfreak and/or walletfreak-shopping@walletfreak with the same host plugin command after installing WalletFreak Travel. Start a new thread and ask for spending-analysis. All use the same dashboard. The CSV importer has no third-party dependencies. PDF text extraction optionally uses an already-installed pdftotext; scanned/unusual PDFs need local conversion and reconciliation. No automatic PDF transaction import or XLSX export is claimed.
-
-Shopping researches live merchant offers and publishes sourced deals to the shared local Shopping board. Give confirmation text to the agent in conversation for reviewed itinerary import; the Travel page has no email paste form.
-
-## Upgrade from Finance
-
-The package ID is now `walletfreak-spending`. Install it, start a new host session, verify the Spending tab still shows your saved references and ledger, then remove `walletfreak-finance`. Do not delete `~/.walletfreak/local`; the server keeps the same data files and does not migrate or reset them.
+Check discovered skills and walletfreak-browser tools, Chrome availability, npx downloads and host permissions. Report actual errors. Do not launch a second server or delete unrelated profiles/locks. If a provider blocks automation, accept redacted manually supplied results and label them unverified. No installation check proves live authenticated provider access.

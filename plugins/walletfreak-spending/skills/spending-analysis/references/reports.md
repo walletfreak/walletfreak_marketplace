@@ -1,30 +1,14 @@
-# Publish spending metrics
+# Ledger commands and spending reports
 
-Resolve the installed WalletFreak core from walletfreak-setup. Run `python3 <core-plugin>/scripts/local.py references` to get the latest revision and available file IDs/paths. Read only the files the user asks to analyze. No model call or analysis is started by uploading.
+Run the bundled `scripts/spending.py` with `--directory <private-directory>` before the command. JSON requests go on stdin (`--input <file.json>` is also supported). Run snapshot first to get the revision and review current data. Every change takes an exclusive local lock and checks the expected revision; reread after conflicts instead of overwriting.
 
-Write a JSON object locally, outside repositories, then run `python3 <core-plugin>/scripts/local.py insights --input <report.json>`:
+- `snapshot`: rows, import IDs, current revision and approved monthly totals.
+- `preview`: `{"import":{"content":"<CSV text>","filename":"activity.csv","bank":"Chase","account":"Personal card","currency":"USD","sign":"negative"}}`. Use `positive` or `negative` from a verified purchase; optional `mapping` maps canonical names to actual CSV headers. No data is saved.
+- `import`: the same `import` plus `"expected_revision":"<snapshot revision>"`. All rows start needing review. Report row errors before saving.
+- `update`: `{"expected_revision":"<revision>","changes":[{"id":"<row ID>","category":"Dining","type":"expense","review":"approved"}]}`. Types: expense, refund, payment, transfer, income, unknown. Reviews: needs-review, approved, excluded. Unknown types cannot be approved; examine possible duplicates individually.
+- `export --output <new.csv>`: transactions CSV. Add `--summary` for approved monthly category totals. Existing destinations are never overwritten. Exported text cells are protected against spreadsheet formula injection.
+- `delete`: `{"expected_revision":"<revision>","confirm":"delete-spending"}`. Use only when the user requests deletion; removes only this ledger.
 
-```json
-{
-  "expected_revision": "revision from references",
-  "report": {
-    "title": "October spending",
-    "generated_at": "2026-10-18T12:00:00-04:00",
-    "metrics": [{
-      "label": "Net spending",
-      "value": "USD 1,240.00",
-      "detail": "Illustrative only. Posted purchases minus refunds; payments excluded. State the exact covered dates and page evidence in a real report.",
-      "source_ids": ["an available reference ID"]
-    }],
-    "findings": [{
-      "label": "Review recurring charges",
-      "detail": "Illustrative only. Explain evidence and uncertainty; one charge alone does not establish a recurring subscription.",
-      "source_ids": ["an available reference ID"]
-    }]
-  }
-}
-```
+For reports, show covered accounts/periods and currencies, approved expenses, refunds, excluded payments/transfers and unresolved rows. Cite source file names and row/page/section references without account numbers. Separate actual transactions from statement totals and pending items. Verify arithmetic against the relevant source sections; do not treat missing values as zero or one charge as proof of a recurring subscription.
 
-Replace all example values with computed evidence. Maximum 12 metrics and 30 findings; every item needs at least one available reference ID. Labels/values are plain text up to 200 characters; details up to 2,000. Dates require a timezone. Keep currencies separate, include period and scope, distinguish estimates, and never treat missing data as zero. The server checks shape, available sources and revision, not the truth of the calculation. Verify arithmetic and reconcile against statement sections before publishing.
-
-If references changed, read them again and reconcile before retrying. Never blindly overwrite a newer report. Removing a referenced file clears reports that depend on it. A new upload does not expand an existing report’s scope automatically. Report source links download the private stored copy. Users can remove references without deleting originals, wallet or CSV ledger.
+Keep reports in conversation by default. Export a sanitized CSV or report only when requested. The helper stores a private plaintext spending.json with owner-only file permissions and atomic replacement. Originals are never edited. Agent-assisted interpretation may enter host/model context.

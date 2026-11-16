@@ -1,7 +1,7 @@
 {
   "name": "walletfreak-credit-cards",
-  "version": "0.3.1",
-  "description": "Research card benefits, points and payment choices using the shared private WalletFreak wallet.",
+  "version": "0.4.0",
+  "description": "Compare existing cards, points and benefits; check requested balances with manual Chrome login.",
   "author": {
     "name": "WalletFreak contributors"
   },

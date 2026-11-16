@@ -1,14 +1,13 @@
 {
   "name": "walletfreak",
-  "version": "0.4.1",
-  "description": "Plan trips, choose cards and redemptions from your wallet, and explore itineraries in a private local viewer.",
+  "version": "0.5.0",
+  "description": "Research flights, hotels and Hertz rentals, compare cash and points, and return sourced itineraries in conversation.",
   "author": {
     "name": "WalletFreak contributors"
   },
   "homepage": "https://github.com/walletfreak/walletfreak_marketplace",
   "repository": "https://github.com/walletfreak/walletfreak_marketplace",
   "license": "MIT",
-  "hooks": {"SessionStart": [{"matcher": "startup", "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/onboarding_hint.py\""}]}]},
   "keywords": [
     "travel",
     "research",

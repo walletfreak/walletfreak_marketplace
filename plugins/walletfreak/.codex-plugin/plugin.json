@@ -1,7 +1,7 @@
 {
   "name": "walletfreak",
-  "version": "0.4.1+codex.20261027",
-  "description": "Map trips, organize wallets by person, refresh portal balances and explore results locally.",
+  "version": "0.5.0",
+  "description": "Research flights, hotels and Hertz rentals, compare cash and points, and return sourced itineraries in conversation.",
   "author": {
     "name": "WalletFreak contributors"
   },
@@ -16,20 +16,15 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "WalletFreak Travel",
-    "shortDescription": "Visual trips, cards and points.",
-    "longDescription": "Plan and import trips, map stays, compare costs and cards, and explore results in a private local travel dashboard.",
+    "shortDescription": "Travel research, cash and points.",
+    "longDescription": "Research flights, hotels and Hertz rentals, compare cash and points, and return sourced itineraries in conversation.",
     "developerName": "WalletFreak",
     "category": "Productivity",
-    "capabilities": [
-      "Interactive"
-    ],
+    "capabilities": [],
     "defaultPrompt": [
-      "Plan a trip with flexible dates and show my local trip board.",
-      "Open my personal wallet to enter my cards and loyalty balances.",
-      "Choose the best card or points redemption from my wallet using current quotes and offers.",
-      "Map my hotel stays and route in a compact itinerary.",
-      "Use wallet-sync to refresh one person\u2019s rewards balances from their portals.",
-      "Turn my pasted booking confirmation into a reviewed itinerary."
+      "Compare cash and points for my trip.",
+      "Research Hertz points and cash rentals near my destination.",
+      "Review my booking confirmation and show an itinerary."
     ],
     "brandColor": "#0788D9",
     "composerIcon": "./assets/mascot.png",

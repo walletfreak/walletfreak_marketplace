@@ -1,78 +1,59 @@
 # WalletFreak
 
-Four focused plugins for Codex and Claude Code: Travel, Credit Cards, Spending and Shopping, with one private local workspace. Plan with flexible dates, compare 31 provider groups, evaluate existing card benefits and lounges, and explore findings in a private local dashboard. Users sign in and book themselves.
+Focused research skills for Codex and Claude Code. Compare flights, hotels, Hertz rentals, cash and points; evaluate existing cards; analyze downloaded statements; and research shopping offers. Results appear in your conversation. No dashboard, account setup or credential file is required.
 
 ## Install
 
-Prerequisites: Python 3.10+, Node.js 18+ and Chrome.
+Travel/browser research needs Node.js 18+, npx and Chrome. Python 3 is needed only for the optional redemption calculator and spending helpers.
 
 ```sh
+# Codex
 codex plugin marketplace add walletfreak/walletfreak_marketplace
 codex plugin add walletfreak@walletfreak
-codex plugin add walletfreak-credit-cards@walletfreak
-codex plugin add walletfreak-spending@walletfreak
-codex plugin add walletfreak-shopping@walletfreak
 
-# Or Claude Code:
+# Or Claude Code
 claude plugin marketplace add walletfreak/walletfreak_marketplace
 claude plugin install walletfreak@walletfreak
-claude plugin install walletfreak-credit-cards@walletfreak
-claude plugin install walletfreak-spending@walletfreak
-claude plugin install walletfreak-shopping@walletfreak
 ```
 
-Start a fresh host session and ask: **Use walletfreak-setup to open my local dashboard.**
+Start a fresh host session and ask for your research. Use `walletfreak-setup` if skills or browser tools are missing. Add only optional packages you want using the same host command: `walletfreak-credit-cards@walletfreak`, `walletfreak-spending@walletfreak`, or `walletfreak-shopping@walletfreak`.
 
-WalletFreak Travel covers all 31 travel providers, trip planning and the shared local server. Credit Cards supplies traveler-profile, card-travel-benefits, wallet-optimizer and wallet-sync. Both use the same saved wallet. Spending and Shopping add their own research skills. See [installation and migration](docs/INSTALL.md).
+| Plugin | Skills |
+| --- | --- |
+| WalletFreak Travel | travel-plan, provider-research, hertz-research, lounge-access, confirmation-import, stay-route-map, walletfreak-setup |
+| Credit Cards | traveler-profile, card-travel-benefits, wallet-optimizer, wallet-sync |
+| Spending | spending-analysis, with standalone CSV review/export and PDF text extraction helpers |
+| Shopping | deal-research |
 
-## Four research views
+Travel supplies the shared browser for authenticated research in the other packages. Spending works independently with downloaded files. See [installation and migration](docs/INSTALL.md).
 
-WalletFreak Spending adds the spending-analysis skill and bank-specific guides for Chase, Citi, Capital One, Amex and other mapped CSVs. It uses the same core local dashboard—no second server. Drop downloaded PDF, CSV or ZIP statements into Spending. Files are saved as local references; ask your agent for metrics, categories or recurring charges, and explore the sourced results in the dashboard. The optional CSV spreadsheet provides category review and transaction/monthly exports. Every row needs review before inclusion. Payments/transfers are excluded from spending; currencies stay separate. PDF extraction is a local assisted workflow, not an automatic transaction parser.
+## Manual Chrome login
 
-**Your files are processed on your device. No bank credentials required.** Direct import, categorization and exports run locally. The ledger is a private local plaintext file. Content you ask an agent to read may be processed by your host/model provider; this is not an offline language model.
+When an account is needed, the agent opens the official provider page and notifies you to log in in Chrome. Enter your username/password and complete verification there, then tell the agent you are done. It verifies a non-sensitive signed-in view before resuming in the same session. Never paste passwords or MFA codes into the conversation.
 
-## Compose your dashboard
+Each host uses its own temporary isolated browser profile. WalletFreak does not save credentials, read a password config, or offer remembered sessions. Closing the browser ends that session. Existing private data from older releases is left untouched and is no longer read by the removed dashboard/credential bridge. See [privacy](docs/PRIVACY.md).
 
-Travel uses the bundled Concierge template for every saved trip. The agent builds from the installed `assets/components/v1` catalog and renderer; the public component gallery only previews those definitions. Use dashboard-builder when you explicitly want to change bundled components or styling. Layouts contain component IDs and local data bindings, never financial data, URLs or executable code.
+## Research
 
-The website publishes the same catalog, schema and renderer at /components/v1/ and previews templates at /components.html. A separate read-only catalog MCP prototype lives in the website repository; deploying it is optional, and the local plugin needs no hosted service.
+Travel covers eight hotel groups, 19 airline/program groups, four card travel portals and Hertz. Provider references load only when relevant. The [catalog](providers.json) records routing and legacy aliases; [verification evidence](docs/provider-verification.json) distinguishes authored guidance from actual live testing.
 
-## Plan a trip
+Ask for dates, locations and preferences in ordinary language. The agent asks only for material gaps, searches useful combinations, and returns equivalent quotes, mandatory fees, restrictions, observation times, sources and reproducible booking steps. Unknown fees remain unknown. Optional balances/cards can stay in chat; saving a non-secret traveler profile is explicitly optional.
 
-“NYC to Tokyo and Kyoto for two adults in April, 7–10 nights, departure flexible by three days. Economy with at most one stop, hotels near transit, USD 4,000 total. Compare cash and my Chase/Amex points. Show my local trip board.”
+Hertz research compares scoped pickup/drop-off locations, dates/times, vehicle classes, eligible discount codes and cash versus points. Exact redemption costs are verified only if accessible without checkout or a hold; otherwise the agent requests redacted user-supplied evidence or labels them unverified. Users make all reservations and transactions themselves.
 
-Keep planning and follow-up questions in your host conversation. The local browser shows the resulting itinerary, flights, stays and findings. Personal wallet lets you enter cards, loyalty programs, points/miles, status, credits and certificates for optional reuse. It does not run or communicate with an agent.
+Redemption value is `(equivalent cash avoided - mandatory award cash charges) / final points spent`, with currencies and assumptions explicit. Card credits and future rewards remain separate from cash due. The agent does not fill checkout, hold inventory, purchase, cancel, enroll or transfer points. These are workflow instructions, not a technical transaction firewall.
 
-The dashboard offers searchable findings, persistent shortlists, side-by-side comparisons, selected itinerary costs, dated evidence and sanitized HTML export. Different currencies and points programs remain separate; unknown fees are never zero. Examples are fictional and labeled.
-
-## Choose the best card or redemption
-
-Ask: “Use my wallet to choose the best card or points redemption for this booking. Compare current offers, total cash due and the points I would spend. Tell me what would change the recommendation.” The wallet-optimizer skill compares existing cards and currencies using current official terms and feasible quotes, including cash-versus-points, transfer bonuses, usable credits and earning opportunity costs.
-
-## Accounts
-
-When sign-in is needed during research, the agent opens the official provider page. Enter credentials and MFA codes there. Temporary sessions are default; remembering sign-ins is opt-in and applies after restarting the host's browser connection. Saved sessions stay in a dedicated local profile outside the repositories. One host owns it at a time. Forget-all removes local sessions on the next browser connection start; it does not revoke provider-side sessions.
-
-Wallet links encrypted sign-ins to cards and loyalty accounts. Each item shows its sign-in status; Refresh queues an account request for the next active agent conversation. Saved sign-ins and privacy controls are at the bottom of Wallet. The encryption key is held by the device (macOS Keychain on Mac), without a separate WalletFreak master password. Older master-password sign-ins can migrate after one unlock. The browser bridge fills saved credentials only on their exact approved login origin, without returning secrets to the agent. MFA remains user-operated. No SMS reader, bookings, cancellations, enrollments or transfers. These are workflow restrictions, not a technical transaction firewall. See [privacy](docs/PRIVACY.md).
-
-## Coverage and verification
-
-Eight hotel groups, 19 airline/program groups and four card travel portals share one research contract and keep individual provider references. The [catalog](providers.json) contains aliases, legacy skill names and guide paths. [Verification evidence](docs/provider-verification.json) stays provider-specific; authored guides do not establish live inventory access. Unknown providers can be researched generically with that limit disclosed.
+Spending uses requested local statements/CSVs, not bank credentials. Its optional ledger retains duplicate review, revision checks, decimal totals, currency separation and safe CSV exports. Agent-assisted interpretation follows your host/model provider's data handling. Shopping returns current sourced offers in conversation. Files are exported only when requested.
 
 ## Develop
 
 ```sh
 python3 -m unittest discover -s tests -v
 claude plugin validate .
-python3 plugins/walletfreak/scripts/local.py start
+# Optional real-Chrome check using a synthetic local page, no provider account:
+python3 tests/browser-mcp-smoke.py
 ```
-
-For a separate test data directory, set WALLETFREAK_DATA to a dedicated private directory. Normal data lives in ~/.walletfreak/local: results.json, wallet.json and layout.json are independent files. Delete individual results or your wallet in the viewer, or remove the corresponding file. Downloaded trip files are separate and exclude wallet data. The legacy optional Markdown profile remains ~/.walletfreak/traveler-profile.md. Never commit real trip or account data.
 
 [Acceptance](docs/ACCEPTANCE.md) · [Validation](docs/VALIDATION.md) · [Contributing](CONTRIBUTING.md).
 
-The separate walletfreak repository owns the public website. Source publication and website deployment are separate release actions. MIT applies to code; provider artwork retains its source/trademark notices.
-
-The wallet groups cards, standalone loyalty accounts and credits. The bundled card and program catalogs cover supported earning relationships and membership tiers. Choosing a cataloged card creates or reuses its local earning account when saved; it never opens a provider account or confirms a balance. Removing a card keeps its loyalty account. The Cards/Table switch shows the same entries in a compact table with item editors. The v2 migration preserves existing values and saves wallet-v1-backup.json locally; deleting the personal wallet also deletes that backup. Travel templates show a compact timeline and route list. Street-map tiles are optional and contact OpenStreetMap only after Load street map. Exports retain an offline route list.
-
-WalletFreak Shopping researches current merchant prices, cash back and card choices, and publishes sourced offers to the same local Shopping board. Give flight or hotel confirmation details to your agent for review and a visual itinerary. The Travel page does not have an email paste form. Your agent can sync upcoming trips from a connected provider during an active conversation, with you completing any provider verification.
+This repository owns skills, catalogs and documentation. The separate [website repository](https://github.com/walletfreak/walletfreak) owns the public GitHub landing page and existing Firebase Hosting configuration. Git publication and website deployment are separate actions. MIT licensed; independent of providers and agent vendors.

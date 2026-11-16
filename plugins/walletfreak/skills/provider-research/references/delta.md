@@ -18,7 +18,7 @@ For every flight compare the same airports, travel days, party size, segments, c
 
 ## Cardmember award and lounge checks
 
-Use the bundled `card-travel-benefits` skill for current cardmember award pricing and `lounge-access` for card-based lounge options. Record final discounted miles once, all mandatory award cash charges and whether the displayed quote already includes the benefit. Award eligibility does not imply lounge access.
+Use the host-discovered `card-travel-benefits` skill in optional WalletFreak Credit Cards for current cardmember award pricing and `lounge-access` for card-based lounge options. Record final discounted miles once, all mandatory award cash charges and whether the displayed quote already includes the benefit. Award eligibility does not imply lounge access.
 
 ## Verification
 

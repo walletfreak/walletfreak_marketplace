@@ -16,7 +16,7 @@ These are official entry points, not inventory or durable rate/benefit claims. F
 
 For every room compare the same dates, number of rooms, adults/children, bed type, meals, cancellation deadline and payment timing. Show total stay cost and mandatory charges payable at the property, even when excluded from the initial displayed total.
 
-For Hilton Aspire or Surpass, use the bundled `card-travel-benefits` skill. Distinguish resort-only versus broader Hilton credits, issued certificates versus spend-triggered rewards, exact status, direct versus portal charges and eligible payment cards. Supply the specific property/rate and full quoted stay total; do not assume a card headline applies to this stay.
+For Hilton Aspire or Surpass, use the host-discovered `card-travel-benefits` skill in optional WalletFreak Credit Cards. Distinguish resort-only versus broader Hilton credits, issued certificates versus spend-triggered rewards, exact status, direct versus portal charges and eligible payment cards. Supply the specific property/rate and full quoted stay total; do not assume a card headline applies to this stay.
 
 ## Verification
 

@@ -277,5 +277,14 @@
     "notes": "Guidance authored; live inventory and eligibility not certified.",
     "id": "citi-travel",
     "skill": "provider-research"
+  },
+  {
+    "plugin": "walletfreak",
+    "stage": "authored",
+    "publicSearch": null,
+    "authenticatedSearch": null,
+    "notes": "Official redemption/FAQ guidance reviewed 2026-11-15; no live rental or authenticated search tested.",
+    "id": "hertz",
+    "skill": "hertz-research"
   }
 ]

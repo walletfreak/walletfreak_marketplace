@@ -1,20 +1,20 @@
 {
   "name": "walletfreak-shopping",
-  "version": "0.1.0+codex.20261019023701",
-  "description": "Research current shopping deals with wallet-aware card recommendations.",
+  "version": "0.2.0",
+  "description": "Compare current merchant offers, coupons, cash back and card value in conversation.",
   "author": {
     "name": "WalletFreak contributors"
   },
   "skills": "./skills/",
   "interface": {
     "displayName": "WalletFreak Shopping",
-    "shortDescription": "Compare current deals and the card to use.",
-    "longDescription": "Research products, merchant offers and cash back, then show sourced deals in the local WalletFreak shopping board.",
+    "shortDescription": "Compare sourced offers.",
+    "longDescription": "Compare current merchant offers, coupons, cash back and card value in conversation.",
     "developerName": "WalletFreak contributors",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
-      "Find current deals for a product and show which card in my wallet to use."
+      "Compare current offers for this product and show sources."
     ],
     "composerIcon": "./assets/mascot.png",
     "logo": "./assets/mascot.png"

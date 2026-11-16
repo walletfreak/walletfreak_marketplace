@@ -1,1 +1,0 @@
-exports.person=async(page,name)=>{await page.getByRole('button',{name:'Wallet',exact:true}).click();await page.evaluate(()=>openWalletSetup());await page.locator('#setup-person').selectOption('');await page.locator('#setup-name').fill(name);for(let i=0;i<4;i++)await page.locator('#setup-next').click();await page.locator('#wallet-setup').waitFor({state:'hidden'});};

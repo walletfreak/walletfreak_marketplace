@@ -5,8 +5,7 @@ import sys
 import tempfile
 import unittest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'plugins/walletfreak/scripts'))
-import local
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'plugins/walletfreak-spending/scripts'))
 import spending
 
 
@@ -17,7 +16,7 @@ def source(content='Transaction Date,Description,Category,Type,Amount\n10/01/202
 class Spending(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.ledger = spending.Ledger(Path(self.temp.name), local.read_json, local.atomic_json)
+        self.ledger = spending.Ledger(Path(self.temp.name), spending.read_json, spending.atomic_json)
     def tearDown(self):
         self.temp.cleanup()
     def add(self, value=None):
@@ -63,9 +62,9 @@ class Spending(unittest.TestCase):
         for change in [dict(type='unknown',review='approved'),dict(type='refund',review='approved')]:
             with self.assertRaises(ValueError):self.ledger.action('update',{'expected_revision':state['revision'],'changes':[dict(id=row['id'],category='Test',**change)]})
             self.assertEqual(before,self.ledger.path.read_bytes())
-        with self.assertRaisesRegex(ValueError,'another tab'):self.ledger.action('delete',{'expected_revision':'stale','confirm':'delete-spending'})
+        with self.assertRaisesRegex(ValueError,'another session'):self.ledger.action('delete',{'expected_revision':'stale','confirm':'delete-spending'})
         state=self.approve(state)
-        with self.assertRaisesRegex(ValueError,'another tab'):self.ledger.action('update',{'expected_revision':'empty','changes':[]})
+        with self.assertRaisesRegex(ValueError,'another session'):self.ledger.action('update',{'expected_revision':'empty','changes':[]})
     def test_csv_export_formula_injection_and_delete_independence(self):
         value=source();value.update(sign='positive',content='Date,Description,Amount,Category\n2026-10-01,=HYPERLINK("bad"),12.34,=BAD\n')
         # Use csv.writer for a valid quoted formula cell.

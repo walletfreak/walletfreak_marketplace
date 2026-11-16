@@ -1,7 +1,7 @@
 {
   "name": "walletfreak-spending",
-  "version": "0.1.0",
-  "description": "Local spending reports, category charts and statement analysis.",
+  "version": "0.2.0",
+  "description": "Analyze requested downloaded statements and reviewed CSV ledgers without bank credentials or a dashboard.",
   "author": {
     "name": "WalletFreak contributors"
   },

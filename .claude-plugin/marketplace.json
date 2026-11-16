@@ -4,29 +4,29 @@
     "name": "WalletFreak contributors"
   },
   "metadata": {
-    "description": "Focused local travel, finance and shopping plugins with one private workspace.",
-    "version": "0.4.1"
+    "description": "Focused travel, card, spending and shopping skills with manual Chrome login.",
+    "version": "0.5.0"
   },
   "plugins": [
     {
       "name": "walletfreak",
       "source": "./plugins/walletfreak",
-      "version": "0.4.1"
+      "version": "0.5.0"
     },
     {
       "name": "walletfreak-credit-cards",
       "source": "./plugins/walletfreak-credit-cards",
-      "version": "0.3.1"
+      "version": "0.4.0"
     },
     {
       "name": "walletfreak-spending",
       "source": "./plugins/walletfreak-spending",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "name": "walletfreak-shopping",
       "source": "./plugins/walletfreak-shopping",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

@@ -1,3 +1,10 @@
+# 0.5.0 — Skills and manual browser login
+
+- Remove the local dashboard, layouts, credential vault/bridge and startup hooks. Existing private data is retained.
+- Research in conversation; users log in directly in temporary Chrome sessions.
+- Add Hertz points/cash research and scoped search combinations.
+- Keep optional profile files and standalone reviewed CSV spending tools.
+
 # Changelog
 
 ## Guided wallets and ZIP references

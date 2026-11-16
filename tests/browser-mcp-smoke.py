@@ -2,24 +2,24 @@
 """Opt-in integration check: real Chrome, synthetic loopback cookie, no provider accounts."""
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
-import os
 from pathlib import Path
 import selectors
 import subprocess
 import sys
-import tempfile
 import threading
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'plugins/walletfreak/scripts'))
-from local import atomic_json
 
 
 class Fixture(BaseHTTPRequestHandler):
     def do_GET(self):
-        body = b'<!doctype html><title>WalletFreak synthetic session test</title><h1>Fictional test only</h1>'
+        signed_in = 'walletfreak_fixture=synthetic' in self.headers.get('Cookie', '')
+        if self.path == '/synthetic-login': signed_in = True
+        body = ('<!doctype html><title>Synthetic session test</title><h1>' + ('Signed in to synthetic fixture' if signed_in else 'Signed out of synthetic fixture') + '</h1>').encode()
         self.send_response(200)
+        if self.path == '/synthetic-login':
+            self.send_header('Set-Cookie', 'walletfreak_fixture=synthetic; HttpOnly; SameSite=Strict; Path=/')
         self.send_header('Content-Length', str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -29,11 +29,11 @@ class Fixture(BaseHTTPRequestHandler):
 
 
 class Client:
-    def __init__(self, root, expanded=False):
+    def __init__(self):
         plugin=ROOT/'plugins/walletfreak'
         config=json.loads((plugin/'.mcp.json').read_text())['mcpServers']['walletfreak-browser']
-        args=[a.replace('${CLAUDE_PLUGIN_ROOT}',str(plugin)) if expanded else a for a in config['args']]
-        self.process = subprocess.Popen([sys.executable, *args], cwd=root if expanded else plugin, env={**os.environ, 'WALLETFREAK_DATA':str(root)}, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+        self.process = subprocess.Popen([config['command'], *config['args']], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
+
         self.sequence = 0
         self.selector = selectors.DefaultSelector()
         self.selector.register(self.process.stdout, selectors.EVENT_READ)
@@ -77,41 +77,24 @@ def main():
     server=ThreadingHTTPServer(('127.0.0.1',0),Fixture)
     thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
     try:
-        with tempfile.TemporaryDirectory(prefix='walletfreak-mcp-test-') as temporary:
-            root=Path(temporary)
-            url=f'http://127.0.0.1:{server.server_port}'
-            def session(remember, expected, set_cookie=False, forget=False):
-                atomic_json(root/'settings.json',{'remember':remember,'forget':forget})
-                client=Client(root)
-                try:
-                    assert 'browser_navigate' in {t['name'] for t in client.call('tools/list',{})['tools']}
+        url=f'http://127.0.0.1:{server.server_port}'
+        for establish_session in (True, False):
+            client=Client()
+            try:
+                names={tool['name'] for tool in client.call('tools/list',{})['tools']}
+                assert 'browser_navigate' in names
+                assert not names.intersection({'walletfreak_signins','walletfreak_sign_in'})
+                client.tool('browser_navigate',{'url':url})
+                assert 'Signed out of synthetic fixture' in json.dumps(client.tool('browser_snapshot'))
+                if establish_session:
+                    client.tool('browser_navigate',{'url':url+'/synthetic-login'})
+                    assert 'Signed in to synthetic fixture' in json.dumps(client.tool('browser_snapshot'))
                     client.tool('browser_navigate',{'url':url})
-                    second=Client(root,expanded=True)
-                    try:
-                        assert second.call('tools/list',{})['tools'], 'Discovery must not require browser ownership'
-                        try:
-                            second.tool('browser_navigate',{'url':url})
-                        except RuntimeError as error:
-                            assert 'WalletFreak browser unavailable' in str(error)
-                        else:
-                            raise AssertionError('Concurrent browser use must be refused')
-                    finally:
-                        second.close()
-                    result=client.tool('browser_evaluate',{'function':'() => document.cookie'})
-                    rendered=json.dumps(result)
-                    assert ('walletfreak_fixture=synthetic' in rendered) == expected, rendered
-                    if set_cookie:
-                        client.tool('browser_evaluate',{'function':"() => { document.cookie = 'walletfreak_fixture=synthetic; Max-Age=3600; SameSite=Strict; Path=/'; return 'Synthetic cookie set'; }"})
-                finally:
-                    client.close()
-            session(False,False,True)
-            session(False,False)
-            session(True,False,True)
-            session(True,True)
-            session(False,False,forget=True)
-            assert not (root/'browser-profile').exists()
-            assert not json.loads((root/'settings.json').read_text())['forget']
-            print('Passed: MCP startup/tools, temporary isolation, remembered synthetic session, concurrent discovery with exclusive browser use, and forget-all. No travel accounts accessed.')
+                    assert 'Signed in to synthetic fixture' in json.dumps(client.tool('browser_snapshot'))
+            finally:
+                client.close()
+        print('Passed: direct MCP discovery, no credential bridge tools, same-session synthetic login and fresh-session isolation. No provider accounts accessed.')
+
     finally:
         server.shutdown();server.server_close();thread.join()
 

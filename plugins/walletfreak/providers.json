@@ -479,5 +479,20 @@
     "legacySkill": "citi-travel-research",
     "guide": "skills/provider-research/references/citi-travel.md",
     "url": "https://www.citi.com/citi-partner/cititravel/login"
+  },
+  {
+    "id": "hertz",
+    "name": "Hertz",
+    "category": "Car rentals",
+    "programs": [
+      "Hertz Gold Plus Rewards",
+      "Hertz Gold+"
+    ],
+    "plugin": "walletfreak",
+    "skill": "hertz-research",
+    "version": "0.5.0",
+    "verification": "authored",
+    "guide": "skills/hertz-research/SKILL.md",
+    "url": "https://www.hertz.com/"
   }
 ]
