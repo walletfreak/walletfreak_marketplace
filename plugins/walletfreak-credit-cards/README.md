@@ -6,7 +6,7 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 
 ## Product coverage
 
-89 individual guides across 17 families. Package version 0.5.16.
+94 individual guides across 18 families. Package version 0.5.17.
 
 | Family | Guides |
 | --- | --- |
@@ -27,5 +27,6 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 | one-key | 2 |
 | united | 6 |
 | delta | 7 |
+| american-airlines | 5 |
 
 See cards.json for every product, alias, variant and bundled guide path. Family scenarios in tests/card-product-scenarios.json are synthetic review cases, not executed model/provider tests.

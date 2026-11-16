@@ -1150,5 +1150,70 @@
       "skymiles reserve business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/delta-skymiles-reserve-business.md"
+  },
+  {
+    "id": "aadvantage-mileup",
+    "name": "American Airlines AAdvantage MileUp",
+    "variant": "personal",
+    "family": "american-airlines",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "aadvantage mileup",
+      "aa mileup"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/aadvantage-mileup.md"
+  },
+  {
+    "id": "aadvantage-platinum-select",
+    "name": "Citi AAdvantage Platinum Select",
+    "variant": "personal",
+    "family": "american-airlines",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "citi aadvantage platinum select",
+      "aa platinum select"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/aadvantage-platinum-select.md"
+  },
+  {
+    "id": "aadvantage-globe",
+    "name": "Citi AAdvantage Globe",
+    "variant": "personal",
+    "family": "american-airlines",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "citi aadvantage globe",
+      "aa globe"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/aadvantage-globe.md"
+  },
+  {
+    "id": "aadvantage-executive",
+    "name": "Citi AAdvantage Executive",
+    "variant": "personal",
+    "family": "american-airlines",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "citi aadvantage executive",
+      "aa executive"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/aadvantage-executive.md"
+  },
+  {
+    "id": "aadvantage-business",
+    "name": "Citi AAdvantage Business",
+    "variant": "business",
+    "family": "american-airlines",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "citi aadvantage business",
+      "aa business citi"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/aadvantage-business.md"
   }
 ]

@@ -241,5 +241,20 @@
       "Verify card-specific lounge limits and companion cabin rules",
       "Do not apply TakeOff to ineligible partners or discount already-reduced miles again"
     ]
+  },
+  {
+    "id": "american-airlines-product-boundaries",
+    "family": "american-airlines",
+    "prompt": "Synthetic offline case: compare MileUp, Globe and Executive. Treat Globe's finite lounge passes as full membership, give MileUp free bags, and apply an announced future Executive refresh today. Do not browse.",
+    "expected_products": [
+      "aadvantage-mileup",
+      "aadvantage-globe",
+      "aadvantage-executive"
+    ],
+    "expected": [
+      "Keep pass and membership inventory distinct",
+      "Do not import baggage privileges to MileUp",
+      "Verify account/network version and effective dates before using changed benefits"
+    ]
   }
 ]
