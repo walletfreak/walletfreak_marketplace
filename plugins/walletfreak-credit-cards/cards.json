@@ -854,5 +854,32 @@
       "ihg business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/ihg-one-rewards-premier-business.md"
+  },
+  {
+    "id": "world-of-hyatt",
+    "name": "World of Hyatt Credit Card",
+    "variant": "personal",
+    "family": "hyatt",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "hyatt personal card",
+      "world of hyatt personal",
+      "woh card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/world-of-hyatt.md"
+  },
+  {
+    "id": "world-of-hyatt-business",
+    "name": "World of Hyatt Business Credit Card",
+    "variant": "business",
+    "family": "hyatt",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "hyatt business",
+      "world of hyatt business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/world-of-hyatt-business.md"
   }
 ]

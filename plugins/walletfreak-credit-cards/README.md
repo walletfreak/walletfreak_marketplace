@@ -6,7 +6,7 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 
 ## Product coverage
 
-66 individual guides across 11 families. Package version 0.5.10.
+68 individual guides across 12 families. Package version 0.5.11.
 
 | Family | Guides |
 | --- | --- |
@@ -21,5 +21,6 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 | hilton | 4 |
 | marriott | 7 |
 | ihg | 3 |
+| hyatt | 2 |
 
 See cards.json for every product, alias, variant and bundled guide path. Family scenarios in tests/card-product-scenarios.json are synthetic review cases, not executed model/provider tests.

@@ -157,5 +157,18 @@
       "Verify points-only eligibility; a certificate night is not automatically eligible",
       "Do not spend an unissued reward or import personal Premier credits"
     ]
+  },
+  {
+    "id": "hyatt-product-boundaries",
+    "family": "hyatt",
+    "prompt": "Synthetic offline case: I hold World of Hyatt Business and assume it has the personal anniversary certificate. A stated rebate posts after redemption, but I need those rebated points to afford the booking now. Do not browse.",
+    "expected_products": [
+      "world-of-hyatt-business"
+    ],
+    "expected": [
+      "Do not import the personal anniversary night",
+      "A later points rebate does not increase the current available balance",
+      "Verify business credit transaction thresholds and award-rebate timing separately"
+    ]
   }
 ]
