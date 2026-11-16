@@ -128,5 +128,20 @@
       "Do not create an annual Surpass reward or double-discount the quoted points stay",
       "Keep personal quarterly/semiannual pools and participating resort eligibility separate"
     ]
+  },
+  {
+    "id": "marriott-product-boundaries",
+    "family": "marriott",
+    "prompt": "Synthetic offline case: compare Bold, Bountiful and Brilliant. Assign Brilliant dining credits to all three; assume Bountiful gets an anniversary certificate without spending. The user has two personal cards and wants to add every elite-night allowance and use an expired award. Do not browse.",
+    "expected_products": [
+      "marriott-bonvoy-bold",
+      "marriott-bonvoy-bountiful",
+      "marriott-bonvoy-brilliant"
+    ],
+    "expected": [
+      "Keep certificate issuance and dining benefits product-specific",
+      "Check personal/business elite-night stacking instead of summing every card",
+      "Exclude the expired award and distinguish elite-night credits from free room nights"
+    ]
   }
 ]

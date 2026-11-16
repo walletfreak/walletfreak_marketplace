@@ -723,5 +723,97 @@
       "hilton honors business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/hilton-honors-business.md"
+  },
+  {
+    "id": "marriott-bonvoy-bold",
+    "name": "Marriott Bonvoy Bold",
+    "variant": "personal",
+    "family": "marriott",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bonvoy bold",
+      "marriott bold"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/marriott-bonvoy-bold.md"
+  },
+  {
+    "id": "marriott-bonvoy-boundless",
+    "name": "Marriott Bonvoy Boundless",
+    "variant": "personal",
+    "family": "marriott",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bonvoy boundless",
+      "marriott boundless"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/marriott-bonvoy-boundless.md"
+  },
+  {
+    "id": "marriott-bonvoy-bountiful",
+    "name": "Marriott Bonvoy Bountiful",
+    "variant": "personal",
+    "family": "marriott",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bonvoy bountiful",
+      "marriott bountiful"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/marriott-bonvoy-bountiful.md"
+  },
+  {
+    "id": "marriott-bonvoy-bevy",
+    "name": "Marriott Bonvoy Bevy American Express Card",
+    "variant": "personal",
+    "family": "marriott",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bonvoy bevy",
+      "marriott bevy"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/marriott-bonvoy-bevy.md"
+  },
+  {
+    "id": "marriott-bonvoy-brilliant",
+    "name": "Marriott Bonvoy Brilliant American Express Card",
+    "variant": "personal",
+    "family": "marriott",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bonvoy brilliant",
+      "marriott brilliant"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/marriott-bonvoy-brilliant.md"
+  },
+  {
+    "id": "marriott-bonvoy-business",
+    "name": "Marriott Bonvoy Business American Express Card",
+    "variant": "business",
+    "family": "marriott",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "bonvoy business",
+      "marriott business amex"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/marriott-bonvoy-business.md"
+  },
+  {
+    "id": "ritz-carlton-credit-card",
+    "name": "The Ritz-Carlton Credit Card",
+    "variant": "personal",
+    "family": "marriott",
+    "market": "US",
+    "access": "existing-or-limited",
+    "aliases": [
+      "ritz carlton card",
+      "ritz card",
+      "jpmorgan ritz carlton"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/ritz-carlton-credit-card.md"
   }
 ]

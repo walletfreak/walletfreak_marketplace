@@ -16,7 +16,7 @@
     {
       "name": "walletfreak-credit-cards",
       "source": "./plugins/walletfreak-credit-cards",
-      "version": "0.5.8"
+      "version": "0.5.9"
     },
     {
       "name": "walletfreak-spending",
