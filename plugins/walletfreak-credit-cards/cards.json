@@ -671,5 +671,57 @@
       "usbar"
     ],
     "guide": "skills/card-travel-benefits/references/cards/us-bank-altitude-reserve.md"
+  },
+  {
+    "id": "hilton-honors-amex",
+    "name": "Hilton Honors American Express Card",
+    "variant": "personal",
+    "family": "hilton",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "hilton honors amex",
+      "hilton no annual fee card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/hilton-honors-amex.md"
+  },
+  {
+    "id": "hilton-surpass",
+    "name": "Hilton Honors American Express Surpass",
+    "variant": "personal",
+    "family": "hilton",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "hilton surpass",
+      "surpass card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/hilton-surpass.md"
+  },
+  {
+    "id": "hilton-aspire",
+    "name": "Hilton Honors American Express Aspire",
+    "variant": "personal",
+    "family": "hilton",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "hilton aspire",
+      "aspire card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/hilton-aspire.md"
+  },
+  {
+    "id": "hilton-honors-business",
+    "name": "Hilton Honors American Express Business Card",
+    "variant": "business",
+    "family": "hilton",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "hilton business",
+      "hilton honors business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/hilton-honors-business.md"
   }
 ]

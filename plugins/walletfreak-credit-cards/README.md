@@ -6,7 +6,7 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 
 ## Product coverage
 
-52 individual guides across 8 families. Package version 0.5.7.
+56 individual guides across 9 families. Package version 0.5.8.
 
 | Family | Guides |
 | --- | --- |
@@ -18,5 +18,6 @@ The four shared skills remain traveler-profile, card-travel-benefits, wallet-opt
 | bank-of-america | 3 |
 | bilt | 3 |
 | us-bank | 5 |
+| hilton | 4 |
 
 See cards.json for every product, alias, variant and bundled guide path. Family scenarios in tests/card-product-scenarios.json are synthetic review cases, not executed model/provider tests.

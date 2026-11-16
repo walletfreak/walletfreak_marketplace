@@ -114,5 +114,19 @@
       "Verify network/account version and current Smartly tier/cap conditions",
       "Keep the unverified banking boost conditional and compare actual cash-back redemption value"
     ]
+  },
+  {
+    "id": "hilton-product-boundaries",
+    "family": "hilton",
+    "prompt": "Synthetic offline case: Surpass has an unissued spending reward; Aspire has one issued certificate expiring before travel. The user wants to combine four points nights with either certificate and take another fifth night free. The quoted five-night points price already includes its program discount. Do not browse.",
+    "expected_products": [
+      "hilton-surpass",
+      "hilton-aspire"
+    ],
+    "expected": [
+      "Neither stipulated certificate is usable",
+      "Do not create an annual Surpass reward or double-discount the quoted points stay",
+      "Keep personal quarterly/semiannual pools and participating resort eligibility separate"
+    ]
   }
 ]
