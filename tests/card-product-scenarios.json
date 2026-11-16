@@ -198,5 +198,19 @@
       "Separate qualification credits, points and actual award inventory",
       "Verify current program tiers and reward issuance before ranking"
     ]
+  },
+  {
+    "id": "one-key-product-boundaries",
+    "family": "one-key",
+    "prompt": "Synthetic offline case: compare One Key and One Key+. Treat OneKeyCash as transferable airline points, spend next year's anniversary award now and attach Plus benefits to the base card. Do not browse.",
+    "expected_products": [
+      "one-key-mastercard",
+      "one-key-plus-mastercard"
+    ],
+    "expected": [
+      "Keep restricted OneKeyCash separate from transferable points and cash",
+      "Do not spend future unissued rewards",
+      "Select the exact base/Plus product and verify equivalent booking conditions"
+    ]
   }
 ]

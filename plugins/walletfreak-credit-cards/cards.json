@@ -959,5 +959,32 @@
       "choice select"
     ],
     "guide": "skills/card-travel-benefits/references/cards/choice-privileges-select.md"
+  },
+  {
+    "id": "one-key-mastercard",
+    "name": "One Key Mastercard",
+    "variant": "personal",
+    "family": "one-key",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "one key card",
+      "onekey mastercard"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/one-key-mastercard.md"
+  },
+  {
+    "id": "one-key-plus-mastercard",
+    "name": "One Key+ Mastercard",
+    "variant": "personal",
+    "family": "one-key",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "one key plus",
+      "onekey plus",
+      "one key+"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/one-key-plus-mastercard.md"
   }
 ]

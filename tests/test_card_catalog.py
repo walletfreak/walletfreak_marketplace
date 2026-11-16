@@ -23,7 +23,7 @@ class CardCatalog(unittest.TestCase):
             self.assertIn(card['variant'], ('personal', 'business'))
             self.assertIn(card['access'], ('standard', 'existing-or-limited'))
             for alias in [card['name'], *card['aliases']]:
-                key = re.sub(r'[^a-z0-9]', '', alias.lower())
+                key = re.sub(r'[^a-z0-9]', '', alias.lower().replace('+', 'plus'))
                 self.assertTrue(key)
                 self.assertIn(aliases.get(key, card['id']), (card['id'],), (alias, aliases.get(key)))
                 aliases[key] = card['id']
