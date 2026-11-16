@@ -933,5 +933,31 @@
       "earner business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/wyndham-rewards-earner-business.md"
+  },
+  {
+    "id": "choice-privileges-mastercard",
+    "name": "Choice Privileges Mastercard",
+    "variant": "personal",
+    "family": "choice",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "choice privileges card",
+      "choice mastercard"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/choice-privileges-mastercard.md"
+  },
+  {
+    "id": "choice-privileges-select",
+    "name": "Choice Privileges Select Mastercard",
+    "variant": "personal",
+    "family": "choice",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "choice privileges select",
+      "choice select"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/choice-privileges-select.md"
   }
 ]

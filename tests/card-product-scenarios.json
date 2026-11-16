@@ -184,5 +184,19 @@
       "Verify partner match eligibility; never enroll or claim it automatically",
       "Do not double-discount the quoted award or spend unissued anniversary points"
     ]
+  },
+  {
+    "id": "choice-product-boundaries",
+    "family": "choice",
+    "prompt": "Synthetic offline case: the base Choice Mastercard is treated as Select. The user counts an elite qualification credit as a free night and spends Select anniversary points before issuance. Do not browse.",
+    "expected_products": [
+      "choice-privileges-mastercard",
+      "choice-privileges-select"
+    ],
+    "expected": [
+      "Keep base and Select benefits distinct",
+      "Separate qualification credits, points and actual award inventory",
+      "Verify current program tiers and reward issuance before ranking"
+    ]
   }
 ]
