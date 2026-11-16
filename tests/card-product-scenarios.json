@@ -143,5 +143,19 @@
       "Check personal/business elite-night stacking instead of summing every card",
       "Exclude the expired award and distinguish elite-night credits from free room nights"
     ]
+  },
+  {
+    "id": "ihg-product-boundaries",
+    "family": "ihg",
+    "prompt": "Synthetic offline case: I have Traveler and Premier Business. Add both cards' fourth-night discounts to the same already-discounted four-night quote, and treat a certificate night as an all-points night. Premier Business has one unissued threshold reward. Do not browse.",
+    "expected_products": [
+      "ihg-one-rewards-traveler",
+      "ihg-one-rewards-premier-business"
+    ],
+    "expected": [
+      "Do not double-apply the same stay discount",
+      "Verify points-only eligibility; a certificate night is not automatically eligible",
+      "Do not spend an unissued reward or import personal Premier credits"
+    ]
   }
 ]

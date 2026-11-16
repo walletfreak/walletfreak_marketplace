@@ -815,5 +815,44 @@
       "jpmorgan ritz carlton"
     ],
     "guide": "skills/card-travel-benefits/references/cards/ritz-carlton-credit-card.md"
+  },
+  {
+    "id": "ihg-one-rewards-traveler",
+    "name": "IHG One Rewards Traveler",
+    "variant": "personal",
+    "family": "ihg",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ihg traveler",
+      "ihg traveller"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/ihg-one-rewards-traveler.md"
+  },
+  {
+    "id": "ihg-one-rewards-premier",
+    "name": "IHG One Rewards Premier",
+    "variant": "personal",
+    "family": "ihg",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ihg premier",
+      "ihg premier personal"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/ihg-one-rewards-premier.md"
+  },
+  {
+    "id": "ihg-one-rewards-premier-business",
+    "name": "IHG One Rewards Premier Business",
+    "variant": "business",
+    "family": "ihg",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "ihg premier business",
+      "ihg business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/ihg-one-rewards-premier-business.md"
   }
 ]
