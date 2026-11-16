@@ -1368,5 +1368,42 @@
       "jetblue business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/jetblue-business.md"
+  },
+  {
+    "id": "british-airways-visa-signature",
+    "name": "British Airways Visa Signature",
+    "variant": "personal",
+    "family": "avios",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "british airways visa",
+      "ba visa"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/british-airways-visa-signature.md"
+  },
+  {
+    "id": "iberia-visa-signature",
+    "name": "Iberia Visa Signature",
+    "variant": "personal",
+    "family": "avios",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "iberia visa"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/iberia-visa-signature.md"
+  },
+  {
+    "id": "aer-lingus-visa-signature",
+    "name": "Aer Lingus Visa Signature",
+    "variant": "personal",
+    "family": "avios",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "aer lingus visa"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/aer-lingus-visa-signature.md"
   }
 ]

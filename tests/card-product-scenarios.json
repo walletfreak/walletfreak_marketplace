@@ -299,5 +299,19 @@
       "A future rebate cannot fund the current booking",
       "Verify package/channel eligibility and separate business versus personal earning rules"
     ]
+  },
+  {
+    "id": "avios-product-boundaries",
+    "family": "avios",
+    "prompt": "Synthetic offline case: I hold the British Airways and Iberia Visa cards. Apply BA's companion ticket to an Iberia paid flight, waive all surcharges and combine Avios from unrelated owners without checking rules. Do not browse.",
+    "expected_products": [
+      "british-airways-visa-signature",
+      "iberia-visa-signature"
+    ],
+    "expected": [
+      "Keep vouchers, eligible airlines/routes and paid versus award use distinct",
+      "Taxes/surcharges and two-seat availability still require verification",
+      "Do not assume unrelated balances are transferable or perform a transfer"
+    ]
   }
 ]
