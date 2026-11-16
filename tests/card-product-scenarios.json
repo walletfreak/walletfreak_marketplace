@@ -170,5 +170,19 @@
       "A later points rebate does not increase the current available balance",
       "Verify business credit transaction thresholds and award-rebate timing separately"
     ]
+  },
+  {
+    "id": "wyndham-product-boundaries",
+    "family": "wyndham",
+    "prompt": "Synthetic offline case: Earner Access and Earner Business hold different accounts. Copy Business status and anniversary points onto Access, match that status to another program automatically, and discount an award that already shows the cardmember price. Do not browse.",
+    "expected_products": [
+      "wyndham-rewards-earner-access",
+      "wyndham-rewards-earner-business"
+    ],
+    "expected": [
+      "Keep variant/owner rewards separate",
+      "Verify partner match eligibility; never enroll or claim it automatically",
+      "Do not double-discount the quoted award or spend unissued anniversary points"
+    ]
   }
 ]

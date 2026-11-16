@@ -1,7 +1,7 @@
 {
   "name": "walletfreak-credit-cards",
-  "version": "0.5.11",
-  "description": "Research 68 individual U.S. card products, compare points and benefits, and check requested balances with manual Chrome login.",
+  "version": "0.5.12",
+  "description": "Research 72 individual U.S. card products, compare points and benefits, and check requested balances with manual Chrome login.",
   "author": {
     "name": "WalletFreak contributors"
   },
@@ -17,7 +17,7 @@
   "interface": {
     "displayName": "WalletFreak Credit Cards",
     "shortDescription": "Cards, points and benefits.",
-    "longDescription": "Research 68 individual U.S. card products, compare points and benefits, and check requested balances with manual Chrome login.",
+    "longDescription": "Research 72 individual U.S. card products, compare points and benefits, and check requested balances with manual Chrome login.",
     "developerName": "WalletFreak",
     "category": "Productivity",
     "capabilities": [],

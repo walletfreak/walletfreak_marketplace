@@ -881,5 +881,57 @@
       "world of hyatt business"
     ],
     "guide": "skills/card-travel-benefits/references/cards/world-of-hyatt-business.md"
+  },
+  {
+    "id": "wyndham-rewards-earner",
+    "name": "Wyndham Rewards Earner",
+    "variant": "personal",
+    "family": "wyndham",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "wyndham earner",
+      "earner card"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wyndham-rewards-earner.md"
+  },
+  {
+    "id": "wyndham-rewards-earner-access",
+    "name": "Wyndham Rewards Earner Access",
+    "variant": "personal",
+    "family": "wyndham",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "wyndham earner access",
+      "earner access"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wyndham-rewards-earner-access.md"
+  },
+  {
+    "id": "wyndham-rewards-earner-plus",
+    "name": "Wyndham Rewards Earner Plus",
+    "variant": "personal",
+    "family": "wyndham",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "wyndham earner plus",
+      "earner plus"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wyndham-rewards-earner-plus.md"
+  },
+  {
+    "id": "wyndham-rewards-earner-business",
+    "name": "Wyndham Rewards Earner Business",
+    "variant": "business",
+    "family": "wyndham",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "wyndham earner business",
+      "earner business"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/wyndham-rewards-earner-business.md"
   }
 ]
