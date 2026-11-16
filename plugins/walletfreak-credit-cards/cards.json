@@ -1405,5 +1405,18 @@
       "aer lingus visa"
     ],
     "guide": "skills/card-travel-benefits/references/cards/aer-lingus-visa-signature.md"
+  },
+  {
+    "id": "chase-aeroplan",
+    "name": "Chase Aeroplan Card",
+    "variant": "personal",
+    "family": "aeroplan",
+    "market": "US",
+    "access": "standard",
+    "aliases": [
+      "aeroplan card",
+      "air canada aeroplan chase"
+    ],
+    "guide": "skills/card-travel-benefits/references/cards/chase-aeroplan.md"
   }
 ]

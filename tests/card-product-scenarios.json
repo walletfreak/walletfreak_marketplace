@@ -313,5 +313,18 @@
       "Taxes/surcharges and two-seat availability still require verification",
       "Do not assume unrelated balances are transferable or perform a transfer"
     ]
+  },
+  {
+    "id": "aeroplan-product-boundaries",
+    "family": "aeroplan",
+    "prompt": "Synthetic offline case: I hold Chase Aeroplan only. Treat its balance as Ultimate Rewards transferable to Hyatt, spend an unissued flight reward and apply Air Canada benefits on an ineligible partner-operated flight. Do not browse.",
+    "expected_products": [
+      "chase-aeroplan"
+    ],
+    "expected": [
+      "Keep Aeroplan and Ultimate Rewards currencies distinct",
+      "Require issued eligible reward inventory",
+      "Verify actual operating-carrier/status/cardholder eligibility instead of assuming partner coverage"
+    ]
   }
 ]
